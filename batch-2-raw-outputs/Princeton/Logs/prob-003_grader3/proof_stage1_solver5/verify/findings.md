@@ -1,0 +1,1 @@
+# Verification Findings — verify_proof_stage1_solver5_20260531_020427
