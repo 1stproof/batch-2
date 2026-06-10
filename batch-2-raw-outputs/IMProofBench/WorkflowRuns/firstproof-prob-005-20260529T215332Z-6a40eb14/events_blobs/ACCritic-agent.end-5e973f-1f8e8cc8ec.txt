@@ -1,0 +1,859 @@
+Act as a strict mathematical referee. Below you find a mathematical
+problem statement together with an attempt at a solution. Perform an
+in-depth review of this given answer, going paragraph by paragraph to
+audit its validity. Check for any mathematical errors, gaps in given
+arguments, missing assumptions when applying known results, handwaving,
+unclear formulations, unproved essential lemmas, or unresolved
+"Remaining open issues". Use web search to validate any cited results
+from the literature, and perform cross-checks using code-interpreter
+where appropriate. Your goal is to identify *any* issues which could
+affect the mathematical validity of the given treatment. Then give me
+a full report.
+
+Set `<answer_ready>true</answer_ready>` only if answer.tex fully solves
+the stated problem as a complete rigorous solution, with no remaining
+open gaps, no unproved essential lemmas, and no missing assumptions. If
+the problem statement was ambiguous, answer.tex must explicitly record
+the adopted interpretation in a "Problem statement and interpretation"
+section and solve that faithful interpretation. A partial final answer
+that merely lists open issues is not answer-ready and must end with
+`<answer_ready>false</answer_ready>`.
+
+Also set `<answer_ready>false</answer_ready>` if answer.tex violates
+the First Proof LaTeX contract supplied below: wrong document class,
+font size other than 12pt, over the page limit, non-permitted
+margin/layout changes, line-spacing changes, in-document font-size
+changes, or any LaTeX compile failure.
+
+End your report with exactly one of these two lines, on its own line, with no additional text:
+
+- `<answer_ready>true</answer_ready>`
+- `<answer_ready>false</answer_ready>`
+
+# Problem statement
+
+Let $u(x,t)$ be  a real-valued  solution to the following stochastic partial differential equation (SPDE):
+\begin{align}\tag{$*$}\label{maineq}
+    \frac{\partial u}{\partial t}(x,t) &= \frac{1}{2} \frac{\partial^2 u}{\partial x^2}(x,t) + \delta_0(u(x,t)) +  \dot{W}(x,t) \quad\text{for }t \geq 0\\
+    u(x,0) &= u_0(x)\in C_0([0,1])\nonumber\\
+    u(0,t) &= u(1,t)=0\quad\text{for all }t\geq0    \nonumber
+\end{align}
+where $C_0([0,1]):=\{f\in C([0,1],\R): f(0)=f(1)=0\}$, $x \in [0,1]$, $t \geq 0$, $\delta_0$ is the Dirac delta
+function at $0$, and $\dot{W}(x,t)$ is space-time white noise, $u_0\in C_0([0,1])$ is the initial condition. We understand
+the probabilistically weak PDE mild solution of the equation in the
+sense described in ``Well-posedness of stochastic heat equation with
+distributional drift and skew stochastic heat equation'' by Siva
+Athreya, Oleg Butkovsky, Khoa Lê, Leonid Mytnik (2024). 
+We assume that the existence, uniqueness, and approximation results of [ABLM24] extend to the SPDE on $[0,1]$ with Dirichlet boundary conditions, i.e. with the Dirichlet heat kernel and initial data $u_0\in C_0([0,1])$. In
+particular, we assume that there exists a unique (in law) adapted mild solution to \eqref{maineq} on $C([0,T],C_0([0,1]))$.
+
+
+We further assume that if $u^n$ is a solution to this SPDE with the drift $G_{1/n}$ in place of $\delta_0$, where $G_{1/n}(x):=\sqrt{\frac{n}{2\pi}} \exp(-\frac{n x^2}{2})$ is the 1D heat kernel on $\mathbb{R}$ with variance $1/n$, then for any $t>0$ we have 
+\begin{equation*}
+u^n(t)\to u(t),\qquad\text{weakly, \,\, as $n\to\infty$}.
+\end{equation*}
+
+Let $P_t$ be the Markov semigroup associated with the solution $u(t)$, i.e., for any bounded measurable function $f\colon C_0([0,1])\to\R$,
+\begin{align}
+    P_t f(u_0) = \mathbb{E}[f(u(\cdot,t)) | u(\cdot,0) = u_0(\cdot)],\quad u_0\in C_0([0,1]).
+\end{align}
+
+
+Prove or disprove the following statement:  $P_t$ has at most one invariant probability measure $\mu$ on $C_0([0,1])$.
+
+# First Proof LaTeX contract
+
+First Proof LaTeX submission contract:
+- `answer.tex` must be a complete standalone LaTeX document.
+- Use exactly `\documentclass[12pt]{article}`.
+- The compiled PDF must be at most 12 pages.
+- The `fullpage` package is permitted.
+- Do not use any other margin/layout changes: no `geometry`, `a4wide`,
+  `typearea`, `anysize`, manual `\textwidth`, `\textheight`,
+  `\oddsidemargin`, `\evensidemargin`, `\topmargin`, etc.
+- Do not change line spacing: no `setspace`, `\linespread`,
+  `\baselinestretch`, `\onehalfspacing`, or `\doublespacing`.
+- Do not change font size inside the document: no `\small`,
+  `\footnotesize`, `\scriptsize`, or `\fontsize`.
+- Run `pdflatex` and fix compile errors before claiming readiness.
+
+
+# Author's solution attempt
+
+## `answer.tex`
+
+```latex
+\documentclass[12pt]{article}
+\usepackage{fullpage}
+\usepackage{amsmath,amssymb,amsthm}
+
+\newtheorem{lemma}{Lemma}
+\newtheorem{proposition}{Proposition}
+\newtheorem{assumption}{Assumption}
+\newcommand{\R}{\mathbb R}
+\newcommand{\E}{\mathbb E}
+\newcommand{\1}{\mathbf 1}
+\newcommand{\cE}{\mathcal E}
+\newcommand{\Var}{\operatorname{Var}}
+\newcommand{\capacity}{\operatorname{Cap}}
+
+\begin{document}
+
+\begin{center}
+{\bf Invariant measures for the Dirichlet skew stochastic heat equation}
+\end{center}
+
+\section*{Problem statement and interpretation}
+
+Let \(E=C_0([0,1])\), and let \(S_t\) be the Dirichlet heat semigroup.
+I use the ABLM regularized/mild interpretation specified in the problem,
+including the assumed Dirichlet extension.  When passing from the
+regularized equations to semigroups I use the following pointwise
+interpretation of the stated weak convergence: for every bounded continuous
+\(\Phi:E\to\R\), deterministic \(x\in E\), and \(t>0\),
+\[
+        P_t^n\Phi(x)\longrightarrow P_t\Phi(x).      \tag{A}
+\]
+The distributional drift has the gradient form
+\[
+        \delta_0=-\frac12\frac{d}{dr}(-2H_+),\qquad
+        H_+(r)=\1_{\{r>0\}} .
+\]
+Thus the natural reversible measure is a bounded Gibbs perturbation of
+Brownian bridge measure.  Let \(\gamma\) be the law on \(E\) of the
+standard Brownian bridge from \(0\) to \(0\), and set
+\[
+   \Lambda(v)=\int_0^1\1_{\{v(x)>0\}}\,dx,\qquad
+   \pi(dv)=Z^{-1}e^{2\Lambda(v)}\gamma(dv).       \tag{1}
+\]
+The map \(\Lambda\) is Borel.  Since \(0\le\Lambda\le1\), \(\pi\sim\gamma\)
+with density bounded above and below.  The value assigned to \(H_+(0)\)
+is irrelevant because a Brownian bridge spends zero Lebesgue time at
+level \(0\):
+\[
+   \E_\gamma\int_0^1\1_{\{\beta(x)=0\}}\,dx
+    =\int_0^1\mathbb P(\beta(x)=0)\,dx=0 .
+\]
+
+\section*{Consequences of the smooth approximations}
+
+Put
+\[
+   B_n(r)=\int_{-\infty}^rG_{1/n}(s)\,ds,\qquad
+   \pi_n(dv)=Z_n^{-1}\exp\!\left(2\int_0^1B_n(v(x))\,dx\right)\gamma(dv).
+\]
+Then \(0\le B_n\le1\), \(B_n(r)\to H_+(r)\) for \(r\ne0\), and hence
+\[
+       \|\pi_n-\pi\|_{\rm TV}\longrightarrow0 .          \tag{2}
+\]
+Indeed, the normalized densities converge in \(L^1(\gamma)\) by dominated
+convergence and the zero-occupation identity above.
+
+Let \(P_t^n\) be the semigroup of the regularized equation.  For each
+fixed \(n\), the Nemytskii drift \(v\mapsto G_{1/n}(v)\) is bounded and
+globally Lipschitz as an \(L^2(0,1)\)-valued map.  The standard
+gradient-SPDE/Dirichlet-form theorem identifies its mild semigroup with
+the symmetric diffusion generated, on smooth cylinder functions, by
+\[
+ L_nF(v)=\frac12{\rm Tr}\,D^2F(v)
+       +\left\langle \frac12\Delta_Dv+G_{1/n}(v),DF(v)\right\rangle ,
+\]
+and by the closed form
+\[
+   \cE_n(F,G)=\frac12\int_E\langle DF,DG\rangle_{L^2(0,1)}\,d\pi_n .
+\]
+Equivalently,
+\[
+   \int G\,L_nF\,d\pi_n
+   =-\frac12\int\langle DF,DG\rangle_{L^2(0,1)}\,d\pi_n
+   =\int F\,L_nG\,d\pi_n.                         \tag{3}
+\]
+Thus \(P_t^n\) is reversible with invariant law \(\pi_n\).
+
+\begin{proposition}\label{prop:limit}
+Under (A), \(\pi\) is invariant for \(P_t\), \(P_t\) is symmetric on
+\(L^2(\pi)\), and the \(L^2(\pi)\)-semigroup has a spectral gap.
+\end{proposition}
+
+\begin{proof}
+For \(f,g\in C_b(E)\), dominated convergence with respect to \(\pi\),
+(2), and invariance of \(\pi_n\) give
+\[
+ \int P_tf\,d\pi
+ =\lim_n\int P_t^nf\,d\pi
+  =\lim_n\int P_t^nf\,d\pi_n
+  =\lim_n\int f\,d\pi_n
+  =\int f\,d\pi .
+\]
+Similarly, using (3),
+\[
+ \int g\,P_tf\,d\pi
+ =\lim_n\int g\,P_t^nf\,d\pi_n
+  =\lim_n\int f\,P_t^ng\,d\pi_n
+  =\int f\,P_tg\,d\pi .
+\]
+Since \(C_b(E)\) is dense in \(L^2(\pi)\), this extends to all of
+\(L^2(\pi)\).
+
+The Brownian bridge satisfies the Gaussian Poincare inequality
+\[
+     \Var_\gamma(F)\le C_0\int\|DF\|_{L^2(0,1)}^2\,d\gamma .
+\]
+Because the densities \(d\pi_n/d\gamma\) are bounded above and below
+uniformly in \(n\), there is \(C<\infty\) such that
+\[
+     \Var_{\pi_n}(F)\le C\,\cE_n(F,F).             \tag{4}
+\]
+The spectral theorem for the reversible semigroup generated by
+\(\cE_n\) therefore gives, with \(c>0\) independent of \(n\),
+\[
+     \Var_{\pi_n}(P_t^n f)
+       \le e^{-2ct}\Var_{\pi_n}(f).                \tag{5}
+\]
+Passing to the limit for bounded continuous \(f\) and then using
+\(L^2(\pi)\)-density yields
+\[
+     \Var_{\pi}(P_t f)\le e^{-2ct}\Var_\pi(f),
+     \qquad f\in L^2(\pi).                         \tag{6}
+\]
+\end{proof}
+
+\section*{Uniqueness once an all-starting-points upgrade is known}
+
+\begin{lemma}\label{lem:criterion}
+Assume Proposition \ref{prop:limit}.  If, for some \(\lambda>0\),
+\[
+     R_\lambda^P(x,\cdot)\ll \pi,\qquad
+     R_\lambda^P(x,A):=\int_0^\infty e^{-\lambda t}P_t(x,A)\,dt,
+     \quad x\in E,                                  \tag{7}
+\]
+then \(\pi\) is the only invariant probability measure of \(P_t\).
+\end{lemma}
+
+\begin{proof}
+Let \(\eta\) be invariant.  If \(\pi(A)=0\), then (7) and invariance give
+\[
+   \eta(A)=\lambda\int_E R_\lambda^P(x,A)\,\eta(dx)=0.
+\]
+Thus \(\eta=h\pi\).  For bounded \(\varphi\),
+\[
+ \int \varphi h\,d\pi=\int P_t\varphi\,h\,d\pi
+   =\int \varphi\,P_t h\,d\pi ,
+\]
+first for bounded \(h\), then by truncation.  Hence \(P_t h=h\) in
+\(L^1(\pi)\).  With \(h_a=h\wedge a\), concavity and the Markov property
+give \(h_a=(P_th)\wedge a\ge P_t h_a\).  The two sides have the same
+\(\pi\)-integral, so equality holds.  Since \(h_a\in L^2(\pi)\), (6)
+forces \(\Var_\pi(h_a)=0\).  Letting \(a\) vary shows \(h\equiv1\).
+\end{proof}
+
+\begin{lemma}\label{lem:sf}
+Either of the following implies (7): \(P_t\) is strong Feller for every
+\(t>0\), or, for one \(\lambda>0\), \(R_\lambda^P\) maps bounded Borel
+functions to continuous functions.
+\end{lemma}
+
+\begin{proof}
+If \(\pi(A)=0\), then \(x\mapsto P_t(x,A)\), respectively
+\(x\mapsto R_\lambda^P(x,A)\), is a nonnegative continuous function with
+zero \(\pi\)-integral.  Since \(\pi\sim\gamma\) and Brownian bridge
+measure has full support on \(E\), that function is identically zero.
+\end{proof}
+
+A weaker topological replacement for strong Feller would also suffice.
+
+\begin{lemma}[eventual equicontinuity criterion]\label{lem:eprop}
+Assume Proposition \ref{prop:limit}.  Suppose that for every bounded
+Lipschitz \(f:E\to\R\), every \(x\in E\), and every \(\varepsilon>0\),
+there are a neighbourhood \(U\) of \(x\) and \(t_0>0\) such that
+\[
+        |P_t f(y)-P_t f(x)|\le\varepsilon,
+        \qquad y\in U,\ t\ge t_0 .                  \tag{8}
+\]
+Then \(\pi\) is the unique invariant probability measure.
+\end{lemma}
+
+\begin{proof}
+By (6), \(P_t f\to \pi(f)\) in \(L^2(\pi)\).  Fix \(x\) and choose \(U\)
+as in (8).  Full support gives \(\pi(U)>0\).  For \(t\ge t_0\),
+\[
+ |P_t f(x)-\pi(f)|
+ \le \varepsilon
+ +\left(\pi(U)^{-1}\int_U |P_t f(y)-\pi(f)|^2\,\pi(dy)\right)^{1/2}.
+\]
+Letting \(t\to\infty\), then \(\varepsilon\downarrow0\), gives
+\(P_t f(x)\to\pi(f)\) for every \(x\).  If \(\eta\) is invariant, dominated
+convergence yields
+\[
+     \eta(f)=\int P_t f\,d\eta \longrightarrow \pi(f).
+\]
+Bounded Lipschitz functions determine probability measures on the Polish
+space \(E\), so \(\eta=\pi\).
+\end{proof}
+
+\section*{The Dirichlet-form exceptional set}
+
+For the bounded-variation potential \(f=-2H_+\), the Bounebache--Zambotti
+Dirichlet form is
+\[
+        \cE(F,G)=\frac12\int_E\langle DF,DG\rangle_{L^2(0,1)}\,d\pi .
+\]
+Their Proposition 2.5 gives a resolvent kernel absolutely continuous with
+respect to \(\pi\), but the representing identity is only \(\pi\)-a.e. in
+the starting point; in the proof the kernel is extended over a
+zero-capacity exceptional set.  Therefore it gives the needed resolvent
+absolute continuity only away from a properly exceptional set \(N\).
+Verification that the BZ local-time process lies in the Dirichlet ABLM
+weak/mild class would identify the constructions at most quasi-everywhere;
+this does not by itself settle deterministic \(x\in N\).
+
+The following two reductions avoid asking for pointwise absolute
+continuity on all of \(E\).
+
+\begin{lemma}\label{lem:entrance}
+Let \(N\) be a BZ properly exceptional set such that
+\(R_\lambda^P(y,\cdot)\ll\pi\) for \(y\notin N\).  If
+\[
+          P_s(x,N)=0,\qquad x\in E,\ s>0,              \tag{9}
+\]
+then (7) holds for every \(x\in E\).
+\end{lemma}
+
+\begin{proof}
+Let \(\pi(A)=0\).  For \(y\notin N\), \(R_\lambda^P(y,A)=0\).  For
+\(\varepsilon>0\),
+\[
+ R_\lambda^P(x,A)
+ \le \varepsilon
+  +e^{-\lambda\varepsilon}\int_E R_\lambda^P(y,A)P_\varepsilon(x,dy)
+ \le \varepsilon+\lambda^{-1}P_\varepsilon(x,N).
+\]
+Use (9) and let \(\varepsilon\downarrow0\).
+\end{proof}
+
+\begin{lemma}\label{lem:capacity}
+Assume that every invariant probability \(\eta\) satisfies the finite
+energy bound
+\[
+       \left|\int \varphi\,d\eta\right|
+       \le C_\eta\,\cE_1(\varphi,\varphi)^{1/2}       \tag{10}
+\]
+for every bounded nonnegative element of \(D(\cE)\), represented by its
+quasi-continuous version.
+Then every invariant \(\eta\) charges no BZ exceptional set.  Consequently
+the quasi-everywhere BZ resolvent absolute continuity implies
+\(\eta\ll\pi\), and Lemma \ref{lem:criterion} gives uniqueness.
+\end{lemma}
+
+\begin{proof}
+Let \(O\) be open and let \(e_O\) be an equilibrium potential with
+\(e_O\ge1\) quasi-everywhere on \(O\) and
+\(\cE_1(e_O,e_O)\le 2\capacity(O)\).  Applying (10) to bounded truncations of
+the quasi-continuous version of \(e_O\) gives
+\[
+       \eta(O)\le \int e_O\,d\eta
+          \le \sqrt2\, C_\eta\,\capacity(O)^{1/2}.
+\]
+Outer regularity of capacity implies that \(\eta(N)=0\) whenever
+\(\capacity(N)=0\).  If \(\pi(A)=0\), invariance and the BZ resolvent identity
+on \(N^c\) give
+\[
+   \eta(A)=\lambda\int_{N^c}R_\lambda^P(y,A)\,\eta(dy)=0.
+\]
+Thus \(\eta\ll\pi\), and the last step is Lemma \ref{lem:criterion}.
+\end{proof}
+
+\section*{Remaining open issues}
+
+The argument proves uniqueness once any one of the all-starting-points
+upgrades above is available.  What is still unproved from the hypotheses
+stated in the problem is an upgrade excluding invariant probabilities
+living on the \(\pi\)-null exceptional set.  Concretely, one still needs
+one of the following.
+
+\begin{enumerate}
+\item Prove (7), or prove one of the strong-Feller sufficient conditions in
+Lemma \ref{lem:sf}.
+\item Prove the eventual equicontinuity estimate (8).  The \(L^2(\pi)\)
+spectral gap plus full support would then imply pointwise convergence
+\(P_t f(x)\to\pi(f)\) by Lemma \ref{lem:eprop}.
+\item Prove entrance into the BZ non-exceptional set, namely (9).
+\item Prove the finite-energy/capacity estimate (10) for every stationary
+law.  This would show that invariant laws are smooth measures for the BZ
+Dirichlet form and hence cannot charge exceptional sets.
+\end{enumerate}
+
+This round I checked two non-pointwise routes: the eventual
+equicontinuity route, which would upgrade \(L^2(\pi)\) mixing to pointwise
+mixing, and the finite-energy route, which would only need invariant laws
+to ignore capacity-zero sets.  Both reductions are rigorous as stated, but
+the required estimates are not consequences of the assumptions currently
+listed in the problem.  Therefore the present document proves uniqueness
+among invariant measures absolutely continuous with respect to \(\pi\) and
+gives several exact sufficient criteria for full uniqueness, but it does
+not yet constitute an unconditional proof or disproof of the statement.
+
+\begin{thebibliography}{9}
+\bibitem{ABLM}
+S. Athreya, O. Butkovsky, K. L\^e and L. Mytnik,
+\emph{Well-posedness of stochastic heat equation with distributional drift
+and skew stochastic heat equation}, Comm. Pure Appl. Math. 77 (2024),
+2708--2777.
+
+\bibitem{ABLMweakmild}
+S. Athreya, O. Butkovsky, K. L\^e and L. Mytnik,
+\emph{Analytically weak and mild solutions to stochastic heat equation with
+irregular drift}, Stoch. PDE: Anal. Comp. (2025).
+
+\bibitem{BZ}
+S. K. Bounebache and L. Zambotti,
+\emph{A skew stochastic heat equation}, J. Theoret. Probab. 27 (2014),
+168--201.
+\end{thebibliography}
+
+\end{document}
+
+```
+
+## `references.bib`
+
+```bibtex
+@article{ABLM2024,
+  author = {Athreya, Siva and Butkovsky, Oleg and L{\^e}, Khoa and Mytnik, Leonid},
+  title = {Well-posedness of stochastic heat equation with distributional drift and skew stochastic heat equation},
+  journal = {Communications on Pure and Applied Mathematics},
+  volume = {77},
+  number = {5},
+  pages = {2708--2777},
+  year = {2024},
+  doi = {10.1002/cpa.22157}
+}
+
+@article{BounebacheZambotti2014,
+  author = {Bounebache, Said Karim and Zambotti, Lorenzo},
+  title = {A skew stochastic heat equation},
+  journal = {Journal of Theoretical Probability},
+  volume = {27},
+  number = {1},
+  pages = {168--201},
+  year = {2014},
+  doi = {10.1007/s10959-012-0421-8}
+}
+
+@article{AthreyaButkovskyLeMytnik2025WeakMild,
+  author = {Athreya, Siva and Butkovsky, Oleg and L{\^e}, Khoa and Mytnik, Leonid},
+  title = {Analytically weak and mild solutions to stochastic heat equation with irregular drift},
+  journal = {Stochastics and Partial Differential Equations: Analysis and Computations},
+  year = {2025},
+  doi = {10.1007/s40072-025-00392-x}
+}
+
+@misc{ButkovskyMytnik2024WeakUniqueness,
+  author = {Butkovsky, Oleg and Mytnik, Leonid},
+  title = {Weak uniqueness for singular stochastic equations},
+  year = {2024},
+  eprint = {2405.13780},
+  archivePrefix = {arXiv},
+  primaryClass = {math.PR},
+  doi = {10.48550/arXiv.2405.13780}
+}
+
+
+@book{FukushimaOshimaTakeda2011,
+  author = {Fukushima, Masatoshi and Oshima, Yoichi and Takeda, Masayoshi},
+  title = {Dirichlet Forms and Symmetric Markov Processes},
+  edition = {Second revised and extended},
+  publisher = {De Gruyter},
+  year = {2011},
+  doi = {10.1515/9783110218091}
+}
+
+@book{DaPratoZabczyk1996,
+  author = {Da Prato, Giuseppe and Zabczyk, Jerzy},
+  title = {Ergodicity for Infinite Dimensional Systems},
+  publisher = {Cambridge University Press},
+  year = {1996},
+  doi = {10.1017/CBO9780511662829}
+}
+
+@article{HairerMattingly2006,
+  author = {Hairer, Martin and Mattingly, Jonathan C.},
+  title = {Ergodicity of the 2D Navier--Stokes equations with degenerate stochastic forcing},
+  journal = {Annals of Mathematics},
+  volume = {164},
+  number = {3},
+  pages = {993--1032},
+  year = {2006},
+  doi = {10.4007/annals.2006.164.993}
+}
+
+@article{HairerMattingly2011,
+  author = {Hairer, Martin and Mattingly, Jonathan C.},
+  title = {A theory of hypoellipticity and unique ergodicity for semilinear stochastic PDEs},
+  journal = {Electronic Journal of Probability},
+  volume = {16},
+  pages = {658--738},
+  year = {2011},
+  doi = {10.1214/EJP.v16-875}
+}
+
+@article{HairerMattingly2018StrongFeller,
+  author = {Hairer, Martin and Mattingly, Jonathan C.},
+  title = {The strong Feller property for singular stochastic PDEs},
+  journal = {Annales de l'Institut Henri Poincare, Probabilites et Statistiques},
+  volume = {54},
+  number = {3},
+  pages = {1314--1340},
+  year = {2018},
+  doi = {10.1214/17-AIHP840}
+}
+```
+
+# Author's working notes (background context only)
+
+This is the Author's persistent scratchpad — not the deliverable, and not the focus of your review. Skim it; flag any fatal mathematical error you happen to spot that could be steering the proof in a wrong direction. Otherwise concentrate the review on `answer.tex`.
+
+## `research_notes.tex`
+
+```latex
+\documentclass[12pt]{article}
+\usepackage{amsmath,amssymb}
+\begin{document}
+\section*{Research notes}
+
+Problem: uniqueness of invariant probability for Dirichlet stochastic heat
+equation on $[0,1]$ with additive space-time white noise and distributional
+drift $\delta_0(u)$, under the ABLM regularized/mild interpretation and
+regularisation by $G_{1/n}$.
+
+Key interpretation:
+\[
+\delta_0(r)=-\frac12(-2{\bf1}_{r>0})',
+\]
+so the equation is a singular gradient SPDE with bounded potential
+$f(r)=-2H_+(r)$.  For smooth approximation $B_n'=G_{1/n}$ with
+$B_n(r)=\int_{-\infty}^rG_{1/n}(s)\,ds$, the invariant measure of the
+regularized gradient equation is
+\[
+\pi_n(dv)=Z_n^{-1}\exp\left(2\int_0^1 B_n(v(x))\,dx\right)\gamma(dv),
+\]
+where $\gamma$ is Brownian bridge law (the invariant measure of the
+Dirichlet OU/string process).  Since $0\le B_n\le1$ and $B_n\to H_+$
+away from zero, while a Brownian bridge spends zero Lebesgue time at
+zero,
+\[
+\pi_n\to
+\pi(dv)=Z^{-1}\exp\left(2\int_0^1{\bf1}_{v(x)>0}\,dx\right)\gamma(dv)
+\]
+in total variation.  Densities $d\pi_n/d\gamma$ and $d\pi/d\gamma$ are
+bounded above and below by deterministic positive constants.
+
+Round-1 robust result obtained: assuming pointwise weak convergence of
+regularized semigroups on bounded continuous observables,
+\[
+P_t^n\Phi(x)\to P_t\Phi(x),\qquad x\in C_0,\ t>0,
+\]
+one can pass reversibility/invariance and a uniform spectral gap from
+$P^n$ to the actual ABLM semigroup $P$ without invoking
+Bounebache--Zambotti:
+\[
+\int gP_tf\,d\pi=\int fP_tg\,d\pi,\qquad
+\operatorname{Var}_\pi(P_tf)\le e^{-2ct}\operatorname{Var}_\pi(f).
+\]
+Key estimates:
+\[
+\operatorname{Var}_{\pi_n}(F)\le C\mathcal E_n(F,F),\qquad
+\mathcal E_n(F,F)=\frac12\int\|DF\|_{L^2}^2\,d\pi_n,
+\]
+with $C$ uniform in $n$, by Gaussian Poincare for $\gamma$ plus bounded
+density perturbation.  Then pass the $L^2$ contraction/spectral gap to
+the limit using total variation convergence $\pi_n\to\pi$ and bounded
+pointwise convergence $P_t^nf\to P_tf$.
+
+Abstract uniqueness mechanism:
+If $\eta$ is invariant and the actual resolvent satisfies
+\[
+R_\lambda^P(x,\cdot)\ll\pi\quad\hbox{for every }x,
+\]
+then $\eta=\lambda\eta R_\lambda^P\ll\pi$.  With $h=d\eta/d\pi$,
+symmetry gives $P_th=h$ in $L^1(\pi)$.  For $h_a=h\wedge a$, concavity
+gives $h_a\ge P_th_a$ and equal integrals force equality.  Since
+$h_a\in L^2$, the spectral gap forces $h_a$ constant.  Varying $a$
+implies $h$ constant, hence $\eta=\pi$.
+
+Central unresolved issue:
+Need pointwise resolvent absolute continuity for the actual ABLM
+semigroup, not only for the $L^2(\pi)$ Dirichlet-form version and not
+only quasi-everywhere.  BZ Proposition 2.5 gives an $L^2$ resolvent kernel
+$\rho_\lambda(x,dy)\ll\nu(dy)$ for all $x$ (setting it to zero on an
+exceptional set) and transition absolute continuity for all
+non-exceptional initial conditions.  BZ Proposition 3.1 constructs a
+weak local-time solution for quasi-every initial condition.  ABLM
+uniqueness plus the 2025 weak/mild equivalence paper plausibly identify
+the BZ process with the ABLM mild process for quasi-every initial point,
+but this still does not prove that arbitrary invariant measures cannot
+charge the exceptional set, nor that $R_\lambda^P(x,\cdot)\ll\pi$ for
+$x$ in that set.
+
+Potential routes to close the gap:
+1. Uniform heat-kernel/capacity estimates for $P_t^n$: prove
+   $P_t^n(x,A)\le C_{t,x}\,\mathrm{Cap}_n(A)^\alpha$ or
+   $\|dP_t^n(x,\cdot)/d\pi_n\|_{L^2(\pi_n)}\le C_{t,x}$ with constants
+   stable as $n\to\infty$ (perhaps only for $t$ large).  This would pass
+   AC to the limit and imply uniqueness via convergence to equilibrium.
+2. Strict version of BZ process: prove that the ABLM process is the
+   strict all-starting-points Hunt process associated with the BZ
+   Dirichlet form, and that BZ's resolvent kernel represents its
+   resolvent at every deterministic $x$.
+3. Entrance from exceptional sets: let $N$ be the BZ exceptional set.
+   Show $P_s^P(x,N)=0$ for every $x$ and $s>0$.  Then q.e. resolvent AC
+   plus the Markov property gives all-$x$ resolvent AC:
+   $R_\lambda(x,A)\le\int_0^s e^{-\lambda t}P_t(x,A)dt$ for
+   $\pi(A)=0$, then let $s\downarrow0$.
+4. Prove uniqueness of invariant measures without pointwise AC by showing
+   every invariant stationary solution has enough finite-energy/Sobolev
+   regularity not to charge zero-capacity sets.  Stationarity and the
+   nondegenerate additive noise imply one-dimensional projections have no
+   atoms by the occupation formula, but this is far weaker than avoiding
+   all Gaussian-capacity-zero sets.
+
+Useful literature facts:
+- BZ use $\nu(dx)\propto \exp(-\int f(x_r)dr)\mu(dx)$.  For
+  $f=-2H_+$ this is exactly $\pi$.
+- BZ equation has singular term
+  $-\frac12\int f(da)\partial_\theta\ell^a_{t,\theta}$; for
+  $f=-2H_+$ this is $\partial_\theta\ell^0$, formally
+  $\delta_0(u(t,\theta))$.
+- ABLM 2024 proves strong existence/uniqueness for $b=\kappa\delta_0$
+  and convergence of smooth approximations; it explicitly did not treat
+  Dirichlet boundary conditions, but the problem assumes the extension.
+- ABLM 2025 ``Analytically weak and mild solutions...'' proves weak
+  regularized and mild regularized solution notions coincide in the
+  known existence range; may be useful for local-time-to-mild
+  identification, though it still does not by itself remove the
+  exceptional-set issue.
+
+
+
+\section*{Additional reduction lemmas and strategy notes}
+
+Strong-Feller/resolvent-Feller reduction.  Since $\pi$ is invariant and
+has full support, if $A$ is Borel and $\pi(A)=0$, then
+\[
+  \int P_t{\bf1}_A\,d\pi=\pi(A)=0,\qquad
+  \int R_\lambda{\bf1}_A\,d\pi=\lambda^{-1}\pi(A)=0.
+\]
+Thus either of the following immediately upgrades $\pi$-a.e. null-set
+avoidance to all starting points:
+\[
+  P_t:B_b(E)\to C_b(E)\quad \hbox{for every }t>0,
+\]
+or
+\[
+  R_\lambda:B_b(E)\to C_b(E)\quad \hbox{for some }\lambda>0.
+\]
+Indeed a nonnegative continuous function with zero integral against a
+full-support probability is identically zero.  This proves
+$P_t(x,\cdot)\ll\pi$ for all $x,t>0$ in the strong-Feller case, and
+$R_\lambda(x,\cdot)\ll\pi$ in the resolvent-Feller case.
+
+Entrance reduction.  Let $N$ be a BZ exceptional set such that the ABLM
+and BZ resolvents are identified for $y\notin N$.  If
+\[
+  P_s^P(x,N)=0,\qquad x\in E,\ s>0,
+\]
+then all-starting-point resolvent absolute continuity follows.  For
+$\pi(A)=0$,
+\[
+ R_\lambda(x,A)
+ =\int_0^\varepsilon e^{-\lambda t}P_t(x,A)\,dt
+  +e^{-\lambda\varepsilon}P_\varepsilon R_\lambda(\cdot,A)(x).
+\]
+The first term is at most $\varepsilon$ and the second term is at most
+$\lambda^{-1}P_\varepsilon(x,N)$, hence zero; let
+$\varepsilon\downarrow0$.
+
+ABLM method note.  The ABLM 2024 paper explicitly says that its proof
+uses neither Girsanov nor Zvonkin transformations; therefore one should
+not rely on an unstated global Zvonkin homeomorphism to transfer strong
+Feller or transition equivalence from an OU process.  Any strong-Feller
+argument would have to be proved separately, probably using Malliavin,
+capacity, or stochastic-sewing/Krylov estimates.
+
+OU comparison.  For the linear Dirichlet stochastic heat equation,
+\[
+  Z_t=S_t x+\int_0^t S_{t-s}\,dW_s,
+\]
+the law at time $t>0$ is equivalent to $\gamma$.  In the sine basis with
+Dirichlet eigenvalues $\lambda_k=(k\pi)^2$, the covariance eigenvalues are
+$q_k(t)=(1-e^{-\lambda_k t})/\lambda_k$ up to the convention-dependent
+factor, while $\gamma$ has eigenvalues proportional to $\lambda_k^{-1}$.
+The covariance ratio differs from $1$ by a summable sequence and the mean
+$S_t x$ is in the Cameron--Martin space $H^1_0$, so Feldman--Hajek gives
+equivalence.  Thus it is enough, in principle, to control the singular
+drift contribution relative to this Gaussian law.
+
+Uniform-density route.  A sufficient estimate for the regularized
+semigroups is: for every $t>0$ and $x\in E$, there exist $p>1$ and
+$C_{t,x}<\infty$ such that
+\[
+  \sup_n \left\|
+    \frac{dP_t^n(x,\cdot)}{d\pi_n}
+  \right\|_{L^p(\pi_n)}\le C_{t,x}.
+\]
+Together with $\pi_n\to\pi$ in total variation and weak convergence
+$P_t^n(x,\cdot)\Rightarrow P_t(x,\cdot)$, this implies
+$P_t(x,\cdot)\ll\pi$.  A capacity version
+\[
+  P_t^n(x,O)\le C_{t,x}\operatorname{Cap}_n(O)^\alpha
+\]
+uniformly in $n$ would also imply entrance from BZ exceptional sets,
+because the forms have densities bounded above and below relative to
+Brownian bridge and hence comparable capacities.
+
+Naive Girsanov issue.  For fixed $n$, the regularized drift
+$G_{1/n}(u)$ is bounded and $H$-valued, so pathwise Girsanov from the
+linear equation gives absolute continuity.  The usual Novikov/entropy
+term contains
+\[
+  \int_0^t\|G_{1/n}(u_s)\|_{L^2(0,1)}^2\,ds,
+\]
+which may blow as $n\to\infty$ because $G_{1/n}^2$ approximates a
+multiple of $\sqrt n\,\delta_0$.  Any successful limiting argument must
+use cancellation or estimates depending on the bounded potential
+$0\le B_n\le1$, not on $\|G_{1/n}\|_\infty$ or $\|G_{1/n}\|_2$.
+
+Dirichlet-form comparison idea.  The regularized and limiting invariant
+densities are uniformly bounded above and below relative to Brownian
+bridge.  Hence the forms
+\[
+  \mathcal E_n(F,F)=\frac12\int\|DF\|_{L^2}^2\,d\pi_n,\qquad
+  \mathcal E_0(F,F)=\frac12\int\|DF\|_{L^2}^2\,d\gamma
+\]
+have comparable $1$-energies and capacities.  This gives spectral-gap
+and compact-resolvent information uniformly, but by itself only produces
+kernels and absolute continuity in the $L^2(\pi)$ or quasi-everywhere
+sense.  The missing upgrade is a strict, all-starting-points statement.
+
+
+
+\section*{Additional reductions for the exceptional-set gap}
+
+Eventual equicontinuity/e-property route.  Suppose $P_t$ is already known
+to be reversible with invariant $\pi$, and $P_t f\to\pi(f)$ in
+$L^2(\pi)$ for every bounded Lipschitz $f$.  If for every $x\in E$ and
+$\varepsilon>0$ there are a neighbourhood $U$ of $x$ and $t_0$ such that
+\[
+  |P_t f(y)-P_t f(x)|\le \varepsilon,\qquad y\in U,\quad t\ge t_0,
+\]
+then $P_t f(x)\to\pi(f)$ for every $x$.  The proof avoids compactness:
+since $\pi$ has full support, $\pi(U)>0$, and
+\[
+ |P_t f(x)-\pi(f)|
+ \le \varepsilon+
+ \left(\pi(U)^{-1}\int_U |P_t f(y)-\pi(f)|^2\,\pi(dy)\right)^{1/2}.
+\]
+The second term goes to $0$.  Then any invariant law $\eta$ satisfies
+$\eta(f)=\int P_t f\,d\eta\to\pi(f)$; bounded Lipschitz functions
+separate probability measures on $E$.  This route would prove uniqueness
+without all-starting-point absolute continuity.  The analytic missing
+input is the eventual equicontinuity estimate.  Ordinary finite-time
+Feller continuity is not enough, because the modulus may deteriorate as
+$t\to\infty$.
+
+Possible use of ABLM stability estimates.  In the ABLM uniqueness proof
+for two solutions driven by the same noise and with the same initial
+condition, the local estimate has the form
+\[
+\|z_t-P_{t-s}z_s\|\lesssim
+D_{s,t}(t-s)^{1/2+\delta}+D_{s,t}|\log D_{s,t}|(t-s),
+\]
+where $D_{s,t}=\sup_{r\in[s,t]}\|z_r\|$.  For different initial data the
+same local identity should still hold for the nonlinear drift part,
+while $P_tz_0$ remains as an inhomogeneous term.  This suggests finite
+time continuous dependence (hence weak Feller), perhaps by an Osgood
+argument.  It does not immediately imply the eventual equicontinuity
+needed above; one would need either a uniform-in-time modulus or an
+asymptotic-strong-Feller estimate in which the heat semigroup
+dissipation beats the logarithmic loss.
+
+Capacity-smooth invariant measures route.  Let $N$ be the BZ exceptional
+set on whose complement the resolvent kernel represents the actual
+resolvent and is absolutely continuous with respect to $\pi$.  It is
+enough to show that every invariant probability $\eta$ is smooth for the
+BZ Dirichlet form, in particular $\eta(N)=0$.  A sufficient finite-energy
+inequality is
+\[
+  \left|\int \varphi\,d\eta\right|
+  \le C_\eta \mathcal E_1(\varphi,\varphi)^{1/2}
+\]
+for bounded nonnegative quasi-continuous $\varphi\in D(\mathcal E)$.
+Indeed, applying this to equilibrium potentials gives
+\[
+  \eta(O)\le C_\eta\,\operatorname{Cap}(O)^{1/2}
+\]
+for open $O$, hence $\eta$ charges no zero-capacity set.  Once
+$\eta(N)=0$, for any $\pi$-null set $A$,
+\[
+  \eta(A)=\lambda\int_{N^c}R_\lambda(y,A)\,\eta(dy)=0,
+\]
+so $\eta\ll\pi$ and the $L^2(\pi)$ spectral gap forces $\eta=\pi$.
+A possible way to prove the finite-energy inequality would be a
+stationary Krylov/capacity estimate for the regularized processes with
+constants depending on the bounded primitives $B_n$ rather than on
+$\|G_{1/n}\|_\infty$.
+
+Local-time form of the drift.  Bounebache--Zambotti write the SPDE with
+a local-time-in-space term
+\[
+ -\frac12\int_\mathbb R f(da)\,\partial_\theta \ell^a_{t,\theta}.
+\]
+For $f=-2H_+$, $df=-2\delta_0$, so this term is
+$\partial_\theta\ell^0_{t,\theta}$, which is formally
+$\delta_0(u(t,\theta))$ by the occupation density formula in the spatial
+variable.  Thus their Dirichlet form matches the Gibbs measure
+$\pi\propto\exp(2\int_0^1{\bf1}_{\{v>0\}})\,d\gamma$, but their Markov
+solution is constructed only outside a properly exceptional set.
+
+Finite-dimensional projection/entropy route.  For an invariant law
+$\eta$, finite-dimensional projections onto the first $m$ Dirichlet
+modes should have Lebesgue densities because the projected dynamics has
+a nondegenerate Brownian martingale part.  This by itself is insufficient
+for $\eta\ll\pi$ in infinite dimensions.  A useful target would be
+uniform relative entropy
+\[
+  \sup_m H((\Pi_m)_\#\eta\mid(\Pi_m)_\#\pi)<\infty,
+\]
+which would imply $\eta\ll\pi$ by projective convergence of entropy.
+The difficulty is to derive such a bound from the stationary martingale
+problem with the distributional drift; the drift contribution is a
+surface/local-time measure rather than an $L^2$ vector field.
+
+Roughness decomposition idea.  At fixed $t>0$, the linear stochastic
+convolution has a Gaussian law equivalent to Brownian bridge.  If the
+drift convolution were an independent Cameron--Martin shift, absolute
+continuity would follow immediately.  In reality it is adapted and
+depends on the same noise.  A possible approach is to split the driving
+noise into independent high-frequency or late-time pieces and show that
+the singular drift contribution cannot cancel the nondegenerate Gaussian
+roughness.  This would amount to a Malliavin or conditional-density
+argument for the singular/local-time SPDE.
+
+\end{document}
+
+
+```
+
+# Author's notes on this draft
+
+Updated the canonical files and compiled `answer.tex` successfully with `pdflatex` twice; it produces a 5-page PDF and respects the LaTeX contract.
+
+Main changes:
+- Weakened the Nemytskii drift wording from “smooth” to the needed bounded/Lipschitz statement.
+- Made the semigroup convergence interpretation explicit.
+- Added a rigorous “eventual equicontinuity/e-property” criterion that would upgrade the \(L^2(\pi)\) spectral gap to pointwise convergence from every deterministic initial condition.
+- Added a finite-energy/capacity criterion showing that it suffices for invariant laws to charge no Bounebache–Zambotti exceptional sets.
+- Toned down the BZ–ABLM identification language.
+- Expanded `research_notes.tex` with the new reduction strategies and obstacles.
+
+I am **not** declaring readiness, since the all-starting-points upgrade is still not proved from the stated hypotheses.

@@ -1,0 +1,108 @@
+## Referee report on revised `answer.tex`
+
+### LaTeX / contract check
+
+I reconstructed the submitted `answer.tex` and ran `pdflatex` twice. It compiles successfully to a 6-page PDF. The document uses exactly `\documentclass[12pt]{article}`, uses only the permitted `fullpage` package for layout, and I found no prohibited margin, line-spacing, or in-document font-size changes. The First Proof LaTeX contract is satisfied.
+
+### Overall verdict
+
+The revision substantially improves the previous draft. In particular, the previously problematic normal-support identification, direct-sum support argument, fusion-label induction, compact-corner hypertrace step, and Bass–Serre reduced-word argument have all been expanded enough to remove the prior fatal gaps. I find no remaining mathematical issue that affects validity.
+
+## Section-by-section audit
+
+### Problem statement and interpretation
+
+The proof explicitly records the adopted interpretation of irreducibility as “not a non-trivial join,” equivalently connected complement graph. This is the standard graph-product interpretation, and it matches the use of CDHJKN’s join-irreducible results later in the proof. The problem statement ambiguity is therefore handled.
+
+### Normal support bookkeeping
+
+The new Lemma `normal support bookkeeping` addresses the previous main objection. It now separates the ordinary open support of \(X\) from that of \(K_X(N)\), proves that their compressed normal supports agree, and formulates the annihilator characterization explicitly.
+
+This is supported by DKEP’s normal-bidual construction: DKEP describe \((A^\sharp)^*\) as the normal-support corner \(p_{\rm nor}A^{**}p_{\rm nor}\), and for a subalgebra \(B\subset A\) whose multiplier action is faithful they identify \((B^\sharp)^*\) with the corresponding compressed support corner. The simultaneous \(N,JNJ\)-normal version is exactly the role of Proposition 2.10. ([arxiv.org](https://arxiv.org/pdf/2204.00517))
+
+The equality of the supports of \(X\) and \(K_X(N)\) is now justified via DKEP Theorem 5.6 and Proposition 3.6: DKEP identify \(K_X^{\infty,1}\) as the relevant \(\|\cdot\|_{\infty,1}\)-closure and characterize it by annihilation against \(\sharp_J\)-normal functionals vanishing on \(X B(L^2N) X\); since \(X\) is hereditary, vanishing on \(X\) gives vanishing on that product. ([arxiv.org](https://arxiv.org/pdf/2204.00517))
+
+This resolves the previous support-calculus objection.
+
+### Subalgebra coefficients
+
+The proof that the coefficient boundary of
+\[
+{}_NL^2N_B\otimes_B{}_BL^2N_N
+\]
+is \(X_B\) is now acceptable. It uses DKEP Example 5.11, which defines coefficient boundary pieces for correspondences and identifies the subalgebra boundary in the case of \(L^2M\) as an \(M\)-\(B\) correspondence. ([arxiv.org](https://arxiv.org/pdf/2204.00517))
+
+The argument that \(Z\subset U\Rightarrow X_{M_Z}\subset X_{M_U}\) via \(e_{M_Z}\le e_{M_U}\) is correct.
+
+### Direct sums and finite fusions
+
+The direct-sum lemma now contains the missing finite-subset net argument, boundedness control for coordinate truncations, and the correct appeal to DKEP Theorem 5.10 and Proposition 5.9. DKEP Theorem 5.10 gives the equivalence between mixing of correspondences and relative compactness of all bounded-vector coefficient operators; Proposition 5.9 converts rectangular relative compactness into \(T_\xi^*T_\xi\in K_X(N)\). ([arxiv.org](https://arxiv.org/pdf/2204.00517))
+
+The finite-fusion algebra argument is also now adequate. The coefficient product formula
+\[
+(T_{\xi_1}^*T_{\xi_2})(T_{\eta_1}^*T_{\eta_2})
+=
+T_{\xi_1\otimes\overline{\xi_2}\otimes\eta_1}^*T_{\eta_2}
+\]
+is consistent with DKEP’s Connes-fusion identity \(T_{\xi\otimes\eta}=T_\eta T_\xi\). ([arxiv.org](https://arxiv.org/pdf/2204.00517)) The construction of a contractive approximate unit from functions \(g_\varepsilon(s)=s(s+\varepsilon)^{-1}\), and the polynomial approximation argument, are standard and sufficient.
+
+### Intersection of boundary supports
+
+This was the central gap in the prior draft. The revised proof now gives a sufficiently explicit argument.
+
+The proof uses CDHJKN’s identification of \(H_R(V,V)\) with
+\[
+L^2M\otimes_{M_R}L^2M
+\]
+and their fusion rule
+\[
+H_{U_1}(V_1,V_2)\otimes_{M_{V_2}}H_{U_2}(V_2,V_3)
+\cong
+\bigoplus_{W\subset U_1\cap U_2}H_W(V_1,V_3)^{\oplus k}.
+\]
+This directly supports the induction that a finite fusion with labels \(A_1,\dots,A_n\) decomposes over subsets of \(\cap_iA_i\). ([arxiv.org](https://arxiv.org/pdf/2404.08150))
+
+The passage from coefficient products to support projections is also now justified: positive finite-fusion products land in \(K_{X_{M_I}}(M)\), norm limits land in \(K_{X_{M_I}}^{\infty,1}(M)\), and the normal-support lemma then converts annihilation against \(A_M^{\sharp_J}\)-functionals into membership in the normal-bidual corner \(q_I\mathcal A_Mq_I\). This resolves the earlier nonmultiplicativity concern.
+
+The induction for palindromic products is correct.
+
+### Finite-boundary criterion
+
+The finite-boundary criterion is now sound. The compression by \(q_i^\perp\) gives a central state on \(\widetilde S_{X_i}(N)\) if \(\omega(q_i^\perp)>0\), and the factor assumption correctly forces its normal restriction to \(N\) to be the trace.
+
+The previous issue with the formal expression \(q_0Tq_0\) has been fixed. DKEP’s proof of Lemma 8.5 explicitly uses natural \(M\)-bimodular u.c.p. maps from \(B(L^2M)\) into the normal compact corner, and the revised proof invokes that map instead of pretending that the concrete inclusion is multiplicative. ([arxiv.org](https://arxiv.org/pdf/2204.00517))
+
+The final Connes-hypertrace contradiction is standard and valid.
+
+### Relative Bass–Serre paradox
+
+The revised proof gives enough AFP normal-form detail. The projections \(p,q\) onto first-letter \(P\)- and \(Q\)-subspaces are shown to lie in \(S_{X_B}(N)\) using commutator computations and DKEP Lemma 6.1. DKEP’s definition of \(S_X(M)\), Lemma 6.1, and Theorem 6.2 justify this route to relative proper proximality. ([arxiv.org](https://arxiv.org/pdf/2204.00517))
+
+The inequalities
+\[
+w_1qw_1^*+w_2qw_2^*\le p,\qquad apa^*\le q
+\]
+are correctly justified by reduced-word orthogonality. The \(B\)-Haar argument for \(h=w_1a\) is also correct: \(E_B(h^n)=0\) for all \(n\ne0\), so the projections \(h^ne_Bh^{-n}\) are pairwise orthogonal and centrality forces their common state value to be zero.
+
+### Graph-product application
+
+The graph-product AFP decomposition over \(M_{\Lk(v)}\) is standard and is used correctly. The construction of the unitaries \(w_1,w_2\) from connectedness of \(\Gamma^c\) is correct in both cases \(C(v)\) has at least two vertices and \(C(v)=\{r\}\). The expectation computations follow from graph-product reduced-word calculus.
+
+The final use of CDHJKN is now correctly stated. CDHJKN Theorem E gives the factoriality criterion, and their Theorem 2.4 gives the join-irreducible \(|V|\ge3\) factor case directly. ([arxiv.org](https://arxiv.org/pdf/2404.08150)) CDHJKN Proposition 6.3 gives the amenability criterion, and connectedness of \(\Gamma^c\) with at least three vertices excludes the exceptional isolated nonedge condition. ([arxiv.org](https://arxiv.org/pdf/2404.08150))
+
+Thus \(M\) is a separable non-amenable finite factor, and the finite-boundary criterion applies.
+
+## Final assessment
+
+All previously fatal objections have been addressed:
+
+- normal-support calculus: addressed;
+- equality of supports for \(X\) and \(K_X(N)\): addressed;
+- direct-sum coefficient control: addressed;
+- CDHJKN fusion-label induction: addressed;
+- nonmultiplicative normal-bidual compression issue: addressed;
+- hypertrace step: addressed;
+- Bass–Serre reduced-word details: addressed;
+- final factoriality/nonamenability citations: addressed.
+
+I find no remaining open gap or missing assumption affecting the proof.

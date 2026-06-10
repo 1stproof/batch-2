@@ -1,0 +1,125 @@
+# Round 3 compute report
+
+Artifacts:
+
+- `code/round3_cap_vector.py` and lean runner `code/round3_cap_vector_fast.py`
+- `data/round3_cap_vector_fast_output.txt`
+- `code/round3_downset_partition.py`
+- `data/round3_downset_partition_output.txt`
+- `data/round3_downset_partition_extrema.csv`
+- new literature file: `papers/paulin-2017-samuels-feige.pdf/.txt`
+
+## 1. Cap-vector conjecture
+
+I found no counterexample to
+\[
+\max_i w_i<p,\quad p\in[1/4,1/3]\quad\Longrightarrow\quad
+\Pr_p[w(R)\ge p]\ge g_4(p)=\Pr[\operatorname{Bin}(4,p)\ge2].
+\]
+
+For every tested \(p>1/4\), the extremal structure is the expected one:
+\[
+w=(p-\varepsilon,p-\varepsilon,p-\varepsilon,1-3p+3\varepsilon),
+\]
+with \(\varepsilon>0\) small enough.  Then the failing down-set is exactly
+\[
+\mathcal D=\{A\subseteq[4]: |A|\le1\},
+\]
+so success is "at least two of the four active coordinates", and the tail is exactly \(g_4(p)\).  At \(p=1/4\), the strict four-coordinate cap vector is infeasible; the smallest strict-cap support is \(5\), and the observed/chamber/MILP extremal is rank \(\le1\) on five coordinates with tail \(0.3671875>g_4(1/4)=0.26171875\).
+
+Representative table from `data/round3_cap_vector_fast_output.txt`:
+
+| \(p\) | \(g_4(p)\) | explicit/chamber extremal tail | MILP best tail, \(n\le7\) | extremal failing maximal sets |
+|---:|---:|---:|---:|---|
+| 0.25 | 0.261718750000 | 0.367187500000 | 0.367187500000 | singletons on 5 coords |
+| 0.26 | 0.278701280000 | 0.278701280000 | 0.278701280000 | singletons on 4 coords |
+| \(2/7\) | 0.323198667222 | 0.323198667222 | 0.323198667222 | singletons on 4 coords |
+| 0.30 | 0.348300000000 | 0.348300000000 | 0.348300000000 | singletons on 4 coords |
+| \(1/3\) | 0.407407407407 | 0.407407407407 | 0.407407407407 | singletons on 4 coords |
+
+Methods used:
+
+1. Explicit extremal construction for \(p>1/4\), e.g. at \(p=0.3\):
+   `weights=[0.299999,0.299999,0.299999,0.100003]`, tail \(=0.3483=g_4(0.3)\).
+2. Hit-and-run search over the strict capped simplex.  It repeatedly found \(g_4\) on the critical support sizes, and no smaller value on tested larger supports.
+3. Exact chamber/down-set enumeration: for \(p>1/4\), \(m=4\) has exactly one strict-cap threshold chamber attaining the minimum, namely the rank \(\le1\) down-set.  For \(p=1/4\), \(m=5\) has the corresponding singleton chamber.
+4. MILP/separation formulation: binaries \(x_A\) were allowed only when \(w(A)\le p-\varepsilon\), with \(w_i\le p-\varepsilon\), maximizing \(\sum_A\mu_p(A)x_A\).  With \(\varepsilon=10^{-4}\), the MILP optimum matched the table for \(n\le7\), with zero MIP gap.
+
+## 2. Proof direction / isolated sublemma
+
+The most useful proof target I see is the following stronger partition statement:
+\[
+0<T(\mathcal D)<p,\qquad T(\mathcal D)=\sup\{t:t{\bf1}\in P(\mathcal D)\}
+\quad\Longrightarrow\quad
+\mu_p(\mathcal D)\le 1-g_4(p)
+\]
+for \(p\in[1/4,1/3]\).
+
+This would imply the cap-vector inequality.  Indeed, for a cap-threshold down-set
+\[
+\mathcal D=\{A:w(A)<p\},\qquad \max_iw_i<p,
+\]
+all singletons lie in \(\mathcal D\), so \(T(\mathcal D)>0\).  Also \(p{\bf1}\notin P(\mathcal D)\), since otherwise averaging \(w(A)<p\) over a distribution on \(\mathcal D\) with marginals \(p\) gives \(p<p\).  Hence \(T(\mathcal D)<p\).
+
+The down-set enumeration supports exactly this stronger statement:
+
+| \(m\) | \(p\) | max \(\mu_p(\mathcal D)\) over \(0<T<p\) | \(1-g_4(p)\) | extremal |
+|---:|---:|---:|---:|---|
+| 4 | \(2/7\) | 0.676801332778 | 0.676801332778 | rank \(\le1\) on 4 |
+| 4 | 0.30 | 0.651700000000 | 0.651700000000 | rank \(\le1\) on 4 |
+| 4 | \(1/3\) | 0.592592592593 | 0.592592592593 | rank \(\le1\) on 4 |
+| 5 | \(2/7\) | 0.676801332778 | 0.676801332778 | rank \(\le1\) on 4, times one free coord |
+| 5 | 0.30 | 0.651700000000 | 0.651700000000 | rank \(\le1\) on 4, times one free coord |
+| 5 | \(1/3\) | 0.592592592593 | 0.592592592593 | rank \(\le1\) on 4, times one free coord |
+
+At \(p=1/4\), the \(T=1/4\) rank-\(\le1\) four-coordinate down-set is excluded by \(T<p\); the best positive-\(T\) example in \(m=5\) has \(\mu=0.6328125<1-g_4=0.73828125\).
+
+Naive two-weight smoothing is not monotone.  Conditional on the rest leaving residual threshold \(r\), merging \(a,b\) into \(c=a+b\) changes the local success probability with signs:
+\[
+\text{split}-\text{merged}=
+\begin{cases}
+-p(1-p),& \max(a,b)<r\le a+b,\\
+0,& \min(a,b)<r\le\max(a,b),\\
++p(1-p),& 0<r\le\min(a,b).
+\end{cases}
+\]
+I also found cap-respecting examples at \(p=0.3\) in both directions: merging can decrease the tail \(0.37917\to0.34830\), or increase it \(0.419301\to0.44091\).  So a proof by pairwise merging needs an additional global invariant; plain majorization/convex-order monotonicity is false.
+
+## 3. Partition-function target
+
+I enumerated all down-sets for \(m\le5\) and \(p\in\{1/4,2/7,0.3,1/3\}\), computing \(T(\mathcal D)\) by LP.  There were no violations of
+\[
+p{\bf1}\notin P(\mathcal D)
+\Longrightarrow
+Z_\lambda(\mathcal D)\le(1+\lambda)^{m-1}.
+\]
+Equality was attained only by dictatorships \(\mathcal D=\{A:i\notin A\}\) in all enumerated cases.
+
+For \(m=5\), the counts were:
+
+| \(p\) | down-sets with \(T<p\) | violations | equality cases |
+|---:|---:|---:|---:|
+| 0.25 | 688 | 0 | 5 dictatorships |
+| \(2/7\) | 753 | 0 | 5 dictatorships |
+| 0.30 | 763 | 0 | 5 dictatorships |
+| \(1/3\) | 763 | 0 | 5 dictatorships |
+
+One warning for quantitative induction: the best non-dictatorship ratios can be arbitrarily close to the dictatorship ratio while still having \(T=0\).  For \(m=5,p=1/3\), the best non-dictatorship ratio was \(0.987654320988\), with maximal sets all 3-subsets of four non-forbidden coordinates.  Thus any useful strengthened induction should separate the \(T=0\) "lower-dimensional" case from the \(T>0\) cap-style case.
+
+## 4. Literature check
+
+Kellerer, "Zur Existenz analoger Bereiche," `papers/kellerer-analogous-areas.pdf`.  Page 240 defines an analogous/similar region \(A\) by \(\mu(A)=\theta\) for every measure in the family and invokes Lyapunov's theorem to get existence for finite families of atomless measures.  Satz 3, pp. 244--245, gives a half-region using at most \(n\) cuts; Satz 4, p. 245, gives analogous regions for arbitrary \(\theta\) of the form \(\{a\in G\}\); Satz 5, p. 246, gives countable atomless families with no nontrivial analogous regions.  This is conceptually relevant but not sufficient: our obstruction is finite/discrete down-sets in a cube, not atomless measure splitting.
+
+Feller, "Note on Regions Similar to the Sample Space," Statistical Research Memoirs 2 (1938), 117--125.  Kellerer cites this on p. 246 as showing the finite atomless statement does not extend to infinite families.  I did not obtain an accessible PDF; the available bibliographic metadata in the Feller Selected Papers listing confirms the citation.  It appears suggestive only, not a proof of the Bernoulli/down-set inequality.
+
+Fokkink--Meester--Pelekis, "Optimizing stakes in simultaneous bets," `papers/fokkink-meester-pelekis-2023.pdf`.  They define
+\[
+\pi(p,t)=\sup_\gamma\Pr(S_\gamma\ge t)
+\]
+on p. 154, exactly matching the complement formulation.  Theorem 4.4, p. 159, proves bold play when \(k/(k+1)<p\le(k+1)/(k+2)<t\).  Proposition 4.5, p. 160, handles diagonal points \(p=t=(k+1)/(k+2)\) for \(k>1\), and Proposition 4.6 handles one nearby point.  But p. 161 explicitly says an "array of triangles along the hypothenuse remains to be filled."  Our required complement region is \(q\ge2/3,\ t>q\), including these near-diagonal gaps, so FMP does not close the lemma.
+
+Csoka, "Limit theory of discrete mathematics problems," `papers/csoka-2015-limit-theory.pdf`.  Problems 4.3, 4.5, and 4.8 formulate the limiting weighted Bernoulli tail questions, but they are problem/conjecture statements, not usable theorems here.
+
+Hoeffding--Shrikhande/Samuels route.  Alpern--Fokkink--Kikuta, `papers/alpern-fokkink-kikuta-2010-ruckle.pdf`, quote Theorem 23 (Hoeffding--Shrikhande) for \(s=2\) i.i.d. nonnegative tail maximization and Theorem 24 (Samuels) under \(\max\{4sh/n,(s-1)sh/n\}<1\).  These are upper-tail extremal theorems for i.i.d. nonnegative variables/fixed-size games, not the weighted Bernoulli mean-threshold inequality.  Paulin, `papers/paulin-2017-samuels-feige.pdf`, proves Samuels' conjecture would imply Feige's conjecture; again this concerns \(T=1+\delta\) above the mean and does not imply the sharp \(\delta=0\) Bernoulli cap inequality.
+
+Bottom line: I found no literature theorem that directly proves the missing base interval.  The strongest computationally supported sublemma is the positive-diagonal down-set bound \(0<T(\mathcal D)<p\Rightarrow \mu_p(\mathcal D)\le1-g_4(p)\).

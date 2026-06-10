@@ -1,0 +1,121 @@
+## Referee report on the revised `answer.tex`
+
+### LaTeX contract audit
+
+I compiled the revised `answer.tex` with `pdflatex` twice.
+
+- It uses exactly `\documentclass[12pt]{article}`.
+- It uses `fullpage`, which is permitted.
+- I found no forbidden margin/layout package or manual layout changes.
+- I found no line-spacing changes.
+- I found no in-document font-size changes such as `\small`, `\footnotesize`, `\scriptsize`, or `\fontsize`.
+- The PDF compiles successfully and is 4 pages.
+
+So the **LaTeX contract is satisfied**.
+
+### Literature / external theorem check
+
+The revised proof uses no external references; `references.bib` is empty. The only named external theorem is Borsuk–Ulam. The version used is the standard implication that a continuous map \(S^2\to\mathbb R^2\) identifies an antipodal pair, and therefore an odd map \(S^2\to\mathbb R^2\) has a zero. A web check confirms this standard statement. ([mathworld.wolfram.com](https://mathworld.wolfram.com/Borsuk-UlamTheorem.html?utm_source=openai))
+
+---
+
+## Status of previous concerns
+
+### Addressed
+
+1. **Quotient and embedding argument.**  
+   The revised proof now explicitly explains why \(f\) descends to a continuous injection \(F:M_\beta\to\mathbb R^3\), and why compact-to-Hausdorff makes it an embedding. This addresses the previous gap.
+
+2. **Finite quotient triangulation.**  
+   The revised proof now states that local finiteness on compact \(M_\beta\) implies finiteness. This is acceptable.
+
+3. **Boundary subarc shortening.**  
+   The proof now handles arbitrary boundary subarcs by subdividing at finitely many boundary vertices. This resolves the previous issue.
+
+4. **Bend-circle and Borsuk–Ulam details.**  
+   The compactification, involution, and oddness argument are now much clearer. The proof of the \(T\)-pair lemma is essentially valid, assuming the usual face-to-face meaning of “triangulation.”
+
+5. **Lift normalization and \(t<\beta\).**  
+   The revised proof now explains the \(t>\beta\) and \(t=\beta\) contradictions. This addresses the earlier underproof.
+
+6. **Geometric inequality in the lower bound.**  
+   The revised proof now states the elementary estimate
+   \[
+   d(P,A)+d(P,B)\ge \sqrt{L^2+4h^2}.
+   \]
+   This resolves the earlier omission.
+
+7. **Unsupported upper-bound theorem.**  
+   The previous draft’s unsupported appeal to a “classical triangular construction” has been replaced by a self-contained six-triangle construction. This is a major improvement.
+
+---
+
+## Main new blocking issue
+
+### False assertion in Lemma 4: one adjacent face pair is coplanar
+
+The proof of Lemma `\ref{lem:model}` contains the statement:
+
+> “The pairs sharing an edge are non-coplanar, hence meet exactly in that edge.”
+
+This is **false** for the displayed model. Specifically,
+\[
+\Delta_4=A_2B_2A_1,\qquad \Delta_5=B_2A_0A_1.
+\]
+All four vertices \(A_0,A_1,A_2,B_2\) have \(z=0\). Therefore \(\Delta_4\) and \(\Delta_5\) lie in the same plane \(z=0\). Their normals are parallel:
+\[
+n_4=(0,0,(1-2\varepsilon)/2),\qquad n_5=(0,0,1/2).
+\]
+So this adjacent pair is not non-coplanar.
+
+The intended conclusion is still true: \(\Delta_4\) and \(\Delta_5\) do meet exactly in the common edge \(B_2A_1\), because \(A_2\) and \(A_0\) lie on opposite sides of the line \(B_2A_1\) for \(0<\varepsilon<1/4\). For example, in the \(xy\)-plane,
+\[
+\det(A_1-B_2,A_2-B_2)=\frac{1-2\varepsilon}{2}>0,
+\]
+whereas
+\[
+\det(A_1-B_2,A_0-B_2)=-\frac12<0.
+\]
+But this required verification is **not present** in `answer.tex`, and the proof as written uses a false statement.
+
+This is not merely cosmetic: Lemma `\ref{lem:model}` is the essential embeddedness lemma supporting the whole upper-bound construction. Since the proof of embeddedness contains a false claim and omits the needed replacement check, the revised answer is not fully rigorous as written.
+
+---
+
+## Other minor issues
+
+These are less serious than the coplanar-face error, but still worth noting.
+
+1. **The assertion that the abstract complex is a Möbius band is compressed.**  
+   The text says the complex has one boundary cycle and Euler characteristic \(0\), “hence is a Möbius band once embedded.” For complete rigor, one should also explicitly check that the vertex links are intervals, so the abstract complex is actually a compact surface with one boundary component. This is easy for the six-face complex, but it is not written out.
+
+2. **The sign table is mostly acceptable but terse.**  
+   I cross-checked the vertex-only sign table symbolically/numerically, and the entries appear correct for \(0<\varepsilon<1/4\). Still, since this finite verification is essential to embeddedness, the proof would be stronger if it gave all coordinate formulas or at least explained how the table was computed.
+
+3. **The quotient triangulation in the upper construction is somewhat terse.**  
+   The statement that the six domain triangles are “just the division into three rectangles” is correct, but a fully explicit placement of \(A_i,B_i\) in a fundamental rectangle would remove possible ambiguity. This is not a fatal issue.
+
+---
+
+## Lower-bound proof assessment
+
+Apart from minor terseness, the lower-bound proof now appears mathematically sound:
+
+- the bend-lengthening lemma is correct;
+- the \(T\)-pair/Borsuk–Ulam argument is now adequately detailed;
+- the \(t<\beta\) normalization is justified;
+- the boundary arc estimates are correct;
+- the final optimization with
+  \[
+  a(t)=\sqrt{1+t^2}+\sqrt{5+t^2},\qquad
+  b(t)=2\sqrt{5+t^2}-2t
+  \]
+  is correct.
+
+So the remaining obstruction is not the lower bound, but the proof of the embedded six-triangle model in the upper construction.
+
+---
+
+## Verdict
+
+The revised proof is much improved and is likely repairable with a small addition to Lemma `\ref{lem:model}`. However, `answer.tex` as currently written contains a false mathematical assertion in an essential embeddedness proof. Therefore it is **not answer-ready**.

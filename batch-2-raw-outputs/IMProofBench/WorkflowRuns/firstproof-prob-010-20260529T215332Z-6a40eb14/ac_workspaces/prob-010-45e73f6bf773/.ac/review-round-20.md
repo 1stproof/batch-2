@@ -1,0 +1,169 @@
+## Referee report on revised `answer.tex`
+
+### Summary verdict
+
+The revision improves several local arguments, especially the subalgebra-coefficient discussion, the finite-boundary compression argument, and the Bass–Serre paradox. However, the proof is still **not answer-ready**. A central support-intersection step remains invalid as written because it multiplies concrete operators after passing to DKEP’s normal bidual as though the canonical map
+\[
+A=\mathbb B(L^2N)\to (A^{\sharp_J})^*
+\]
+were multiplicative. DKEP explicitly warn that this canonical embedding is generally **not** a \(*\)-homomorphism. This directly invalidates the passage from
+\[
+\phi(h_\alpha k_\beta h_\alpha)=0
+\]
+for concrete products to
+\[
+\widetilde\phi(q_Wq_Uq_W)=0
+\]
+inside \(\mathcal A_M\). Since this is the load-bearing proof of the boundary-support intersection lemma, the final proper-proximality argument is incomplete.
+
+No obvious LaTeX-contract violation appears in the displayed source: it uses `\documentclass[12pt]{article}`, the permitted `fullpage` package, no forbidden layout/font/spacing commands, and appears standalone. The mathematical issue below is decisive.
+
+---
+
+## What the revision fixed or improved
+
+### 1. Problem interpretation
+
+The revised draft explicitly records the intended interpretation: irreducible means join-irreducible, equivalently \(\Gamma^c\) connected. This is appropriate for finite simple graphs.
+
+### 2. Literature alignment
+
+The cited DKEP and CDHJKN results are real and relevant. DKEP Lemma 8.5 does characterize relative proper proximality using the normal-bidual operator system \(\widetilde S_X(M)\). DKEP Proposition 2.10 gives the simultaneous-normal-bidual inclusion framework, and DKEP explicitly define \((K_X(M)^{\sharp_J})^*\) as a corner with support commuting with \(M\) and \(JMJ\). ([arxiv.org](https://arxiv.org/pdf/2204.00517))
+
+CDHJKN’s graph-product bimodule and fusion rules are also accurately targeted: their Theorem 5.4 decomposes \(L^2(M)\) over subgraph algebras, and Proposition 5.5 gives the fusion rule over intersections. ([ems.press](https://ems.press/content/serial-article-files/51743)) Their factor and amenability criteria are also correctly relevant. ([ems.press](https://ems.press/content/serial-article-files/51743))
+
+### 3. Subalgebra coefficient lemma
+
+The revised proof of the coefficient boundary of
+\[
+{}_N L^2N_B\otimes_B {}_B L^2N_N
+\]
+is substantially better. It now uses a linking-algebra formula
+\[
+T_{\xi\otimes\bar\alpha}^*T_{\eta\otimes\bar\beta}
+= T_\xi^*\,\theta_{\alpha,\beta}\,T_\eta,
+\]
+which is the right kind of argument. DKEP Example 5.11 indeed identifies coefficient boundary pieces of correspondences and notes that for \(L^2M\) as an \(M\)-\(B\) correspondence one obtains the subalgebra boundary of Example 3.4. ([arxiv.org](https://arxiv.org/pdf/2204.00517))
+
+Minor caveat: the proof still silently identifies \({}_B L^2N_N\) with \(\overline{{}_N L^2N_B}\). This is true in the tracial case, but the argument should explicitly say that this identification is being used before writing \(H\otimes_B\overline H\).
+
+### 4. Bass–Serre proposition
+
+The Bass–Serre argument is clearer than before. The reduced-word projections \(p,q\), the commutator formulas with right multiplication, the paradoxical inequalities
+\[
+2\varphi(q)\le \varphi(p)\le \varphi(q),
+\]
+and the \(B\)-Haar unitary argument are now mostly explicit. The use of DKEP Lemma 6.1/Theorem 6.2 is directionally correct: DKEP Theorem 6.2 defines relative proper proximality by absence of central states on \(S_X(M)\) with normal restriction. ([arxiv.org](https://arxiv.org/pdf/2204.00517))
+
+This section still has some compressed reduced-word verification, but it is no longer the main obstruction.
+
+---
+
+## Main remaining fatal issue: nonmultiplicativity in the normal bidual
+
+The central problem is in Lemma `\ref{lem:intersection}` and in the support bookkeeping surrounding it.
+
+The revised proof argues as follows:
+
+1. Choose c.a.u.’s \(h_\alpha\subset X_{M_W}\) and \(k_\beta\subset X_{M_U}\).
+2. Show that the **concrete product**
+   \[
+   h_\alpha k_\beta h_\alpha
+   \]
+   belongs to \(K_{X_{M_I}}(M)\), where \(I=U\cap W\).
+3. Hence every \(\phi\in A_M^{\sharp_J}\) vanishing on \(X_{M_I}\) satisfies
+   \[
+   \widetilde\phi(h_\alpha k_\beta h_\alpha)=0.
+   \]
+4. Since \(h_\alpha\to q_W\) and \(k_\beta\to q_U\) strongly* in \(\mathcal A_M\), conclude
+   \[
+   \widetilde\phi(q_Wq_Uq_W)=0.
+   \]
+
+The invalid step is the transition from concrete products to products inside \(\mathcal A_M\). In DKEP’s normal-bidual construction, the canonical map
+\[
+A_M=\mathbb B(L^2M)\longrightarrow \mathcal A_M=(A_M^{\sharp_J})^*
+\]
+is generally **not multiplicative**. DKEP say this explicitly: the canonical embedding is a complete order isomorphism onto its range, but “is not a \(*\)-homomorphism in general” because the normal support projection need not be central. ([arxiv.org](https://arxiv.org/pdf/2204.00517))
+
+Thus the following two elements are not known to agree:
+\[
+\iota(h_\alpha k_\beta h_\alpha)
+\quad\text{and}\quad
+\iota(h_\alpha)\,\iota(k_\beta)\,\iota(h_\alpha)
+\]
+inside \(\mathcal A_M\). The coefficient/fusion argument proves vanishing for the first expression. Strong* convergence of \(h_\alpha,k_\beta\) in \(\mathcal A_M\) gives convergence of the second expression to \(q_Wq_Uq_W\). Without multiplicativity, the proof does not connect these two nets.
+
+This is not a cosmetic gap. It is exactly the mechanism needed to prove
+\[
+q_Wq_Uq_W\le q_{U\cap W}.
+\]
+Therefore Lemma `\ref{lem:intersection}` is not proved.
+
+A valid proof would need to work in the ordinary enveloping algebra \(A_M^{**}\), where concrete multiplication is multiplicative, prove an ordinary-support inclusion there, and then carefully compress by the simultaneous normal support projection; or else prove directly that the nonmultiplicative defect is annihilated by all relevant \(\sharp_J\)-normal functionals. The current `answer.tex` does neither.
+
+---
+
+## Normal-support bookkeeping remains overstated
+
+The revised Lemma `\ref{lem:support}` is better than before, but still too sweeping.
+
+It says: for a hereditary \(Y\subset A_N\),
+\[
+(Y^{\sharp_J})^*=s(Y)\mathcal A_Ns(Y),
+\]
+and “the canonical image of \(Y\)” is weak* dense in the corner, with c.a.u.’s converging strongly* to \(s(Y)\).
+
+Some version of this is plausible, but the proof given treats the universal simultaneous normal representation as if it were a genuine \(*\)-representation of \(A_N\). DKEP’s actual construction is subtler: for an \(M\)-\(C^*\)-algebra \(A\), they describe \((A^\sharp)^*\) as a cut-down \(p_{\rm nor}A^{**}p_{\rm nor}\), and again the canonical embedding of \(A\) need not be multiplicative. ([arxiv.org](https://arxiv.org/pdf/2204.00517))
+
+The equality of annihilators of \(X\) and \(K_X(N)\) is more plausibly justified now using DKEP Theorem 5.6 and Proposition 3.6. DKEP Theorem 5.6 indeed gives an annihilator characterization involving functionals vanishing on \(XB(L^2N,L^2M)Y\), and Proposition 3.6 identifies \(K_X^{\infty,1}\) as the \(\|\cdot\|_{\infty,1}\)-closure of both \(X\) and \(K_X\). ([arxiv.org](https://arxiv.org/pdf/2204.00517)) But the support lemma still does not adequately handle the nonmultiplicative normal-bidual embedding.
+
+---
+
+## Direct-sum/fusion lemma: mostly improved, but still compressed
+
+The direct-sum lemma is more defensible than before. DKEP Theorem 5.10 does give equivalences between correspondence mixing and membership of all bounded-vector operators in relative compact classes. ([arxiv.org](https://arxiv.org/pdf/2204.00517)) The revised proof also correctly points to DKEP Proposition 5.9 for converting relative compactness of \(T_\xi\) into compactness of \(T_\xi^*T_\xi\). ([arxiv.org](https://arxiv.org/pdf/2204.00517))
+
+However, the proof still compresses several nontrivial facts:
+
+- finite direct sums require control of off-diagonal coefficients \(T_{\xi_i}^*T_{\xi_j}\);
+- infinite direct sums require a precise use of the closure step in DKEP Theorem 5.10;
+- the phrase “finite direct sums have the same property” hides the hereditary-corner argument.
+
+These are probably fixable, but the current version is still not fully self-contained at the level expected of a “strict proof.”
+
+---
+
+## Finite-boundary criterion
+
+The revised finite-boundary lemma is mostly correct **assuming** the palindromic compact-corner hypothesis (4.1). The compression
+\[
+q^\perp \widetilde S_X(N)q^\perp\subset \widetilde S(N)
+\]
+is now explicitly checked. The use of the GNS extension of the state is also now clearer.
+
+The hypertrace step is plausible: DKEP Lemma 8.5 indeed uses natural \(M\)-bimodular u.c.p. maps from \(B(L^2M)\) into the normal-bidual compact corner. ([arxiv.org](https://arxiv.org/pdf/2204.00517)) But since the proof of (4.1) in the graph-product case depends on the invalid support-intersection lemma, this criterion cannot be applied as written.
+
+---
+
+## Graph-product application
+
+The final application is broadly correct if all previous lemmas were available:
+
+- The link AFP decomposition is standard, though a citation should be added.
+- The choices of \(w_1,w_2\) from complement-connectedness are combinatorially sound.
+- The intersection of all links is indeed empty.
+- CDHJKN Theorem 2.4 gives factoriality/fullness for join-irreducible graphs with at least three vertices and state-zero unitaries. ([ems.press](https://ems.press/content/serial-article-files/51743))
+- CDHJKN Proposition 6.3 gives the amenability obstruction used in the final paragraph. ([ems.press](https://ems.press/content/serial-article-files/51743))
+
+But the final deduction depends essentially on Lemma `\ref{lem:intersection}`, which is not proved.
+
+---
+
+## Bottom line
+
+The revision addresses several previous objections, but the proof still has a fatal gap: it uses multiplication in DKEP’s normal bidual as if the canonical embedding of \(\mathbb B(L^2M)\) were multiplicative. DKEP explicitly state that this is generally false. Consequently, the key inequality
+\[
+q_Wq_Uq_W\le q_{U\cap W}
+\]
+is not established, and the proof of proper proximality is incomplete.

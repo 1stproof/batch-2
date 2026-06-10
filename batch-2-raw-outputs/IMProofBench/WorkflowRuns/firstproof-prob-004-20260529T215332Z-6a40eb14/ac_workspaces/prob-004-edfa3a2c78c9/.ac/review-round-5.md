@@ -1,0 +1,211 @@
+# Referee report on revised `answer.tex`
+
+## Overall verdict
+
+The revised `answer.tex` is **not answer-ready**. It explicitly says:
+
+> “Thus the document is not yet a complete proof of the stated problem.”
+
+and its last mathematical section is **“Remaining open issues”**, where the essential mixed family-level sweepout estimate is still unproved. Under the stated readiness criterion, this alone forces ``.
+
+The revision does, however, improve the partial proof. The first-alternative argument is now much cleaner and addresses several earlier objections.
+
+## LaTeX contract check
+
+I compiled the supplied `answer.tex` twice with `pdflatex`.
+
+- It compiles successfully.
+- The output is 4 pages, under the 12-page limit.
+- It uses exactly `\documentclass[12pt]{article}`.
+- It uses `fullpage`, which is permitted.
+- I found no prohibited margin/layout package or manual layout changes.
+- I found no line-spacing changes.
+- I found no in-document font-size changes such as `\small`, `\footnotesize`, or `\fontsize`.
+- There is only a minor overfull hbox warning, not a contract violation.
+
+So the failure is mathematical completeness, not LaTeX formatting.
+
+## Literature validation
+
+I checked the cited Guth source. Guth’s paper *Area-expanding embeddings of rectangles* is the cited arXiv paper, and the PDF states the main rectangle estimates and introduces the needed relative isoperimetric profile machinery. ([arxiv.org](https://arxiv.org/pdf/0710.0403)) In particular, the paper defines the filling profile for relative integral cycles in rectangles and states Theorem 3 estimating that profile. ([arxiv.org](https://arxiv.org/pdf/0710.0403)) The same paper states Estimate 1 for maps of pairs of degree \(D>0\), giving a lower bound for \(k\)-dilation in terms of the side ratios \(Q_i=S_i/R_i\). ([arxiv.org](https://arxiv.org/pdf/0710.0403))
+
+The draft’s specialization of Guth’s Estimate 1 with \(j=1,k=2,l=4\) is algebraically correct:
+\[
+\Dil_2(f)\ge c\,Q_1(Q_2Q_3Q_4)^{1/3}
+\]
+and \(\Dil_2(f)\le1\) implies
+\[
+R_1^3R_2R_3R_4\ge c_GS_1^3S_2S_3S_4.
+\]
+
+## Previous concerns addressed
+
+The revision addresses several earlier issues:
+
+1. **Problem interpretation**: The document now explicitly states the interpretation of degree \(1\) in relative homology.
+
+2. **Chain/current category**: It now states that it works with integral Lipschitz chains/integral currents, masses with multiplicity, and standard Federer–Fleming slicing, push-forward, and coarea.
+
+3. **\(\Dil_2\Rightarrow \Dil_3,\Dil_4\)**: The singular-value argument is now correctly stated with the a.e./piecewise smooth qualification.
+
+4. **Small-cycle filling lemma**: The previous proof sketch has been replaced by a precise invocation of Guth’s relative isoperimetric profile theorem.
+
+5. **Target filling lower bound**: The calibration proof using
+   \[
+   \omega=dx_1\wedge dx_2\wedge d\psi
+   \]
+   fixes the earlier “escape through \(x_4\)” problem. This argument is essentially correct.
+
+6. **Slicing naturality**: The revised proof explicitly uses slicing naturality and the degree-one hypothesis.
+
+7. **Constant hierarchy in Proposition `\ref{prop:first}`**: The choice \(C_1>C_I/c\) is now spelled out.
+
+8. **Profile consequence made standalone**: The profile proposition now restates its assumptions.
+
+## Remaining fatal gap
+
+The main theorem is still not proved. The proof still requires the boxed mixed estimate:
+\[
+R_1\le\kappa S_1,\quad R_3R_4\le\kappa S_3S_4
+\quad\Longrightarrow\quad
+\Vol(R)\ge cS_1S_2^{1/2}S_3^{3/2}S_4.
+\]
+This is exactly the missing estimate needed to obtain the second alternative in the problem. It is not proved or cited.
+
+Thus `answer.tex` is a rigorous partial proof/reduction, not a complete solution.
+
+## Section-by-section mathematical audit
+
+### Problem statement and interpretation
+
+This section is faithful and clear. Renaming the problem’s constant \(k\) as \(\kappa\) is appropriate.
+
+However, the section explicitly states that the document is not a complete proof. That is fatal for answer-readiness.
+
+### Standard tools
+
+The dilation implication is correct:
+\[
+\sigma_1\sigma_2\le1
+\quad\Rightarrow\quad
+\sigma_i\le1 \text{ for } i\ge2
+\quad\Rightarrow\quad
+\sigma_1\cdots\sigma_j\le1,\ j\ge2.
+\]
+
+The stated Guth isoperimetric estimate is the correct \(k=2,n=4\) small-volume specialization. The “in particular” bound
+\[
+\Fill_R(Z)\le C_IR_1R_2^2
+\]
+follows since \(A\le c_IR_1R_2\) and \(R_1\le R_2\).
+
+The Guth degree estimate is also correctly specialized.
+
+Minor issue: the paper source is cited, but a final polished proof should ideally quote the exact formula from Guth’s Theorem 3 and Estimate 1, not only refer generally to them.
+
+### Lemma `target filling lower bound`
+
+This is substantially improved and essentially valid.
+
+The function \(\psi\) can be chosen as a small multiple of distance to the boundary of the \((x_3,x_4)\)-rectangle. Since \(y_3,y_4\) are central and \(S_4\ge S_3\), one obtains
+\[
+\psi(y_3,y_4)\gtrsim S_3.
+\]
+The boundary terms vanish for the stated reasons. Thus
+\[
+\Mass Y\ge \left|\int_Y\omega\right|
+=\psi(y_3,y_4)S_1S_2
+\gtrsim S_1S_2S_3.
+\]
+
+Only minor technical details remain: orientation signs are suppressed but harmless because of the absolute value, and the smoothing/approximation of \(\psi\) is acceptable but could be written slightly more formally.
+
+### Proposition `first alternative`
+
+The argument is now largely sound.
+
+The filling lower bound
+\[
+\Fill_R(Z_y)\ge cS_1S_2S_3
+\]
+follows if one accepts the slicing naturality statement
+\[
+f_\#Z_y=P_y
+\]
+as a relative current. This is the right idea.
+
+One minor technical point remains: degree \(1\) in relative homology does not literally mean equality of currents without a short justification. In top dimension this can be justified, but the document should explicitly say why the pushforward of the fundamental current represents the fundamental current as a relative current, not merely as a homology class. This is not a fatal flaw for the partial result, but it is a place where a final proof should be more explicit.
+
+The use of Guth’s profile theorem is correct: if \(\Mass Z_y\le c_IR_1R_2\), then
+\[
+\Fill_R(Z_y)\le C_IR_1R_2^2,
+\]
+which contradicts the lower bound under the stated hypothesis. Therefore
+\[
+\Mass Z_y\gtrsim R_1R_2.
+\]
+
+The coarea step is correct:
+\[
+\Vol(R)\ge\int_Q \Mass Z_y\,dy
+\gtrsim R_1R_2S_3S_4,
+\]
+and since \(\Vol(R)=R_1R_2R_3R_4\), this gives
+\[
+R_3R_4\gtrsim S_3S_4.
+\]
+
+### Proposition `profile consequence`
+
+The derivation is correct as a consequence of the same filling lower bound and Guth’s profile estimate. From
+\[
+cS_1S_2S_3\le C_I\max\{A^{3/2},A^2/R_1\},
+\]
+one gets
+\[
+A\gtrsim \min\left\{(S_1S_2S_3)^{2/3},
+(R_1S_1S_2S_3)^{1/2}\right\},
+\]
+unless \(A\gtrsim R_1R_2\). Integrating gives the displayed volume lower bound.
+
+But, as the author correctly notes, this still falls short in the difficult regime.
+
+### Mildly anisotropic range
+
+The use of Guth’s monomial estimate is correct:
+\[
+R_1^2\Vol(R)\ge c_GS_1^3S_2S_3S_4.
+\]
+Together with \(R_1\le\kappa S_1\), this yields
+\[
+\Vol(R)\ge c_G\kappa^{-2}S_1S_2S_3S_4.
+\]
+This implies the desired volume alternative only when
+\[
+S_3/S_2\lesssim\kappa^{-6}.
+\]
+So this handles only a restricted range.
+
+### Remaining open issues
+
+This section is explicit and honest, but it is fatal to readiness. The mixed family-level estimate is neither proved nor cited.
+
+The single-fiber “no-go” paragraph is useful motivation, but it is not a rigorous theorem as written. In particular, the model relative cycle, its boundary conditions, and the asserted filling volume are only sketched. Since it is only explanatory and not used to prove the theorem, this is not the main failure, but it should not be treated as a proved obstruction without further detail.
+
+## New issues introduced or newly visible
+
+1. **The title now explicitly says “Partial proof and reduction.”** This is accurate, but incompatible with answer-readiness.
+
+2. **The phrase “leave exactly the highly anisotropic complementary case” is slightly stronger than what is fully proved.** It is true at the level of informal constants, but a final solution would need a precise hierarchy of constants, including choosing \(\kappa<\min\{c_1,c,\ldots\}\).
+
+3. **The boxed mixed estimate uses a universal \(c\), while the original theorem needs the same small constant \(\kappa\) in the conclusion.** This is not a serious problem if one later chooses \(\kappa<c\), but the final proof would need to state this.
+
+4. **The slicing equality from homological degree still needs a top-dimensional current justification.** The intended statement is standard, but it is not fully spelled out.
+
+5. **The single-fiber model is heuristic.** It may be correct as a scaling obstruction, but the document does not define a precise relative cycle satisfying all boundary requirements.
+
+## Final assessment
+
+The revision is a good partial reduction and substantially improves the first-alternative proof. It validates and clarifies several previously questionable steps.
+
+Nevertheless, the proof of the stated theorem is still incomplete. The essential mixed family-level sweepout estimate remains open in the document.

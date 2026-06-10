@@ -1,0 +1,101 @@
+## Referee report on `answer.tex`
+
+### 1. LaTeX / First Proof contract
+
+- `\documentclass[12pt]{article}` is exactly as required.
+- `fullpage` is used and is permitted.
+- I found no forbidden layout packages or manual margin changes.
+- I found no line-spacing changes.
+- I found no in-document font-size changes such as `\small`, `\footnotesize`, `\fontsize`, etc.
+- I compiled the file with `pdflatex`; compilation succeeded.
+- The compiled PDF is 3 pages, hence within the 12-page limit.
+
+No LaTeX-contract violation found.
+
+### 2. Literature / citation check
+
+`answer.tex` cites no external literature, and `references.bib` is empty. Thus there are no cited literature results to validate. The proof is intended to be self-contained.
+
+### 3. Mathematical audit
+
+#### Theorem statement
+
+The theorem proves a stronger property than the question asks: not merely computably AUT-countable on a cone, but every automorphism of every copy is computable from that copy alone. This is sufficient.
+
+Minor notation issue: the theorem writes \(P\subseteq A\) while the structure is denoted \(\mathcal A\). This is standard shorthand for the domain and not a mathematical problem.
+
+#### Construction of \(\mathcal A\)
+
+The construction using \(V=[\omega]^{<\omega}\) with symmetric difference is sound. A computable cofinal repetition sequence \((D_i)\) of all finite subsets of \(V\) exists by a routine effective enumeration.
+
+One formal point should ideally be stated explicitly: the “two sorts” should be interpreted either as a genuine two-sorted structure or as a one-sorted computable structure whose domain is a computable disjoint union of the \(I\)-sort and \(V\)-sort, with predicates \(I,V\). Since the problem statement wants a representation on \(\mathbb N\), a polished proof should add a sentence coding the disjoint union into \(\mathbb N\). This is routine and does not affect the argument.
+
+Similarly, the relation \(<\) should be understood as the usual order on \(I\) and false outside \(I\times I\), if one works one-sorted. The proof implicitly uses this convention.
+
+#### Automorphism group computation
+
+The argument is correct.
+
+- Since \((I,<)\cong(\omega,<)\) is rigid, every automorphism fixes \(I\) pointwise.
+- For each \(h\in V\), some marker \(i\) satisfies \(D_i=\{h\}\).
+- Preservation of \(R(i,x,x+h)\) forces \(f(x+h)=f(x)+h\).
+- Taking \(x=0_V\) yields \(f(h)=f(0_V)+h\).
+- Conversely, translations \(x\mapsto x+c\) preserve all differences \(x+y\), hence preserve \(R\).
+
+Thus \(\operatorname{Aut}(\mathcal A)=\{\tau_c:c\in V\}\). I also sanity-checked finite-dimensional analogues computationally; the only permutations preserving all singleton-difference relations are translations.
+
+#### Computable AUT-countability on all copies
+
+The proof is valid under the standard non-uniform reading of “every automorphism is computable relative to the copy.”
+
+For a copy \(\mathcal B\) and \(\sigma\in\operatorname{Aut}(\mathcal B)\), transporting to \(\mathcal A\) gives some translation \(\tau_c\). Choosing in \(\mathcal B\) a marker corresponding to an index with \(D_i=\{c\}\), the oracle procedure searches for the unique \(y\) satisfying \(R(i,x,y)\). This computes \(\sigma\).
+
+Important clarification: the Turing program is allowed to have the chosen marker \(i\) hardwired. That proves non-uniform relative computability of each automorphism, which is what Definition 1.1 appears to require. If a uniform functional independent of the automorphism were intended, the proof would not establish that stronger property, but the stated definition does not demand it.
+
+#### Choice of \(h\), \(W\), and \(x\)
+
+This part is correct.
+
+- \(W=\operatorname{span}(\bigcup_{i\le M}D_i)\) is finite-dimensional over \(\mathbb F_2\), hence finite.
+- Since \(V\) has infinite dimension, there is nonzero \(h\notin W\).
+- The cosets \(x+W\) and \(x+h+W\) are distinct.
+- Since \(Q=P\cup\pi(P)\) is finite and the quotient \(V/W\) is infinite, one can choose \(x\) so both cosets avoid \(Q\cap V\).
+
+#### Reduction from \(\Sigma^{in}_1\)-definability to one existential formula
+
+The logic is correct. If a countable disjunction of existential formulas defines exactly the graph of \(\pi\), then every existential disjunct that appears in the defining family must itself be contained in the graph; otherwise the union would contain a non-graph pair. Therefore it suffices to show that no single existential formula true of \((x,\pi(x))\) is contained in the graph.
+
+The use of disjunctive normal form for the quantifier-free part is standard.
+
+#### Perturbation argument for low markers
+
+The low-marker part is essentially correct.
+
+For \(i\le M\), \(D_i\subseteq W\). If one vector is in \(C=y+W\) and the other is outside \(C\), then their difference is not in \(W\), hence not in any low \(D_i\). After shifting the \(C\)-part by \(t\), one avoids finitely many values of \(t\) so that no new cross-cut difference lands in a low \(D_i\).
+
+The phrase “for every pair \(a\in C\), \(b\in F\setminus C\)” is acceptable because \(C=y+W\) is finite; it is even stronger than necessary. A reader might initially expect \(a\in F\cap C\), but since \(W\) is finite over \(\mathbb F_2\), this does not create an infinite-forbidden-set problem.
+
+Equalities are preserved by avoiding collisions between shifted and unshifted elements.
+
+#### High-marker replacement
+
+The high-marker argument is sound but compressed.
+
+For each high marker equality class \(\mu\), after the vector shift the proof defines:
+
+- \(A_\mu\): differences required by positive \(R\)-literals;
+- \(B_\mu\): differences forbidden by negative \(R\)-literals.
+
+The only danger is \(A_\mu\cap B_\mu\neq\varnothing\). For each positive/negative pair, equality after shifting is either impossible because it would already contradict the original true diagram, or it imposes one linear equation on \(t\). Thus only finitely many \(t\)'s are forbidden.
+
+Since every finite subset of \(V\) appears cofinally often among the \(D_i\)'s, the proof can choose fresh high markers, above \(M\), in the same order/equality pattern, with \(D_i=A_\mu\). This preserves the relevant \(R\)-literals and order/equality literals.
+
+Minor formal point: a fully expanded proof should explicitly mention literals involving sort predicates, mixed-sort \(R\)-arguments, or \(<\)-atoms outside the \(I\)-sort. These are preserved because the construction keeps \(I\)-objects in \(I\), \(V\)-objects in \(V\), and only replaces high \(I\)-markers by other high \(I\)-markers. This is not a fatal gap.
+
+#### Final nondefinability conclusion
+
+The conclusion is correct. The modified assignment satisfies the same existential formula at \((x,y+t)\), while \(t\ne0\) gives \(y+t\ne y=\pi(x)\). Therefore the formula cannot be contained in the graph of \(\pi\). Since the original existential formula was arbitrary, no \(\Sigma^{in}_1\)-definition over \(P\cup\pi(P)\) can define \(\pi\).
+
+### 4. Overall verdict
+
+I find no fatal mathematical error. The proof is concise and would benefit from a few explicit formalization sentences about the disjoint coding of the two sorts, the interpretation of \(<\) outside \(I\), and the treatment of mixed-sort literals, but these are routine clarifications rather than substantive gaps. The construction does solve the stated problem.

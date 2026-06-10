@@ -1,0 +1,194 @@
+# Compute worker reply — round 12
+status: done
+error: (none)
+workspace: /data/output/workflow_runs/firstproof-prob-004-20260529T215332Z-6a40eb14/ac_workspaces/prob-004-edfa3a2c78c9/compute
+zip: /data/output/workflow_runs/firstproof-prob-004-20260529T215332Z-6a40eb14/agents/Compute-c1-bd5645/compute_workspace_round_12.zip
+
+---
+
+# Round 12 report: random-puncture deformation lemma
+
+## Bottom line
+
+The lemma in `answer.tex` is **false as stated**.  There is a simple linear degree-one map of pairs with `Dil_2=1` for which
+\[
+A \gtrsim L^6,\qquad
+R_1 I+\frac{I^2}{S_1|Q|}\lesssim L^2,\qquad
+\int_Q \operatorname{Mass}(B_y\llcorner \mathcal B_z)\,dy=0
+\]
+for every central puncture \(z\).  Thus no dimensional constant can make the displayed random-puncture estimate true in the stated generality.
+
+This does **not** disprove the original theorem: the example lies deep in the first-alternative regime, with \(R_3R_4/S_3S_4=L^2\).  It does show that Lemma `random-puncture` needs an additional hypothesis, an additional term, or a different bad set before it can be used as a black-box deformation lemma.
+
+Reproducible scaling check: `code/round12_random_puncture_counterexample.py`; output: `data/round12_random_puncture_counterexample.txt`.
+
+## Precise PL/cubical restatement
+
+Let
+\[
+B=[0,R_1]\times[0,R_2],\qquad C=[0,R_3]\times[0,R_4],\qquad R=B\times C
+\]
+with the product cubical structure and relative boundary \(\partial R\).  Let \(\widetilde Q=[0,S_3]\times[0,S_4]\), let \(Q\subset\widetilde Q\) be the central rectangle, and put \(q=|Q|\).  Let \(F:R\to\widetilde Q\) and \(G=(f_1,f_2):R\to [0,S_1]\times[0,S_2]\) be PL after subdivision, with \(F\) transverse to a cubical subdivision of \(Q\) and to a.e. point \(y\in Q\).
+
+For regular \(y\), define the relative integral 2-cycle
+\[
+Z_y=\langle [R,\partial R],F,y\rangle\in I_2(R,\partial R).
+\]
+Set
+\[
+\lambda(x)=\|dG|_{\ker dF_x}\|
+\]
+on rank-two affine pieces of \(F\), with the harmless convention \(\lambda=0\) on the rank-deficient part, and
+\[
+I=\int_Q\int_{Z_y}\lambda^2\,d\|Z_y\|\,dy,\qquad
+A=\int_Q \operatorname{Fill}_R(Z_y)\,dy.
+\]
+Choose measurable almost-minimizing relative fillings
+\[
+\partial B_y=Z_y\quad\text{in }I_2(R,\partial R),\qquad
+\int_Q \operatorname{Mass} B_y\,dy\le 2A.
+\]
+For \(u\in B\), let \(V_u=\{u\}\times C\).  For \(z\in Q\), define
+\[
+\mathcal B_z=\{x=(u,v)\in R:\ z\in F(V_u)\}.
+\]
+The proposed lemma is:
+\[
+A\le C\left(R_1I+\frac{I^2}{S_1q}\right)
+ +C\int_Q \operatorname{Mass}(B_y\llcorner\mathcal B_z)\,dy
+\tag{RP}
+\]
+for every \(z\in Q\).
+
+The rigorous averaged bad-mass estimate remains valid:
+\[
+\frac1q\int_Q\int_Q \operatorname{Mass}(B_y\llcorner\mathcal B_z)\,dy\,dz
+\le
+\frac{R_3R_4}{q}\int_Q\operatorname{Mass}B_y\,dy
+\le 2\frac{R_3R_4}{q}A.
+\]
+The failure is not in this Fubini estimate; it is in the pointwise deformation estimate (RP).
+
+## Counterexample to (RP)
+
+Let \(L\gg1\),
+\[
+R=[0,1]\times[0,L^2]\times[0,L^2]\times[0,L^2],
+\qquad
+S=[0,1]\times[0,1]\times[0,L]\times[0,L],
+\]
+and define the linear map of pairs
+\[
+f(x_1,x_2,x_3,x_4)=
+\left(\frac{x_3}{L^2},\frac{x_4}{L^2},Lx_1,\frac{x_2}{L}\right).
+\]
+It has degree \(\pm1\).  Its singular values are
+\[
+L,\ L^{-1},\ L^{-2},\ L^{-2},
+\]
+so \(\operatorname{Dil}_2(f)=L\cdot L^{-1}=1\).
+
+Take
+\[
+F=(f_3,f_4)=(Lx_1,x_2/L),\qquad
+G=(f_1,f_2)=(x_3/L^2,x_4/L^2),
+\]
+and the central parameter rectangle
+\[
+Q=[L/3,2L/3]\times[L/3,2L/3],\qquad q=L^2/9.
+\]
+For \(y=(y_3,y_4)\in Q\),
+\[
+u_y=(y_3/L,Ly_4)\in [0,1]\times[0,L^2],
+\qquad
+Z_y=\{u_y\}\times[0,L^2]^2.
+\]
+Thus \(\operatorname{Mass}Z_y=L^4\).
+
+For any relative 3-filling \(W\) of \(Z_y\), choose a 1-Lipschitz function \(\phi\) on \(B\) which vanishes on \(\partial B\) and satisfies \(\phi(u_y)\ge 1/3\).  The calibration
+\[
+d(\phi\,dx_3\wedge dx_4)
+\]
+has comass at most \(1\), and all relative boundary terms vanish because \(\phi=0\) on \(\partial B\times C\) and \(dx_3\wedge dx_4\) vanishes on \(B\times\partial C\).  Hence
+\[
+\operatorname{Mass}W
+\ge
+\left|\int_W d(\phi\,dx_3\wedge dx_4)\right|
+=\phi(u_y)L^4
+\ge L^4/3.
+\]
+Therefore
+\[
+A=\int_Q\operatorname{Fill}_R(Z_y)\,dy\ge (L^2/9)(L^4/3)=L^6/27.
+\]
+
+On \(Z_y\), \(\ker dF=\operatorname{span}\{\partial_{x_3},\partial_{x_4}\}\), and \(dG\) has operator norm \(L^{-2}\).  Thus \(\lambda^2=L^{-4}\), so
+\[
+E_y=\int_{Z_y}\lambda^2\,d\|Z_y\|=1,\qquad
+I=\int_QE_y\,dy=L^2/9.
+\]
+Since \(R_1=S_1=1\),
+\[
+R_1I+\frac{I^2}{S_1q}=L^2/9+L^2/9=2L^2/9.
+\]
+
+Finally, for a fixed \(z=(z_3,z_4)\in Q\),
+\[
+\mathcal B_z=\{z_3/L\}\times\{Lz_4\}\times[0,L^2]^2.
+\]
+This is a 2-dimensional vertical rectangle.  Every integral 3-current \(B_y\) has 3-dimensional mass measure absolutely continuous with respect to \(\mathcal H^3\) on a countably 3-rectifiable set, so
+\[
+\operatorname{Mass}(B_y\llcorner\mathcal B_z)=0
+\]
+for every \(y\), regardless of the almost-minimizing filling chosen.  Therefore (RP) would require \(L^6\lesssim_C L^2\), impossible.
+
+## Where the proof attempt breaks
+
+The tempting cubical proof is:
+
+1. Cubulate \(Q\) and view \(y\mapsto Z_y\) as an Almgren complex of relative 2-cycles, with slabs \(F^{-1}(\sigma)\) over cells \(\sigma\subset Q\).
+2. Use coarea for \(G=(f_1,f_2)\) on the level cycles to control seams by \(I\), giving the heuristic costs \(R_1I\) and \(I^2/(S_1q)\).
+3. On \(R\setminus\mathcal B_z\), use \(F(V_u)\subset Q\setminus\{z\}\) to retract vertical parts of the family in the punctured parameter rectangle and avoid paying the long \(R_3,R_4\) filling cost.
+
+Step 3 is false in this form.  The condition \(F(V_u)\subset Q\setminus\{z\}\) is a statement about the **image** of a vertical rectangle in parameter space.  It does not produce a source 3-chain filling \(\{u\}\times C\) with mass controlled by \(G\)-energy.  In the counterexample, every vertical rectangle \(V_u\) maps to a single point of \(Q\), so it avoids every other puncture.  Nevertheless the source relative cycle \(\{u\}\times C\) costs \(\sim L^4\) to fill, while its \(G\)-energy is only \(\sim1\).
+
+Equivalently: puncturing \(Q\) kills a possible two-parameter degree obstruction in the image, but it does not by itself kill the large relative class represented by a vertical sheet in the source.  A Federer-Fleming deformation of the image complex cannot be lifted to a controlled source filling without an additional quantitative hypothesis tying vertical source area to the punctured image deformation.
+
+## Relation to product/snake models
+
+The product example already in `answer.tex`,
+\[
+f(u_1,u_2,u_3,u_4)=(u_1,u_2/M,u_3,u_4),
+\]
+is captured by the bad term: each \(F(V_u)\) is the whole central \(Q\), so \(\mathcal B_z=R\) and the bad term is \(A\).
+
+The counterexample above is the opposite product degeneration: \(F\) uses only the first two source variables.  Then \(F(V_u)\) is a point, the puncture condition is almost always satisfied, and the bad set is too thin to see any 3-dimensional filling mass.  This is the cleanest obstruction to the lemma as written.
+
+A hard-regime version might still be possible.  The counterexample has
+\[
+R_3R_4/S_3S_4=L^2,
+\]
+so it is not in the regime \(R_3R_4\ll S_3S_4\) where the averaged bad term would be absorbed.  If one adds \(R_3R_4\le c|Q|\), then \(F\) cannot be purely horizontal in this way because \(J_2F\le1\) would force \(R_1R_2\ge |Q|\), while ordering gives \(R_3R_4\ge R_1R_2\).  I did not find a counterexample satisfying the intended small-\(R_3R_4/|Q|\) hypothesis.  But the present lemma statement is universal, and the proof still needs a real lifting/deformation mechanism even after adding that hypothesis.
+
+## Literature search
+
+I did not find a published result matching the proposed random-puncture deformation lemma.
+
+Files refreshed or added:
+
+- `papers/guth_liokumovich_parametric_inequalities_2202.11805_v3.pdf`
+- `data/pdftxt/guth_liokumovich_parametric_inequalities_2202.11805_v3.txt`
+- `papers/staffa_parametric_coarea_1cycles_2410.23195_v2.pdf`
+- `data/pdftxt/staffa_parametric_coarea_1cycles_2410.23195_v2.txt`
+- `data/round12_literature_excerpts.md`
+
+Relevant sources:
+
+- Federer-Fleming deformation theorem: standard cubical deformation to skeletons with mass estimates.  Useful for a discretized proof, but it is not parametric enough by itself.
+- Guth, *Area-expanding embeddings of rectangles*, arXiv:0710.0403: Theorem 3 gives the rectangular relative isoperimetric profile; Estimate 1 gives the monomial inequalities; Section 3 and Lemma 4.1 use Almgren complexes of cycles and small-complex null-homotopy.  This supports the first-alternative proof, but I found no weighted two-parameter filling estimate like (RP).
+- Guth thesis, Chapter 8: Propositions 8.1.2 and 8.1.3 are exactly the first-alternative mechanism.  The thesis later says the available techniques are not close to estimating best 2-dilation between 4-dimensional rectangles.
+- Guth-Liokumovich, *Parametric inequalities and Weyl law for the volume spectrum*, arXiv:2202.11805v3 / Geom. Topol. 29 (2025): this is the closest modern framework.  It formulates parametric isoperimetric and coarea conjectures and proves low-dimensional cases.  It also records obstructions: continuous families of fillings may fail for integer coefficients, and naive parametric coarea cuts can fail without modifying the family.
+- Staffa, *Parametric Coarea Inequality for 1-cycles*, arXiv:2410.23195v2: proves the Guth-Liokumovich parametric coarea conjecture for 1-cycles, including rectangular/cubical domains.  It does not provide the needed 2-cycle parametric filling deformation.
+- Guth, *Minimax problems related to cup powers and Steenrod squares*, arXiv:math/0702066: useful cycle-space language and minimax lower bounds, but no rectangle estimate yielding (RP).
+
+Conclusion for the Author: replace Lemma `random-puncture` by a qualified conjectural hard-regime lemma, or add a term that controls horizontal-\(F\) vertical-sheet fillings.  As written, the lemma should not remain in the proof.

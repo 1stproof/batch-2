@@ -1,0 +1,87 @@
+# Compute worker reply — round 2
+status: done
+error: (none)
+workspace: /data/output/workflow_runs/firstproof-prob-008-20260529T215332Z-6a40eb14/ac_workspaces/prob-008-5722abb22c2d/compute
+zip: /data/output/workflow_runs/firstproof-prob-008-20260529T215332Z-6a40eb14/agents/Compute-c1-031718/compute_workspace_round_2.zip
+
+---
+
+## Verdicts
+
+### (a) Complete-valuated-flag / adjacent-relation criterion
+
+**Verdict: Confirmed, but the citation in `answer.tex` should be made more precise.**
+
+Best references found:
+
+- **Joswig--Loho--Luber--Olarte, "Generalized permutahedra and positive flag Dressians"**, Theorem 10: if two arbitrary finite functions
+  \(\mu:\binom{[n]}d\to\mathbb R\), \(\nu:\binom{[n]}{d+1}\to\mathbb R\) satisfy the 3-term tropical incidence relations, then both are valuated matroids.  This is exactly the missing "incidence implies Plucker" statement in adjacent ranks.  Theorem 14 uses this to reconstruct a full valuated flag from the 1-step relations on the permutahedron.
+- **Brandt--Eur--Zhang**, Proposition 4.2.3: points of \(FlDr(r,s;n)\) are precisely pairs of valuated matroids forming a valuated quotient.  The proof rewrites the tropical incidence-Plucker relations as the valuated quotient exchange inequalities.
+- **Brandt--Eur--Zhang**, Theorem 4.3.1: \(\mu\preceq\nu\) iff \(\overline{\operatorname{trop}}(\mu)\subseteq\overline{\operatorname{trop}}(\nu)\); equivalently valuated flag matroids are flags of projective tropical linear spaces.
+- **Jarra--Lorscheid**, Theorem 2.17 plus Proposition 2.21: over the tropical hyperfield (perfect tract), adjacent quotients imply the whole sequence is a flag, and their valuated-flag notion recovers BEZ.
+- For extended-real/support statements, cite **Murota, "Matroid valuation on independent sets"**, Theorem 3.5 and Corollary 3.4: the independent-set/M-natural exchange cryptomorphism implies that rank slices are valuated matroids.  This is the cleanest source for allowing \(\infty\)-supports rather than only finite uniform coordinates.
+
+Recommended replacement for lines 46--51 of `answer.tex`: say that for a complete sequence with nonempty rank slices and fixed endpoints, adjacent 3-term incidence is the local \(M^\natural\)-concavity / valuated generalized matroid condition.  By Murota's independent-set cryptomorphism (Theorem 3.5, Corollary 3.4) the rank slices are valuated matroids; in the finite uniform case, Joswig--Loho--Luber--Olarte Theorem 10 proves directly that adjacent incidence implies the Plucker relations.  Then BEZ Proposition 4.2.3 identifies the resulting sequence with a valuated flag matroid.
+
+### (b) Valuated Higgs factorization
+
+**Verdict: Confirmed, but I would not leave the present paragraph as a bare "standard theorem" without either a formula or a proof sketch.**
+
+For a valuated quotient \(p\preceq q\) of ranks \(a<b\), the expected valuated Higgs intermediates are
+\[
+  h_j(J)=\min\{\,p(A)+q(B): A\subseteq J\subseteq B,\ |A|=a,\ |B|=b\,\},
+  \qquad a\le j\le b,
+\]
+with \(\infty\) if no such finite pair exists.  In the special case \(q=\mu_M\), this reduces to
+\[
+  h_j(J)=\min\{p(A):A\subseteq J,\ |A|=a\}
+\]
+for independent \(j\)-subsets \(J\) of \(M\), and \(\infty\) otherwise, exactly as stated in `answer.tex`.
+
+Reference/proof support:
+
+- **Murota 1997**, Theorem 2.1 proves valuated truncation and elongation; Theorem 3.2 and Theorem 3.5 give the independent-set cryptomorphism.  These are in max-plus notation, so translate by changing signs.
+- **BEZ**, Theorem 4.4.2 says the Minkowski sum of a valuated flag matroid induces a flag-matroidal subdivision; Theorem 5.1.2 handles the rank-difference-one valuated quotient extension.  Combining these with the classical Higgs lift of each initial matroid gives the displayed tropical convolution formula.
+- **Fujishige--Hirai**, Theorems 5.2 and 5.3: valuated generalized matroids decompose into flag-matroid strips under compression.  This is a good secondary citation for the "full flag from \(M^\natural\)" viewpoint.
+
+Recommended edit: include the displayed general formula above, then specialize to \(q=\mu_M\).  Add one sentence: "This is the \(M^\natural\)-convex convolution/Higgs lift construction; the rank slices are valuated matroids by Murota's cryptomorphism, and adjacent slices are quotients by BEZ Proposition 4.2.3."
+
+## Local elementary opposition audit
+
+**Verdict: the lemma is sufficient when combined with the complete-flag criterion.  No extra Plucker checks are needed in the main theorem.**  The lemma only proves adjacent transformed incidence for each elementary step; the complete-flag criterion then supplies Plucker relations and all quotient relations for the reversed full flag.
+
+The \(\delta=3\) case looks correct.  Since \(\delta=3\), \(x,y,z\) are independent over \(U=\operatorname{cl}(A)\).  Thus the three \(P_x,P_y,P_z\) are distinct atoms over \(G=W^\perp\), the joins \(P_y\vee P_z=Q_x\) etc. have rank \(d+1\), and representatives \(a_x,a_y,a_z\) with a basis \(S\) of \(G\) give exactly the original incidence relation for \(p\preceq q\).
+
+The \(\delta=2\) case is essentially correct but should be worded more carefully.  As written, it says \(L_x,L_y,L_z\) are rank \(d+1\) flats in \([G,H]\); this is only true for elements \(x,y,z\) that actually raise rank over \(U\).  If, say, \(x\in U\), then the \(x\)-term is \(\infty\), and the other two terms are also \(\infty\) unless \(y,z\) span the rank-two interval.  If two nonzero rank-one flats coincide, the corresponding two finite terms are equal and the third term is \(\infty\).  If three distinct rank-one flats occur, the proof using the incidence relation \(q\preceq\mu_M\) is valid: choose a basis \(S\) of \(G\), representatives in the three atoms, and a complement \(C\); deleting an element of \(C\) leaves three elements in a rank-two interval, hence a dependent set.
+
+Suggested small edit in the proof: replace "The remaining coordinates are the rank \(d+1\) flats \(L_x,L_y,L_z\)" by "For each finite term, the corresponding \(L_e=(\operatorname{cl}(Ae))^\perp\) is a rank \(d+1\) flat, i.e. a point of the rank-two interval \([G,H]\).  Terms for which \(e\in U\), or the complementary pair fails to span \(W/U\), are \(\infty\)."
+
+Loops and parallel elements: the simplification reduction is sound.  Loops are never in finite bases of quotients of \(\mu_M\); parallel representatives have the same coordinate by flat constancy.  The local proof can therefore be stated for the simple loopless simplification, with pullback to \(M\).
+
+## Computational sanity checks
+
+New script: `code/complete_flag_adjacent_search.py`.
+
+New outputs:
+
+- `data/complete_flag_adjacent_z3_round2.json`
+- `data/direct_sum_complete_flag_z3_long_round2.json`
+
+The Z3 search used full subset-indexed variables, not flat-constant variables.  It fixed \(g_0=0\), \(g_r=\mu_M\), required every middle slice to have at least one finite value, imposed all adjacent 3-term incidence relations, and asked for a middle-rank tropical Plucker violation.
+
+| Matroid | Alphabet | Result |
+|---|---:|---|
+| Boolean \(U_{4,4}\) | \(\{0,1,\infty\}\), \(\{0,1,2,\infty\}\) | unsat for rank 2 and 3 Plucker violation |
+| Boolean \(U_{5,5}\) | both | unsat for rank 2, 3, 4 Plucker violation |
+| \(U_{2,4}\), \(U_{2,5}\) | both | no nontrivial middle Plucker relation; counterexample query unsat |
+| Fano \(PG(2,2)\) | both | unsat for rank 2 Plucker violation |
+| \(U_{2,3}\oplus U_{2,3}\) | both | unsat for rank 2 and 3 Plucker violation after longer timeout |
+
+So I found no example where trivial endpoints plus adjacent relations hold while a middle rank slice violates tropical Plucker.
+
+## Recommended edits to `answer.tex`
+
+1. Expand the "standard facts" paragraph with theorem numbers: Murota 1997 Theorem 3.5/Corollary 3.4; BEZ Proposition 4.2.3 and Theorem 4.3.1; Jarra--Lorscheid Theorem 2.17/Proposition 2.21; Joswig--Loho--Luber--Olarte Theorem 10 for incidence-implies-Plucker.
+2. Add the general valuated Higgs formula \(h_j(J)=\min_{A\subseteq J\subseteq B}(p(A)+q(B))\), then specialize to \(q=\mu_M\).
+3. In Lemma "elementary opposition", add the finite-term caveat in the \(\delta=2\) paragraph as above.
+4. Keep the proof strategy: elementary opposition + complete Higgs flag + complete-flag criterion is enough; do not add separate transformed Plucker checks.

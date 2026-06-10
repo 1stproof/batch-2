@@ -1,0 +1,127 @@
+## Referee report on the revised `answer.tex`
+
+### LaTeX contract
+
+I compiled the revised `answer.tex` twice with `pdflatex`. It compiles successfully and produces a 7-page PDF. The document uses exactly `\documentclass[12pt]{article}`, uses only the permitted `fullpage` layout package, and I found no forbidden margin changes, line-spacing changes, or in-document font-size changes. The LaTeX contract is satisfied.
+
+### Literature validation
+
+The cited ABLM paper is a real work on well-posedness for stochastic heat equations with distributional drift and skew stochastic heat equations. ([arxiv.org](https://arxiv.org/abs/2011.13498?utm_source=openai)) Lê’s Banach-valued stochastic sewing paper is also real and explicitly concerns a stochastic sewing lemma applicable to Banach-space-valued processes. ([eprints.whiterose.ac.uk](https://eprints.whiterose.ac.uk/id/eprint/196312/?utm_source=openai)) Bounebache–Zambotti’s skew stochastic heat equation paper is likewise real and appears with the cited journal data. ([ideas.repec.org](https://ideas.repec.org/a/spr/jotpro/v27y2014i1d10.1007_s10959-012-0421-8.html?utm_source=openai))
+
+The proof’s Dirichlet-boundary extension and the new Hilbert drift estimate are not directly validated by these sources, but the problem statement explicitly assumes the relevant Dirichlet ABLM approximation framework, and the revised draft now supplies its own proof of the additional estimate.
+
+---
+
+## Review by section
+
+### 1. Problem statement and interpretation
+
+This section is now clear and acceptable. The author explicitly works on \(E=C_0([0,1])\), \(H=L^2(0,1)\), and records the approximation assumption as
+\[
+P_t^n\Phi(x)\to P_t\Phi(x),\qquad \Phi\in C_b(E).
+\]
+This is a faithful and sufficiently explicit interpretation of the weak convergence assumption in the problem.
+
+### 2. Uniform regularized drift estimate
+
+The previous major concern was that the \(3/4\)-drift estimate was an essential unproved lemma. The revision substantially strengthens this part.
+
+The Dirichlet heat-kernel estimates are now spelled out: the diagonal bound, the estimate
+\[
+\rho_\tau(y)\asymp \sqrt{\tau}\wedge d(y),
+\]
+the weighted convolution bound, and the Hardy-inequality estimate
+\[
+\|\rho_\tau^{-1}S_\tau f\|_2\le C_T\tau^{-1/2}\|f\|_2
+\]
+are all justified at an acceptable level.
+
+The identification of \(D^n\) with the semigroup-sewn limit of the frozen increments \(A^n\) is also now adequate. The fixed-\(n\) Lipschitz comparison gives convergence of the frozen Riemann sums to the true drift increment. The constants may depend on \(n\) there, but this is only used for identification of the limit, not for the uniform estimate.
+
+The Gaussian convolution estimates are now correctly explained and are uniform in \(n\), relying only on \(b_n\) being a probability density and on the derivative bound for convolution with a Gaussian kernel.
+
+The dyadic semigroup stochastic sewing lemma is now stated and proved directly enough for this use. The martingale-orthogonality argument for the centered dyadic increments is valid, and the exponent bookkeeping gives the claimed estimate. The bootstrap
+\[
+Y_n(h)\le C+Ch^{1/2}Y_n(h)
+\]
+then closes uniformly in \(n\), and longer intervals are handled correctly by semigroup additivity.
+
+I find this lemma acceptable in the revised draft.
+
+### 3. Reversible reference measure and regularized spectral gap
+
+The Gibbs measures
+\[
+\pi_n(dv)=Z_n^{-1}\exp\left(2\int_0^1B_n(v(r))\,dr\right)\gamma(dv)
+\]
+and
+\[
+\pi(dv)=Z^{-1}e^{2\int_0^1\mathbf 1_{\{v(r)>0\}}\,dr}\gamma(dv)
+\]
+are correctly identified. The total variation convergence \(\pi_n\to\pi\) follows by bounded convergence and the fact that Brownian bridge has zero Lebesgue occupation time at a fixed level.
+
+The revised Galerkin/cylinder-potential argument now addresses the earlier concern about purely formal generator computations. For fixed \(n\), the cylinder-potential approximation has drift
+\[
+\Pi_m b_n(\Pi_m v)=\nabla_H U_{n,m}(v),
+\]
+so it is a genuine finite-dimensional gradient perturbation of the first \(m\) modes plus an independent OU tail. Its reversibility with respect to \(\pi_{n,m}\) is standard.
+
+The convergence \(u^{n,m}\to u^n\) is sketched but sufficiently justified: the Nemytskii map is globally Lipschitz for fixed \(n\), the projection errors vanish by dominated convergence, and the fixed-time convergence in \(E\) follows from parabolic smoothing plus smallness of the terminal short-time contribution. Passing the reversible identities and the spectral-gap estimate \(m\to\infty\) is now legitimate for bounded continuous observables.
+
+The uniform spectral gap follows from the Gaussian Poincaré inequality and the two-sided boundedness of the Gibbs densities, via the standard Holley–Stroock perturbation argument. This part now resolves the earlier objection about the regularized semigroup’s reversibility and gap.
+
+### 4. Passage from \(P_t^n,\pi_n\) to \(P_t,\pi\)
+
+The limiting argument is sound. Since the densities \(d\pi_n/d\gamma\) are uniformly bounded and converge to \(d\pi/d\gamma\), and \(P_t^n f(x)\to P_t f(x)\) pointwise for \(f\in C_b(E)\), dominated convergence gives invariance and symmetry for bounded continuous functions. The measure-identification argument on the Polish space \(E\) then extends invariance and detailed balance to bounded Borel functions.
+
+The spectral gap passes to the limit for bounded continuous functions and then extends to \(L^2(\pi)\) by density and \(L^2\)-contractivity. This addresses the previous concern about extending the limiting symmetry and gap.
+
+### 5. Fixed-time absolute continuity
+
+This section is now robust.
+
+The dyadic adapted control \(F^n\) is predictable, because each increment \(D_k^n\) is known by the left endpoint of the interval on which it is used. The energy estimate follows directly from Lemma 1:
+\[
+\E\int_0^t\|F_s^n\|_2^2\,ds<\infty
+\]
+uniformly in \(n\). The telescoping identity
+\[
+\int_0^t S_{t-s}F_s^n\,ds=K_t^n
+\]
+is correct.
+
+The previous state-space issue is fixed: the proof now explicitly shows that deterministic controlled convolutions with \(L^2(0,t;H)\) controls lie in \(H^\alpha_0(0,1)\subset E\) for \(\alpha>1/2\).
+
+The Girsanov step is now formulated on a Hilbert space \(U=H^{-\beta}\), \(\beta>1/2\), in which the cylindrical Brownian motion has continuous paths. After localization, the standard adapted-shift entropy bound applies, and data processing gives the entropy estimate for terminal laws on \(E\). The lower semicontinuity of relative entropy first as \(N\to\infty\), then as \(n\to\infty\), is valid.
+
+Finally, the Feldman–Hájek comparison between \(\nu_t^x=\Law(S_tx+V_t)\) and Brownian bridge measure \(\gamma\) is correct: the covariance eigenvalue ratios are bounded away from zero and differ from \(1\) by a square-summable sequence, and \(S_tx\in H^1_0\), the Cameron–Martin space of \(\gamma\).
+
+Thus the proof of
+\[
+P_t(x,\cdot)\ll \gamma\sim\pi
+\]
+for every deterministic \(x\in E\) and \(t>0\) is now acceptable.
+
+### 6. Final uniqueness argument
+
+The final uniqueness argument is correct.
+
+If \(\eta\) is invariant and \(\pi(A)=0\), fixed-time absolute continuity gives \(P_t(y,A)=0\) for every \(y\), hence \(\eta(A)=0\). Thus \(\eta\ll\pi\). Writing \(d\eta=h\,d\pi\), detailed balance gives \(P_t h=h\) in \(L^1(\pi)\). For \(h_a=h\wedge a\), concavity gives
+\[
+P_t h_a\le (P_t h)\wedge a=h_a.
+\]
+Equality of integrals forces \(P_t h_a=h_a\). Since \(h_a\in L^2(\pi)\), the spectral gap implies \(\operatorname{Var}_\pi(h_a)=0\). Letting \(a\uparrow\infty\) gives \(h=1\). Hence every invariant probability measure equals \(\pi\).
+
+---
+
+## Overall verdict
+
+The revision addresses the substantive concerns from the previous review:
+
+- the Dirichlet heat-kernel and boundary estimates are now supplied;
+- the semigroup stochastic sewing step is now proved in a usable dyadic form;
+- the regularized reversibility and spectral gap are justified through cylinder-potential Galerkin approximations;
+- the Girsanov/entropy argument is now correctly placed on a common Polish state space \(E\);
+- the final \(L^1\)-duality and truncation argument is complete.
+
+I do not find a remaining mathematical gap that would affect the validity of the proof. The draft now gives a complete rigorous proof of uniqueness of the invariant probability measure under the stated interpretation and assumptions.

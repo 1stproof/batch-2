@@ -1,0 +1,133 @@
+## Referee report on `answer.tex`
+
+### Overall verdict
+
+`answer.tex` is **not answer-ready**. It explicitly states that it is “not yet a complete proof” and leaves the averaged tightening estimate (8) unproved. Since that estimate is essential for the desired second alternative, the document is a rigorous partial reduction at best, not a complete solution of the stated problem.
+
+The LaTeX contract appears satisfied: I reconstructed and ran `pdflatex` twice; compilation succeeded, the PDF has 4 pages, the document class is exactly `\documentclass[12pt]{article}`, only `fullpage` is used for layout, and I saw no forbidden spacing or font-size changes.
+
+### Literature check
+
+The citation to Guth’s *Area-expanding embeddings of rectangles* is relevant. Guth’s Estimate 1 indeed applies to maps of pairs of nonzero degree and gives a lower bound for \(k\)-dilation in terms of the quotients \(Q_i=S_i/R_i\); the paper also notes that the estimate is more general than the embedding case because the map need not be a diffeomorphism. Specializing \(n=4,k=2,j=1,l=4\) gives the stated inequality
+\[
+R_1^2\operatorname{Vol}(R)\ge c\,S_1^3S_2S_3S_4.
+\]
+([arxiv.org](https://arxiv.org/pdf/0710.0403))
+
+The cited isoperimetric profile is also broadly consistent with Guth’s Theorem 3: for small \(V\le cR_1\cdots R_k\), the profile is estimated in terms of \(R_1,\dots,R_j\) and a scale \(\rho\), and there is also a general linear bound \(I_R^k(V)\le C R_{k+1}V\). For \(k=2\), the simplified bound used in the draft,
+\[
+\Fill_R(Z)\lesssim \max\{A^{3/2},A^2/R_1\},
+\]
+under the smallness condition \(A\lesssim R_1R_2\), is a valid consequence. ([arxiv.org](https://arxiv.org/pdf/0710.0403))
+
+### Paragraph-by-paragraph mathematical audit
+
+#### Problem statement and interpretation
+
+The interpretation of rectangles as oriented Euclidean products and degree as relative degree is reasonable and faithful. Renaming the problem’s universal constant from \(k\) to \(\kappa\) is also appropriate.
+
+However, the sentence saying that smoothing or PL approximation is “standard harmless” is not enough for a complete proof. A rigorous final proof would need to explain how approximation preserves the pair condition, degree, and the \(\Dil_2\le 1\) hypothesis up to controllable constants.
+
+Most importantly, this section explicitly says the document is “not yet a complete proof.” That alone makes the submission fail the requested standard.
+
+#### Standard inputs
+
+The singular-value argument proving \(\Dil_2(f)\le1\Rightarrow \Dil_3(f),\Dil_4(f)\le1\) is correct.
+
+The use of Guth’s Estimate 1 is correct in formula and specialization, modulo routine but unstated details about applying the result to closed rectangles/piecewise smooth maps rather than the open-set formulation in Guth’s paper.
+
+The stated small-volume isoperimetric profile is plausible and correctly includes the needed smallness hypothesis. The inverse estimate
+\[
+\Mass(Z)\ge c\min\{R_1R_2,L^{2/3},(R_1L)^{1/2}\}
+\]
+is also valid by splitting into the cases \(\Mass Z\ge c_*R_1R_2\) and \(\Mass Z<c_*R_1R_2\). This is acceptable, though a complete proof should spell out the constants more carefully.
+
+#### Lemma “Filling a central target plane”
+
+The calibration argument is essentially correct. The function \(\psi\) can be chosen as a multiple of distance to the boundary of the \((x_3,x_4)\)-rectangle, giving \(\psi\gtrsim S_3\) on the middle half. The form \(d(\psi\,dx_1\wedge dx_2)\) has bounded comass, and the boundary terms vanish on the coordinate faces for the reasons stated.
+
+This lemma is sound.
+
+#### Proposition “The first alternative”
+
+The overall argument is credible, but one important point is underjustified: the equality
+\[
+f_\#Z_y=\pm [0,S_1]\times[0,S_2]\times\{y\}
+\]
+as a relative current requires more than “naturality of slicing.” One also needs to justify that \(f_\#[R]\) agrees with the degree-one fundamental current \([S]\) in the relevant top-dimensional relative current sense, e.g. via the constancy theorem, and then slice. This is repairable but not fully written.
+
+Once that equality is accepted, the rest of the proof is valid: any filling of \(Z_y\) pushes forward to a filling of \(P_y\), \(\Dil_3(f)\le1\) controls its mass, the central-plane filling lemma gives the lower bound, and Guth’s small-volume profile forces \(\Mass Z_y\gtrsim R_1R_2\). Coarea then yields \(R_3R_4\gtrsim S_3S_4\).
+
+So this proposition is essentially correct but not completely self-contained.
+
+#### Section “The best bound from single-slice information”
+
+The contrapositive use of Proposition 1 is correct provided the constants are ordered explicitly: failure of \(R_3R_4\ge cS_3S_4\) forces
+\[
+R_1R_2^2\gtrsim S_1S_2S_3.
+\]
+
+The lower bound for each term in the minimum is correct:
+\[
+R_1R_2,\quad (S_1S_2S_3)^{2/3},\quad (R_1S_1S_2S_3)^{1/2}
+\]
+are each at least a constant multiple of
+\[
+\alpha^{1/2}S_1(S_2S_3)^{1/2}
+\]
+under \(R_1=\alpha S_1\le S_1\) and \(S_1\le S_2\le S_3\).
+
+The interpolation/optimization between
+\[
+\Vol(R)\gtrsim \alpha^{1/2}S_1S_2^{1/2}S_3^{3/2}S_4
+\]
+and
+\[
+\Vol(R)\gtrsim \alpha^{-2}S_1S_2S_3S_4
+\]
+is also correct and gives
+\[
+\Vol(R)\gtrsim S_1S_2^{3/5}S_3^{7/5}S_4.
+\]
+
+But this is explicitly weaker than the required second alternative, so it cannot complete the problem.
+
+#### Section “The remaining averaged estimate”
+
+The weighted coarea idea is mostly correct. At a rank-two point of \(dF\), the pointwise inequality
+\[
+\lambda^2J_2F\lesssim 1
+\]
+follows from \(\Dil_2(f)\le1\), and hence
+\[
+I\lesssim \Vol(R).
+\]
+
+However, the definition
+\[
+E_y=\int_{Z_y}\|dG|_{TZ_y}\|^2\,d\mathcal H^2
+\]
+should use the mass measure \(d\|Z_y\|\), including multiplicity, not plain Hausdorff measure unless multiplicity-one regularity is proved. This is a technical but real current-theoretic issue.
+
+The conditional implication from the missing estimate
+\[
+A\le C\left(R_1I+\frac{I^2}{S_1|Q|}\right)
++C\frac{R_3R_4}{S_3S_4}A
+\]
+to the desired theorem is algebraically sound. If \(R_1\le\kappa S_1\) and \(R_3R_4\le\kappa S_3S_4\), the last term can be absorbed for small \(\kappa\), and the lower bound on \(A\) forces
+\[
+I\gtrsim S_1S_2^{1/2}S_3^{3/2}S_4.
+\]
+Together with \(I\lesssim\Vol(R)\), this would give the desired volume lower bound.
+
+But estimate (8) is not proved, not cited from the literature, and is precisely the missing hard part. The proof therefore stops at a conditional statement.
+
+#### Remaining open issue
+
+This section correctly acknowledges the fatal gap: estimate (8) is unproved. Under the user’s instructions, any answer with an unresolved “Remaining open issue” is not answer-ready.
+
+The statement that published monomial estimates and the ordinary rectangular isoperimetric profile give “only” the weaker exponent is plausible in the context of the preceding derivation, but it is not proved as a rigorous impossibility theorem. This is secondary, since the main failure is already the unproved averaged estimate.
+
+### Final assessment
+
+`answer.tex` contains a useful partial proof: the central-plane calibration, the first-alternative slicing argument, and the weaker optimized volume lower bound appear largely correct, modulo some current-theoretic details. But it does **not** prove the theorem. The unproved averaged parametric tightening estimate is essential and cannot be treated as a harmless lemma.

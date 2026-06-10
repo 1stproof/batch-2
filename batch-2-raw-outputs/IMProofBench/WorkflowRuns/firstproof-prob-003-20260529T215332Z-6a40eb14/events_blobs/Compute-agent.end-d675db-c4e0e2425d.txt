@@ -1,0 +1,140 @@
+# Round 16 compute report: CTC / strict hypotenuse search
+
+I focused on the centered tail comparison
+\[
+q\,\Pr\!\left[\sum_i b_i(\zeta_i-p)\ge p\right]
+\ge
+p\,\Pr\!\left[\sum_i b_i(\zeta_i-p)<-q\right],
+\qquad q=1-p,\quad 0<p\le1/3,\quad 0\le b_i\le1. \tag{CTC}
+\]
+
+New files:
+
+- `notes/round16_literature.md`
+- `code/round16_ctc_bellman.py`
+- `data/round16/bellman_grid.json`
+- `data/round16/hug_milp_n7_allcoeff.json`
+- `data/round16/hug_milp_n7.json`
+- `data/round16/hug_milp_n7_p13_eps.json`
+- `data/round16/hug_milp_n8_selected_summary.md`
+- `data/round16/random_ctc_search_max1.json`
+
+## 1. Literature conclusion
+
+I did not find a known theorem that proves CTC as stated.
+
+The closest exact framework remains Fokkink--Meester--Pelekis, *Optimizing stakes in simultaneous bets*, ALEA 20 (2023), 153--165.  They define
+\[
+  \pi(p,t)=\sup_{\gamma}\Pr\!\left(\sum_i c_i\beta_i\ge t\right),
+\]
+over convex combinations of iid Bernoulli(\(p\)) variables.  In complement notation, CTC/original small-\(p\) would follow from the strict hypotenuse theorem
+\[
+  \pi(q,t)\le q\qquad(q\ge2/3,\ t>q). \tag{FMP-strip}
+\]
+Indeed, for fixed finite weights \(w_i\) with \(\sum_iw_i=1\), the event
+\[
+  \sum_iw_i\eta_i>q,\qquad \eta_i\sim\mathrm{Bernoulli}(q),
+\]
+equals \(\sum_iw_i\eta_i\ge t_*\), where \(t_*\) is the smallest attainable subset sum strictly larger than \(q\).  Thus (FMP-strip) gives \(\Pr(\sum_iw_i\eta_i>q)\le q\), equivalently
+\(\Pr(\sum_iw_iv_i\ge p)\ge p\).  The pivot/unit-gap equivalence in the draft then gives CTC.
+
+But FMP does **not** prove (FMP-strip).  Their Theorem 4.4 proves bold play when
+\[
+  {k\over k+1}<p\le {k+1\over k+2}<t,
+\]
+and Proposition 4.5 proves diagonal endpoints \(p=t=(k+1)/(k+2)\) for \(k>1\).  The needed region is exactly the leftover near-hypotenuse strip
+\[
+  q<t\le {k+1\over k+2},\qquad {k\over k+1}<q<{k+1\over k+2}.
+\]
+FMP explicitly say an array of triangles along the hypotenuse remains open.
+
+Other checked areas:
+
+- Fishburn--Frankl--Freed--Lagarias--Odlyzko intersecting-system results, Frankl/Tokushige/Filmus biased-intersection theorems: useful for reciprocal/endpoints, but not enough above bias \(2/3\) without the extra weighted-threshold structure.
+- Pinelis left-tail domination: sharp moment-based left-tail bounds, but does not compare the two CTC tails with factor \(p/q\), and moment-only data are too weak near pivot-plus-dust.
+- Bentkus/Dzindzalieta: sharp symmetric/Rademacher comparisons, structurally mismatched because CTC increments are asymmetric \((+qb_i,-pb_i)\).
+- Samuels/Feige: adjacent small-deviation extremal problems, but I found no implication to the strict convex-combination Bernoulli hypotenuse.
+- Kellerer: still no finite-cube down-set convex-hull or Bernoulli halfspace inequality found.
+
+## 2. Bellman / induction exploration
+
+For
+\[
+g(y)=q1_{\{y\ge p\}}-p1_{\{y<-q\}},
+\]
+CTC is \(\mathbb E g(Y)\ge0\).  Removing one coefficient gives the exact identity
+\[
+D_{R+c}(0)=qD_R(pc)+pD_R(-qc),
+\]
+in the notation of the prompt.  The existing shifted-HUG induction proves the nonnegative-shift subcritical region, but the supercritical case needs information tying together the two shifted residual values.
+
+I tested the natural Bellman state \((x,R)\), where \(x\) is the current centered sum and \(R\) is remaining total coefficient mass.  This state is too small.  The finite-grid dynamic program in `code/round16_ctc_bellman.py` computes the value of a **stronger adaptive game**, where future coefficient choices may depend on the current random partial sum.  Negative values appear, so an \((x,R)\)-only Bellman proof would prove a false adaptive statement.
+
+Mesh \(1/40\), total mass up to \(10\):
+
+| \(p\) | best adaptive total | adaptive Bellman value at 0 |
+|---:|---:|---:|
+| \(1/6\) | 0 | 0 |
+| \(1/5\) | \(161/40\) | \(-4.9018\cdot10^{-4}\) |
+| \(1/4\) | \(121/40\) | \(-0.0231005\) |
+| \(3/10\) | \(97/40\) | \(-0.0537881\) |
+| \(1/3\) | \(399/40\) | \(-0.0765753\) |
+
+These are **not counterexamples to CTC**: they use adaptive coefficient choices after observing partial sums.  They are useful because they rule out the most naive dynamic-programming proof and explain why a successful Bellman invariant must remember more than current sum and remaining mass, e.g. nonadaptive coefficient data, boundary local time, or a convex/support-function state.
+
+## 3. Nonadaptive computational searches
+
+The MILP from earlier rounds was reused for HUG/CTC.  For fixed \(p,n\), binary variables encode the upper and lower threshold chambers.  The relaxed objective is
+\[
+  \Pr[S\ge p(B+1)]-\frac pq\Pr[S<p(B+1)-1].
+\]
+Because the relaxation may undercount the closed upper event and overcount the strict lower event, a nonnegative relaxed optimum certifies no counterexample for that fixed \(p,n\).
+
+All-coefficient search, \(n=7\), no normalization \(b_1=1\):
+
+| \(p\) | relaxed optimum | solver |
+|---:|---:|---|
+| \(1/6\) | 0 | optimal |
+| 0.20 | 0 | optimal |
+| 0.25 | 0 | optimal |
+| 0.30 | 0 | optimal |
+| 0.32 | 0 | optimal |
+| \(1/3\) | boundary relaxation negative at eps=0; eps \(10^{-5}\) gives 0 | endpoint already known |
+
+The zero optimum is the trivial all-zero coefficient vector; since the relaxation minimizes a lower bound for the true HUG difference, this still certifies no negative chamber for those \(p,n\).
+
+Saturated search with \(b_1=1\), \(n=7\), probing the nontrivial normalized cases:
+
+| \(p\) | min relaxed HUG diff | true diff at solver point |
+|---:|---:|---:|
+| \(1/6\) | 0.115869341564 | 0.598122427984 |
+| 0.20 | 0.0784 | 0.5904 |
+| 0.25 | 0.015625 | 0.578125 |
+| 0.30 | 0.069 | 0.51 |
+| 0.31 | 0.081127 | 0.5239 |
+| 0.32 | 0.093696 | 0.5376 |
+| \(1/3\) | eps \(10^{-5}\): 0.111111111111 | 0.111111111111 |
+
+Selected \(n=8\): \(p=0.25\) solved optimally with relaxed optimum \(0.015625\).  The \(p=0.30\) run timed out at 120s, but the incumbent relaxed objective was already positive \(0.069\); this is evidence only, not a certificate.
+
+Random nonadaptive searches with \(b_1=1\), \(n\le10\), found no counterexamples.  Smallest CTC gaps found:
+
+| \(p\) | best CTC gap | support size |
+|---:|---:|---:|
+| \(1/6\) | 0.138888888889 | 1 |
+| 0.20 | 0.14464 | 6 |
+| 0.25 | 0.1171875 | 4 |
+| 0.30 | 0.0483 | 7 |
+| 0.32 | 0.06371328 | 9 |
+| \(1/3\) | \(2/27\approx0.0740741\) | 4 |
+
+## 4. Current proof target
+
+The cleanest theorem that would close the draft is still:
+
+> For every \(q\ge2/3\), every convex combination \(T=\sum_i w_i\eta_i\) of iid Bernoulli(\(q\)) variables, and every \(t>q\),  
+> \[
+>   \Pr(T\ge t)\le q.
+> \]
+
+This is precisely the strict FMP near-hypotenuse strip.  Existing FMP/cyclic methods prove adjacent rectangles and reciprocal endpoints; deterministic interval or fixed-size coloring strengthenings fail.  The new Bellman computation suggests that a proof by dynamic programming needs a genuinely nonadaptive state, not just \((x,R)\).

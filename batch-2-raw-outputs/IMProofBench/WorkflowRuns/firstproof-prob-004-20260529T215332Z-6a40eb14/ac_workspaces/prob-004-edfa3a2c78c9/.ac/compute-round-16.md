@@ -1,0 +1,241 @@
+# Compute worker reply — round 16
+status: done
+error: (none)
+workspace: /data/output/workflow_runs/firstproof-prob-004-20260529T215332Z-6a40eb14/ac_workspaces/prob-004-edfa3a2c78c9/compute
+zip: /data/output/workflow_runs/firstproof-prob-004-20260529T215332Z-6a40eb14/agents/Compute-c0-983cfc/compute_workspace_round_16.zip
+
+---
+
+# Round 16 compute report: Guth thesis/arXiv check
+
+## Files downloaded / generated
+
+- MIT DSpace thesis PDF, refreshed this round:
+  `papers/round16/guth_area_contracting_thesis_mit_61207020.pdf`.
+  DSpace metadata: handle `1721.1/31158`, item UUID `cadf67f7-db0a-4bb0-b804-b27e1d462e55`, bitstream `61207020-MIT.pdf`, MD5 `788e2113627e3040d3a5a1c3cd32936b`; see `data/round16/mit_dspace_item_31158.json` and `data/round16/mit_dspace_bitstreams_31158.json`.
+- Extracted thesis OCR text: `data/round16/guth_area_contracting_thesis_pdftotext.txt`.
+  The PDF already has usable OCR/text. I rendered the ambiguous pages to images:
+  `data/round16/thesis_pages/thesis_page-139.png`, `thesis_page-140.png`,
+  and `thesis_page-143.png` through `thesis_page-148.png`.
+- arXiv 0710.0403:
+  PDF `papers/round16/arxiv_0710.0403.pdf`, source tar `papers/round16/arxiv_0710.0403_e-print.tar`, extracted source `data/round16/arxiv_0710_0403_src/EXEMB2.TEX`.
+- arXiv 0802.3549:
+  PDF `papers/round16/arxiv_0802.3549.pdf`, source tar `papers/round16/arxiv_0802.3549_e-print.tar`, extracted source `data/round16/arxiv_0802_3549_src/LINKDIL2.TEX`.
+- Stress-test construction search rerun:
+  `data/round16/guth_ch8_stress_search_rerun.txt`,
+  `data/round16/guth_ch8_stress_search_deeper_rerun.txt`.
+
+## Guth thesis, Chapter 8
+
+Source: Larry Guth, *Area-contracting maps between rectangles*, MIT PhD thesis, 2005.
+
+Chapter 8 is explicitly about **2-contracting diffeomorphisms between 4-dimensional rectangles**, not arbitrary degree-one maps. The section 8.2 constructions are degree-one maps of pairs with bounded 2-dilation and Guth says they can be slightly perturbed to diffeomorphisms.
+
+### Main cube theorem
+
+Printed/PDF p.139:
+
+> Theorem 8.1. If there is a 2-contracting diffeomorphism from the unit 4-cube to \(S\), then
+> \[
+> S_2 S_3^3 S_4^2<C.
+> \]
+> Conversely, if \(S_2 S_3^3 S_4^2<c\), then there is a 2-contracting diffeomorphism from the unit 4-cube to \(S\).
+
+The proof on p.147 uses the pinching map with
+\[
+A=S_2^{1/2}S_3^{1/2},\qquad B=S_2^{-1/2}S_3^{1/2}S_4,
+\]
+so the sufficient condition is \(A^2B=S_2^{1/2}S_3^{3/2}S_4\lesssim 1\), equivalently \(S_2S_3^3S_4^2\lesssim1\).
+
+### Boundary ellipsoid inequalities
+
+Printed/PDF pp.140-142, Proposition 8.1.1, for ellipsoids with axes \(R_1<\cdots<R_4\), \(S_1<\cdots<S_4\). A 2-contracting diffeomorphism \(E\to F\) exists approximately iff:
+\[
+R_2R_3>S_2S_3,\qquad R_2^2R_3R_4>S_2^2S_3S_4,
+\]
+and
+\[
+\text{if }R_2^2>S_2S_3,\quad R_2R_3R_4>S_2^{1/2}S_3^{3/2}S_4,
+\]
+\[
+\text{if }R_2^2<S_2S_3,\quad R_3R_4>S_3S_4.
+\]
+These are boundary/diffeomorphism constraints. They are useful for ruling out some tempting residual diffeomorphisms, but they do not by themselves rule out arbitrary degree-one pair maps.
+
+### Proposition 8.1.2
+
+Printed/PDF p.143; I checked the formula against the page image because OCR drops the square:
+
+> Let \(C\) be an oriented relative 2-cycle in the rectangle \(R\) with area less than \((1/2)R_1R_2\). Then \(C\) has an oriented filling with volume less than
+> \[
+> C R_1R_2^2.
+> \]
+
+Proof outline: approximate by a rectilinear cycle \(C'\); choose a point \(p\) outside the projection of \(C'\) to the \((x_1,x_2)\)-plane; use the Chapter 7 filling \(F_p(C')\). Averaging over \(p\in S\times[0,R_3]\), where \(S\subset[0,R_1]\times[0,R_2]\) avoids the projection, gives the improved volume \(O(R_1R_2^2)\).
+
+### Proposition 8.1.3
+
+Printed/PDF p.144; again checked against page image:
+
+> Suppose there is a 2-contracting diffeomorphism from \(R\) to \(S\). If
+> \[
+> C R_1R_2^2<S_1S_2S_3,
+> \]
+> then
+> \[
+> R_3R_4>cS_3S_4.
+> \]
+
+Proof outline: central planes \([0,S_1]\times[0,S_2]\times\{y_3\}\times\{y_4\}\) have filling volume \(\gtrsim S_1S_2S_3\). Their inverse images in \(R\) therefore have filling volume \(\gtrsim S_1S_2S_3\). By Proposition 8.1.2, their area is \(\gtrsim R_1R_2\). Coarea/transverse area over the central \((y_3,y_4)\)-rectangle gives \(\operatorname{Vol}U\gtrsim R_1R_2S_3S_4\), hence \(R_3R_4\gtrsim S_3S_4\).
+
+This is exactly the current “first alternative” type reduction. It does **not** supply the missing averaged parametric tightening estimate/HAF.
+
+### Section 8.2 maps
+
+Printed/PDF p.144: Guth says the five maps each take boundary to boundary, have degree 1, and have 2-dilation \(<C\).
+
+Relevant exact formulas:
+
+- p.146, short-side stretch:
+  \[
+  R_1\times R_2\times R_3\times R_4
+  \to
+  \lambda R_1\times\lambda^{-3}R_2\times\lambda R_3\times\lambda^{-1}R_4,
+  \]
+  with \(1\le\lambda<(R_2/R_1)^{1/4}\) and \(\lambda<(R_4/R_3)^{1/2}\).
+- p.146, technical remark:
+  there is also a map to
+  \[
+  \lambda R_1\times\lambda^{-3}R_2\times A\times B,
+  \]
+  where \(\lambda^4<R_2/R_1\), \(R_3<A<(R_3R_4)^{1/2}\), and \(AB=R_3R_4\).
+- pp.146-147, pinching map:
+  \[
+  R_1\times R_2\times R_3\times R_4\to A\times A\times A\times B,
+  \]
+  with \(R_1>A\) and \(R_2R_3R_4>A^2B\). The pinch collapses the large-2-dilation region to a line.
+- p.148, double pinching map:
+  \[
+  R_1\times R_2\times R_3\times R_4\to R_1^2/A\times A\times A\times B,
+  \]
+  with \(R_1<A\), \(A^2<R_2R_3\), and \(A^3B<R_1R_2R_3R_4\). This corrects the common OCR error \(R_1/A\); the page image clearly says \(R_1^2/A\).
+
+## arXiv:0710.0403 formulas
+
+Source `data/round16/arxiv_0710_0403_src/EXEMB2.TEX`.
+
+Let \(Q_i=S_i/R_i\).
+
+Estimate 1, source lines 656-663, PDF p.10:
+\[
+\operatorname{dil}_k(\Phi)\ge c(n)Q_1\cdots Q_j
+(Q_{j+1}\cdots Q_l)^{(k-j)/(l-j)}
+\]
+for a map of pairs \((U,\partial U)\to(S,\partial S)\) of degree \(D>0\), \(0\le j<k\le l\le n\).
+
+Estimate 2, source lines 677-682, PDF p.10:
+\[
+\operatorname{dil}_k(\Phi)\ge c(n)D^{(k-j)/(n-j)}Q_1\cdots Q_j
+(Q_{j+1}\cdots Q_n)^{(k-j)/(n-j)}
+\]
+for \(0\le j<k\).
+
+Equivalent k-contracting nontrivial forms, source lines 867-883, PDF p.12:
+\[
+\left({R_1\cdots R_j\over S_1\cdots S_j}\right)^{(l-k)/(k-j)}
+R_1\cdots R_l\ge c(n)S_1\cdots S_l,
+\]
+\[
+\left({R_1\cdots R_j\over S_1\cdots S_j}\right)^{(n-k)/(k-j)}
+R_1\cdots R_n\ge c(n)|D|S_1\cdots S_n.
+\]
+
+Rectangular relative isoperimetric profile, Theorem 3, source lines 478-488, PDF p.7:
+if \(V\le c(n)R_1\cdots R_k\), write
+\[
+V=c(n)R_1\cdots R_j\rho^{k-j},\qquad R_j\le\rho\le R_{j+1},\quad 0\le j\le k-1.
+\]
+Then
+\[
+I_R^k(V)\le C(n)R_1\cdots R_j\rho^{k-j+1},
+\]
+and always \(I_R^k(V)\le C(n)R_{k+1}V\).
+
+For the relative \(2\)-cycle case \(k=2,n=4\), this gives, for area \(A\le cR_1R_2\),
+\[
+\operatorname{Fill}_R(Z)\le C\max\{A^{3/2},A^2/R_1\}\le C R_1R_2^2.
+\]
+
+## arXiv:0802.3549 formulas
+
+Source `data/round16/arxiv_0802_3549_src/LINKDIL2.TEX`.
+
+The introduction says the 4D rectangle 2-dilation mapping problem was “recently solved” in the preprint
+Guth, *On the 2-dilation of mappings between 4-dimensional rectangles*; see source lines 392-400 and bibliography lines 1588-1590. I did not locate that preprint in this round; prior exact-title searches in the workspace also found no arXiv/Archive/Crossref/DataCite match.
+
+Proposition 2.2, source lines 878-892, PDF p.12:
+if \(z\) is an \(m\)-dimensional relative integral cycle in a rectangle \(R\), then there is an \((m+1)\)-chain \(y\) with \(\partial y=z+B\), \(B\subset\partial R\), and for each \((m+1)\)-tuple \(I\), if \(e\) is the smallest number not in \(I\),
+\[
+\operatorname{Vol}_I(y)\lesssim \sum_{d=1}^{e-1}R_d\,\operatorname{Vol}_{I-d}(z).
+\]
+It also gives the boundary estimate
+\[
+\operatorname{Vol}_J(B)\lesssim \operatorname{Vol}_J(z)+
+\sum_{d=1}^{e-1}R_1^{-1}R_d\,\operatorname{Vol}_{1\cup J-d}(z)
+\]
+for \(J\) not containing \(1\), with \(e\) the smallest element of \([2,\dots,n]\) not in \(J\).
+
+For \(m=2,n=4\), summing over \(I=123,124,134,234\) yields the relative directional filling inequality
+\[
+\operatorname{Fill}_R(Z)\lesssim
+R_1(\operatorname{Vol}_{23}Z+\operatorname{Vol}_{24}Z+\operatorname{Vol}_{34}Z)
++R_2(\operatorname{Vol}_{13}Z+\operatorname{Vol}_{14}Z)
++R_3\operatorname{Vol}_{12}Z.
+\]
+
+## Stress-test dimensions
+
+Stress family:
+\[
+S=(1,1,L^6,L^6),\qquad R=(L^{-1},L^4,L^5,L^6).
+\]
+The three bad ratios are
+\[
+R_1/S_1=L^{-1},\qquad R_3R_4/(S_3S_4)=L^{-1},
+\]
+\[
+\operatorname{Vol}(R)/(S_1S_2^{1/2}S_3^{3/2}S_4)=L^{14}/L^{15}=L^{-1}.
+\]
+The quotient vector for Estimate 1 is \(Q=(L,L^{-4},L,1)\), and all \(k=2\) Estimate 1 monomials are \(O(1)\) or smaller; the \(j=1,k=2,l=4\) monomial is exactly saturated. Thus the published monomial estimates do not rule out this stress family.
+
+Against the Chapter 8.2 constructions:
+
+- The short-side technical map can plausibly move
+  \[
+  (L^{-1},L^4,L^5,L^6)\to(1,L,L^5,L^6)
+  \]
+  at the exponent level.
+- A tempting next step
+  \((1,L,L^5,L^6)\to(1,1,1,L^{12})\) uses the pinching map at the endpoint \(A\sim1\), again only up to constants.
+- The final required split
+  \[
+  (1,1,1,L^{12})\to(1,1,L^6,L^6)
+  \]
+  is **not** licensed by the p.146 technical remark: it would require stretching when \(R_2/R_1=1\). It is also contradicted by arXiv:0710.0403 Estimate 1 with \(j=0,k=2,l=3\), which would force \(\operatorname{dil}_2\gtrsim L^4\).
+
+I reran the corrected exponent search over the listed Chapter 8.2 maps plus a final linear 2-contracting map. No route was found:
+
+```text
+step=1 depth=5 beam=2000: not_found, searched 16939 states
+step=1/2 depth=5 beam=2500: not_found, searched 39483 states
+step=1/4 depth=4 beam=2500: not_found, searched 89136 states
+step=1/3 depth=4 beam=2500: not_found, searched 72683 states
+```
+
+This is not a proof of nonexistence, only a check that the page-verified sufficient constructions do not visibly construct the stress map.
+
+## Conclusion
+
+**Conclusion for the accessible literature: known theorem proves only the current reductions.** Guth thesis Proposition 8.1.3 gives the \(CR_1R_2^2<S_1S_2S_3\Rightarrow R_3R_4\gtrsim S_3S_4\) reduction. arXiv:0710.0403 gives the monomial degree estimates and the rectangular isoperimetric profile. arXiv:0802.3549 gives the directional filling inequality. None of these supplies the missing averaged parametric tightening estimate or proves the desired \(R_1\ll S_1\), \(R_3R_4\ll S_3S_4\) volume alternative.
+
+I found no valid uniformly bounded 2-dilation degree-one pair map for the stress dimensions from the thesis constructions. I also found no accessible theorem ruling out arbitrary degree-one maps in that stress case. The unavailable preprint cited in arXiv:0802.3549 may contain the full answer, but without the text it is not safely citeable.

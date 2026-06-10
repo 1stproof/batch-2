@@ -1,0 +1,157 @@
+## Referee report
+
+### Overall verdict
+
+I found **no fatal mathematical error** and no LaTeX-contract violation. The proof is compressed in a few places, but the omitted details are standard or routine finite checks, and I was able to verify the nontrivial computational parts independently. The solution proves the strict lower bound \(\beta>\sqrt3\) for every realization and constructs realizations for every \(\beta>\sqrt3\), hence establishes the claimed infimum.
+
+### LaTeX contract check
+
+- `answer.tex` uses exactly `\documentclass[12pt]{article}`.
+- It uses `fullpage`, which is explicitly permitted.
+- I found no prohibited margin/layout package or manual layout change.
+- I found no prohibited line-spacing command.
+- I found no in-document font-size change such as `\small`, `\footnotesize`, `\scriptsize`, or `\fontsize`.
+- I compiled with `pdflatex` twice. The document compiled successfully and produced a **5-page PDF**, within the 12-page limit.
+
+### External theorem validation
+
+The proof invokes Borsuk–Ulam in the odd-map form: an odd continuous map \(S^n\to\mathbb R^n\) has a zero. This is a standard equivalent form of Borsuk–Ulam. ([encyclopediaofmath.org](https://encyclopediaofmath.org/wiki/Borsuk-Ulam_theorem)) The proof also invokes the classification of compact surfaces with boundary; the relevant form is that compact surfaces are classified by boundary number, orientability, and Euler characteristic. ([open.edu](https://www.open.edu/openlearn/science-maths-technology/mathematics-statistics/surfaces/content-section-4.6)) These uses are appropriate.
+
+### Paragraph-by-paragraph mathematical audit
+
+#### Quotient and embedding paragraph
+
+The quotient \(M_\beta=\Sigma/\langle G_\beta\rangle\) is correctly identified as a compact flat Möbius band with one boundary circle of length \(2\beta\). Condition (2) indeed says precisely that \(f\) is constant on \(G_\beta\)-orbits and separates distinct orbits, so \(f\) descends to a continuous injection \(F:M_\beta\to\mathbb R^3\). Since \(M_\beta\) is compact and \(\mathbb R^3\) is Hausdorff, \(F\) is an embedding.
+
+The assertion that the invariant locally finite triangulation descends to a finite triangulation is essentially correct. A compact fundamental domain meets only finitely many triangles by local finiteness, hence there are finitely many triangle orbits. A slightly more explicit justification would improve the exposition, but this is not a fatal gap.
+
+#### Definition of ridges, apices, and bends
+
+The terminology is valid. In a clean triangle, exactly one edge lies in \(\partial\Sigma\), because the three non-collinear vertices lie on the two horizontal boundary components. The opposite vertex is well-defined.
+
+#### Lemma “bends lengthen”
+
+The proof is correct. For \(P_s=(1-s)A+sB\), the second derivative computation
+\[
+q''(s)=2\bigl(|L(A)-L(B)|^2-|A-B|^2\bigr)<0
+\]
+is correct. Since the side edges are strictly lengthened, \(q(0)>0\) and \(q(1)>0\), and concavity implies \(q(s)>0\) throughout \([0,1]\).
+
+The boundary-subarc shortening statement is also correct: on each boundary edge the affine restriction has constant Lipschitz factor \(<1\), and a boundary subarc meets only finitely many boundary edges in the quotient triangulation.
+
+#### Lemma “a polygonal \(T\)-pair”
+
+The argument that bends form a circle is valid. Each clean triangle is foliated by segments from its apex to its ridge, and each such segment crosses the center circle \(y=1/2\) exactly once. Across a shared non-boundary edge, the limiting bend is the same segment, so the bend family is globally a circle.
+
+The definitions of \(e(u)\) and \(m(u)\) are valid. The anti-periodicity
+\[
+e(u+1)=-e(u),\qquad m(u+1)=m(u)
+\]
+is correct because one circuit around the Möbius band reverses the lower-to-upper orientation of a lifted bend.
+
+The map
+\[
+\Phi(u,r)=\left(e(u)\cdot e(u+r),\,
+(m(u)-m(u+r))\cdot(e(u)\times e(u+r))\right)
+\]
+is continuous and periodic in \(u\). Its limits as \(r\to0\) and \(r\to1\) are correctly computed as \((1,0)\) and \((-1,0)\), so it extends over the two-point compactification, identified with \(S^2\).
+
+The involution \(\iota(u,r)=(u+r,1-r)\) is correctly identified with the antipodal map under the displayed coordinates. The oddness \(\Phi\circ\iota=-\Phi\) checks out algebraically. Borsuk–Ulam therefore gives a zero of \(\Phi\), and this zero cannot occur at the compactification points since the values there are \((\pm1,0)\).
+
+At a zero, the two direction vectors are perpendicular, and the vanishing of the scalar triple product says that the two supporting lines are coplanar. Since they are non-parallel, they intersect. This paragraph is mathematically sound.
+
+#### Proposition: lower bound \(\beta>\sqrt3\)
+
+The initial choice of the two bends from Lemma \(\ref{lem:T}\) is valid. Their image relative interiors are disjoint because \(F\) is an embedding and distinct bends have disjoint relative interiors in the domain.
+
+The lift of \(T\) to a segment from \((0,0)\) to \((t,1)\), with \(t\ge0\) after reflection, is valid. The proof that \(t<\beta\) is correct: for \(t>\beta\), the segment intersects its \(G_\beta\)-translate in its interior; for \(t=\beta\), its endpoints are \(G_\beta\)-equivalent.
+
+The boundary arc lengths
+\[
+\ell(H)=\beta-t,\qquad \ell(D)=\beta+t
+\]
+are correct using the boundary coordinate in which the upper endpoint \((t,1)\) has coordinate \(t+\beta\) modulo \(2\beta\).
+
+Inequality (2),
+\[
+\beta-t>\ell(H^*)\ge |T^*|>\sqrt{1+t^2},
+\]
+is correct: \(H^*\) joins the endpoints of \(T^*\), boundary arcs are strictly shortened, and bends are strictly lengthened.
+
+The perpendicular-line distance argument for \(B^*\) is correct. If the intersection point \(O\) is not in the relative interior of \(B^*\), then at least one endpoint of \(B^*\) is at distance at least \(|B^*|\) from the line of \(T^*\). Since the domain length of \(B\) is at least \(1\), Lemma \(\ref{lem:lengthen}\) gives \(|B^*|>1\).
+
+Inequality (3) is correct. If \(v^*\) is at perpendicular distance \(h>1\) from the line through \(T^*\), and \(|T^*|=L>\sqrt{1+t^2}\), then the sum of the distances from \(v^*\) to the endpoints of \(T^*\) is at least
+\[
+\sqrt{L^2+4h^2}>\sqrt{5+t^2}.
+\]
+
+The two final cases are correct. In the case \(A=H\), one obtains immediately \(2\beta>2\sqrt3\). In the case \(A=D\), the inequalities
+\[
+2\beta>\sqrt{1+t^2}+\sqrt{5+t^2},
+\qquad
+2\beta>2\sqrt{5+t^2}-2t
+\]
+are valid. The monotonicity of
+\[
+a(t)=\sqrt{1+t^2}+\sqrt{5+t^2},\qquad
+b(t)=2\sqrt{5+t^2}-2t
+\]
+on \([0,\infty)\), and the equality
+\[
+a(1/\sqrt3)=b(1/\sqrt3)=2\sqrt3,
+\]
+are correct. I also cross-checked this optimization numerically.
+
+#### Lemma: embedded six-triangle model
+
+The abstract complex is correctly described. The vertex links are intervals, the boundary cycle is
+\[
+A_0B_0A_1B_1A_2B_2A_0,
+\]
+and \(\chi=6-12+6=0\). With one boundary component, the classification theorem gives a Möbius band.
+
+I independently checked the listed face normals; they are correct. The edge-sharing face-pair arguments are valid. For the coplanar pair \((4,5)\), the determinant signs correctly show that the third vertices lie on opposite sides of the common edge.
+
+For the nine vertex-only face pairs, I checked the tangent-cone sign table symbolically for \(0<\varepsilon<1/4\). The signs agree with the table, up to harmless reversal of the chosen direction of the intersection line. The conclusion that no nontrivial point of the plane-intersection line lies in both closed tangent cones is valid. Thus the embeddedness proof is sound.
+
+The final affine-transfer step is also valid: a nonsingular affine map sending the normalized triangle \(A_0A_1A_2\) to the equilateral triangle \(E_0E_1E_2\) preserves embeddedness, and the points \(B_i\) tend to the appropriate side midpoints, so their images \(C_i(\varepsilon)\) do as well.
+
+#### Lemma: realizations above \(\sqrt3\)
+
+The choice of \(a\) is valid. Since \(\delta=\beta/3>1/\sqrt3\),
+\[
+2/\sqrt3<2\delta,\qquad \sqrt{1+\delta^2}<2\delta,
+\]
+so the interval for \(a\) is nonempty.
+
+The six-triangle triangulation of \(M_\beta\) is correct. The repeated labels \(B_1\) and \(A_0\) correctly record the quotient identifications
+\[
+(\beta,0)\sim(0,1),\qquad (\beta,1)\sim(0,0).
+\]
+The listed six faces are exactly the three rectangles split by the stated diagonals, and their lift gives a \(G_\beta\)-invariant clean triangulation of \(\Sigma\).
+
+The length inequalities in the image are correct. As \(\varepsilon\to0\),
+\[
+|E_iC_i|,\ |C_iE_{i+1}|\to a/2<\delta,
+\]
+and
+\[
+|C_iE_{i+2}|\to (\sqrt3/2)a>1.
+\]
+Also \(|E_iE_j|=a>\sqrt{1+\delta^2}\). Therefore, for sufficiently small \(\varepsilon>0\), every ridge is strictly shortened and both non-boundary sides of every triangle are strictly lengthened.
+
+Lemma \(\ref{lem:model}\) gives an embedded quotient map \(F:M_\beta\to\mathbb R^3\). Lifting \(F\) to \(f=F\circ\pi:\Sigma\to\mathbb R^3\) gives a continuous \(G_\beta\)-invariant map, and because \(F\) is an embedding, condition (2) follows exactly.
+
+#### Final conclusion
+
+The lower-bound proposition gives that every realized \(\beta\) satisfies \(\beta>\sqrt3\), and the construction gives realizations for all \(\beta>\sqrt3\). Hence the set of realized numbers is exactly \((\sqrt3,\infty)\), and its infimum is \(\sqrt3\).
+
+### Minor non-fatal suggestions
+
+The proof would be even cleaner if it added:
+
+1. A sentence justifying explicitly why local finiteness plus compactness gives finitely many triangle orbits.
+2. A short explanation of the anti-periodicity \(e(u+1)=-e(u)\) in Lemma \(\ref{lem:T}\).
+3. The exact cone-coordinate formulas behind the sign table in Lemma \(\ref{lem:model}\), or a note that the table is a finite symbolic check.
+
+These are exposition improvements, not mathematical defects.

@@ -1,0 +1,38 @@
+# Author round 16
+
+Files changed: ['answer.tex', 'research_notes.tex']
+Ready: False
+Council question: We are trying to prove the rectangle 2-dilation theorem. The current reduction is complete except for the averaged parametric tightening estimate:
+
+Let \(F=(f_3,f_4)\), \(G=(f_1,f_2)\), \(Q\subset [0,S_3]\times[0,S_4]\) central, \(Z_y=\langle [R,\partial R],F,y\rangle\), \(A=\int_Q\Fill_R(Z_y)\,dy\), \(I=\int_Q\int_{Z_y}\lambda^2\) with \(\lambda=\|dG|_{\ker dF}\|\), and \(q=|Q|\). For almost-minimizing fillings \(B_y\) and all-coordinate bad plaque sets
+\[
+\mathcal B_z=\{x: z\in F(P_{ij}(x))\text{ for some coordinate }2\text{-plaque }P_{ij}(x)\},
+\]
+we need
+\[
+A\le C\left(R_1I+\frac{I^2}{S_1q}\right)
++\frac{C}{q}\int_Q\int_Q \Mass(B_y\llcorner \mathcal B_z)\,dy\,dz.
+\tag{HAF-avg}
+\]
+The all-plaque averaging lemma gives the self-absorbing term
+\((R_3R_4/S_3S_4)A\), so HAF-avg would finish the theorem.
+
+Please suggest a portfolio of rigorous ways to prove HAF-avg or to bypass it. In particular:
+1. Can Guth’s complex-of-cycles tightening proof be localized to this punctured-parameter setting?
+2. Is there a cleaner differential-form/coarea/level-set argument that yields the same \(I\gtrsim qS_1(S_2S_3)^{1/2}\) lower bound in the hard regime \(R_1\ll S_1\), \(R_3R_4\ll S_3S_4\)?
+3. Are there counterexamples to HAF-avg even under the hard-regime hypotheses?
+4. If HAF-avg is too strong, what weaker family-level estimate would still close the theorem?
+Council to: (default models)
+Parse warnings: (none)
+
+## Thinking summary
+
+Updated the canonical files and compiled `answer.tex` successfully with `pdflatex` twice; the PDF is 5 pages and satisfies the formatting contract.
+
+Main changes:
+- Corrected the flawed “exists \(z\)” puncture logic by replacing it with an averaged fixed-puncture tightening estimate \((13')\).
+- Added measurable-selection justification for the fillings \(B_y\).
+- Tightened the approximation/transversality paragraph.
+- Fixed the definition of directional projected volumes \(\Vol_{ij}\).
+- Clarified the remaining essential gap: proving the averaged parametric tightening estimate.
+- Added Round 16 research notes recording the corrected averaged formulation and several alternative approaches checked this round.

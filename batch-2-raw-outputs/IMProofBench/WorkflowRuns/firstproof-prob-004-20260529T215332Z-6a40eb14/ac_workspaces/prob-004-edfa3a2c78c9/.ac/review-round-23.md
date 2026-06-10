@@ -1,0 +1,230 @@
+## Referee report on revised `answer.tex`
+
+### Overall verdict
+
+The revised draft is **still not answer-ready**. It explicitly describes itself as a “reduction and partial proof” and states that the proof is incomplete at the cellular low-energy fixed-puncture comparison `(13c)` and cellular averaging `(12b)`. Those are essential, unproved lemmas. Therefore the stated theorem is not proved.
+
+The revision does improve the previous version: it correctly abandons the overly sharp literal cut term \(\Mass(B_y\llcorner\mathcal B_z)\) as a chain-level construction, since cutting along \(\mathcal B_z\) creates uncontrolled seams. But the replacement cellular bad-star machinery is only proposed, not proved.
+
+---
+
+## LaTeX contract audit
+
+I compiled the submitted `answer.tex` twice with `pdflatex`.
+
+- Compile status: **success**.
+- PDF length: **7 pages**, within the 12-page limit.
+- Document class: exactly `\documentclass[12pt]{article}`.
+- Uses `fullpage`, which is permitted.
+- No forbidden `geometry`, `a4wide`, manual margin changes, line-spacing changes, or in-document font-size changes detected.
+
+So the LaTeX contract is satisfied. The failure is mathematical.
+
+---
+
+## Literature validation
+
+The cited Guth paper *Area-expanding embeddings of rectangles* exists as arXiv:0710.0403; the arXiv abstract says it estimates whether one rectangle embeds into another while expanding every \(k\)-dimensional area, sharply up to constants. This is consistent with using it for rectangle profile and dilation estimates, but the exact formulas quoted in the draft should still be cited with theorem/estimate numbers in a final proof. ([arxiv.org](https://arxiv.org/abs/0710.0403))
+
+The cited Guth paper *Directional isoperimetric inequalities and rational homotopy invariants* exists as arXiv:0802.3549; the arXiv abstract says it uses a directionally dependent isoperimetric inequality to prove lower bounds for \(k\)-dilation. This is consistent with the directional-isoperimetry role assigned to it, though the exact relative rectangular specialization used as equation `(14)` is not independently verified in the draft. ([arxiv.org](https://arxiv.org/abs/0802.3549))
+
+---
+
+## What the revision addresses
+
+### Addressed or improved
+
+1. **The previous over-sharp fixed-puncture comparison is withdrawn.**  
+   The prior draft suggested a pointwise comparison involving \(\Mass(B_y\llcorner\mathcal B_z)\). The revised draft correctly recognizes that this is too optimistic because cutting a current along \(\mathcal B_z\) produces uncontrolled boundary/interface terms.
+
+2. **The remaining gap is now stated more honestly.**  
+   The missing ingredient is reformulated as:
+   - cellular bad-mass averaging `(12b)`, and
+   - cellular low-energy competitor construction `(13c)`.
+
+3. **The first-alternative proof remains essentially intact.**  
+   The calibration and slicing proof of the first alternative is still the strongest rigorous part of the document.
+
+4. **The weighted coarea argument remains valid in outline.**  
+   The estimates
+   \[
+   I\le \Vol(R),\qquad E_y\ge S_1S_2
+   \]
+   are still plausible and correctly used conditionally.
+
+---
+
+## Main unresolved mathematical gaps
+
+### 1. The proof still explicitly leaves the theorem incomplete
+
+The “Problem statement and interpretation” section states that the document is not a complete proof. The “Remaining open issues” section says:
+
+> The proof is incomplete at one essential point: the cellular low-energy fixed-puncture comparison \((13c)\), together with the corresponding cellular averaging \((12b)\).
+
+This is decisive. A proof with an essential unproved estimate cannot be marked answer-ready.
+
+### 2. Cellular averaging `(12b)` is not proved
+
+The draft proposes a cubical replacement for the bad set:
+\[
+ \mathcal B^{\rm cell}_{z,\theta}.
+\]
+It then states the desired bound
+\[
+ \limsup_{\varepsilon\downarrow0}
+ \frac1q\int_\Theta\int_Q\int_\Omega
+ \Mass(B_{y,\theta}\llcorner\mathcal B^{\rm cell}_{z,\theta})\,dy\,dz\,d\theta
+ \le C\frac{R_3R_4}{S_3S_4}\int_\Omega\Fill_R(Z_y)\,dy. \tag{12b}
+\]
+But this is only asserted as a desired “cellular version” of the all-plaque lemma. It is not derived.
+
+This is not a routine consequence of the pointwise all-plaque estimate. Once one passes to whole bad cells, the set of \(z\)’s making a cell bad can be much larger than the image of one coordinate \(2\)-plaque through a fixed point. The draft itself acknowledges this difficulty: near-misses or enlarged cells can destroy the area bound because \(F\) may have large one-dimensional oscillation while \(J_2F\) remains small. Therefore `(12b)` is a substantial missing lemma.
+
+### 3. The cubical deformation \(B_y\mapsto B_{y,\theta}\) is underspecified
+
+The draft says one can “deform \(B_y\) by the Federer--Fleming projection to a cubical \(3\)-chain \(B_{y,\theta}\) with
+\[
+\Mass B_{y,\theta}\le(1+\varepsilon)\Mass B_y.
+\]
+”
+
+This is not a standard statement in the form written. Federer–Fleming deformation typically gives dimension-dependent mass control and boundary-control terms, not automatically a \((1+\varepsilon)\)-mass cubical representative with the same relative boundary. If the deformation changes the boundary of \(B_y\), then the later identity involving \(Z_y\) is no longer valid without additional correction terms.
+
+A final proof would need to specify:
+
+- the cubulation scale;
+- the averaging measure \(d\theta\) on shifts \(\Theta\);
+- whether \(B_{y,\theta}\) has exactly \(\partial B_{y,\theta}=Z_y\);
+- how boundary errors are handled if not;
+- why mass inflation tends to \(1\);
+- measurability in \(y,\theta\).
+
+None of this is proved.
+
+### 4. The competitor estimate `(13c)` is the central missing theorem
+
+The draft says one needs to construct \(C_{y,z,\theta}\) with
+\[
+ \Mass C_{y,z,\theta}
+ \le C\left(R_1E_y+\frac{E_y^2}{S_1}\right)
+      +C\,\Mass(B_{y,\theta}\llcorner\mathcal B^{\rm cell}_{z,\theta}). \tag{13c}
+\]
+This is exactly the missing hard estimate. The intended identity
+\[
+C_{y,z,\theta}=H_{z,\theta}(Z_y)+P_{z,\theta}(B_{y,\theta})
+\]
+is only schematic. The maps \(P_{z,\theta}\) and \(H_{z,\theta}\) are not defined, and it is not proved that:
+
+- \(C_{y,z,\theta}\) is a relative filling of \(Z_y\);
+- \(P_{z,\theta}\) commutes with boundary in the required relative sense;
+- good cells project to \(\partial R\) without uncontrolled mass;
+- bad cells are charged only by the displayed term;
+- the homotopy term satisfies
+  \[
+  \Mass H_{z,\theta}(Z_y)\lesssim R_1E_y+E_y^2/S_1.
+  \]
+
+This is the main mathematical obstacle. It is not a minor technicality.
+
+### 5. The conditional algebra after `(12b)` and `(13c)` is fine, but conditional
+
+If `(12b)` and `(13c)` were true, the absorption step in the hard regime
+\[
+R_3R_4\le \kappa S_3S_4
+\]
+would work. The lower bound
+\[
+\int_\Omega \Fill_R(Z_y)\,dy\gtrsim S_1S_2S_3q
+\]
+combined with
+\[
+E_y\le 4I/q
+\]
+does correctly force
+\[
+I\gtrsim S_1S_2^{1/2}S_3^{3/2}S_4,
+\]
+and then \(I\le\Vol(R)\) gives the desired second alternative. But this part is purely conditional on the missing cellular estimates.
+
+---
+
+## Audit of the rigorous parts
+
+### Central target filling lemma
+
+The calibration proof is sound. Choosing \(\psi\) on the \((x_3,x_4)\)-rectangle, zero on the boundary and with \(\psi(y)\gtrsim S_3\), gives
+\[
+\Mass Y\gtrsim S_1S_2S_3.
+\]
+The boundary terms vanish for the stated reasons.
+
+### First alternative
+
+The proof is essentially correct:
+
+- slicing by \(F=(f_3,f_4)\);
+- naturality of slicing;
+- pushforward of fillings using \(\Dil_3(f)\le1\);
+- Guth’s small relative filling profile;
+- coarea.
+
+The result
+\[
+C_1R_1R_2^2\le S_1S_2S_3
+\implies
+R_3R_4\gtrsim S_3S_4
+\]
+is convincingly established, modulo standard current-theoretic details.
+
+### Partial bound
+
+The derivation of
+\[
+\Vol(R)\gtrsim S_1S_2^{3/5}S_3^{7/5}S_4
+\]
+after failure of the first alternative is algebraically correct. It remains below the desired scale by the factor \((S_3/S_2)^{1/10}\), as the author notes.
+
+### Weighted coarea
+
+The pointwise inequality
+\[
+\lambda^2J_2F\le1
+\]
+is correct. The lower bound \(E_y\ge S_1S_2\) also follows from the degree-one pushforward of the slice to the target \((x_1,x_2)\)-rectangle. This section remains valid but insufficient.
+
+### Directional filling check
+
+The directional estimate is plausible and consistent with the cited Guth paper, but the exact relative rectangular specialization should be quoted precisely in a final proof. In any case, the draft correctly says this estimate is too weak to close the theorem.
+
+---
+
+## Previous concerns: status
+
+### Resolved
+
+- The previous literal fixed-puncture comparison using \(B_y\llcorner\mathcal B_z\) as if one could cut sharply without boundary cost has been abandoned.
+- The author now explicitly records that seam/interface terms are uncontrolled.
+- The main gap is now more accurately formulated as a cellular bad-star deformation problem.
+
+### Still unresolved
+
+- The essential low-energy cellular estimate `(13c)` remains unproved.
+- The cellular averaging estimate `(12b)` remains unproved.
+- The PL approximation/transversality paragraph is still compressed.
+- The measurable-selection statement for \(B_y\) is still asserted at a high level.
+- Guth’s estimates are invoked without exact theorem statements or full hypotheses.
+
+### New issues introduced
+
+- The proposed cubical approximation \(B_y\mapsto B_{y,\theta}\) may not preserve the boundary \(Z_y\), and no boundary-error correction is supplied.
+- The claimed \((1+\varepsilon)\)-mass cubical deformation is not justified.
+- The shift space \(\Theta\), mesh parameter, and limiting procedure in `(12b)` are not defined rigorously.
+- The “prescribed coordinate-plaque tracks” used to define bad cells are not specified.
+- The maps \(P_{z,\theta}\) and \(H_{z,\theta}\) are schematic only; the chain identity and mass estimates are not proved.
+
+---
+
+## Final assessment
+
+The revision is more honest and mathematically cleaner than the previous draft, because it no longer hides the seam problem behind an invalid sharp cut. But it remains a partial proof. The first alternative and the partial volume lower bound are credible; the required second alternative depends on unproved cellular estimates `(12b)` and `(13c)`. Therefore `answer.tex` does not fully solve the stated problem.

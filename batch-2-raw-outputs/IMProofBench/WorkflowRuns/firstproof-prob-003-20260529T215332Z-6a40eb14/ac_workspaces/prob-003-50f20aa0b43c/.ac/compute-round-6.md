@@ -1,0 +1,207 @@
+# Compute worker reply — round 6
+status: done
+error: (none)
+workspace: /data/output/workflow_runs/firstproof-prob-003-20260529T215332Z-6a40eb14/ac_workspaces/prob-003-50f20aa0b43c/compute
+zip: /data/output/workflow_runs/firstproof-prob-003-20260529T215332Z-6a40eb14/agents/Compute-c0-05cb58/compute_workspace_round_6.zip
+
+---
+
+# Round 6 report: small-\(p\) lemma literature/proof/computation search
+
+I read the current `problem_documents_readonly/answer.tex` and
+`problem_documents_readonly/research_notes.tex`.  The missing item is still the
+small-\(p\) lemma
+\[
+  \Pr\!\left[\sum_i w_i v_i\ge p\right]\ge p,\qquad 0<p\le 1/3,
+\]
+or equivalently, with \(q=1-p\ge 2/3\) and \(\eta_i\sim{\rm Bernoulli}(q)\),
+\[
+  \Pr\!\left[\sum_i w_i\eta_i>q\right]\le q. \tag{C}
+\]
+
+## Bottom line
+
+I did not find a known theorem that directly proves the full lemma.  The closest
+result is Fokkink--Meester--Pelekis, but their proved "bold play" regions leave
+exactly the near-hypotenuse strip needed for (C), except at some endpoint/grid
+cases already covered by the reciprocal-point arguments.  The biased-measure
+3-wise intersection theorems also do not close the gap: they apply up to
+parameter \(2/3\), whereas the complement family must be controlled at
+\(q\ge2/3\), and arbitrary 3-wise intersecting families are known to be too
+large for \(q>2/3\).  Thus any proof still has to use the weighted-threshold
+structure, not just 3-wise intersection.
+
+## Retrieved sources
+
+Useful files now in the workspace:
+
+- `papers/fmp-arxiv.pdf`, `papers/fmp-arxiv.txt`: Fokkink--Meester--Pelekis,
+  "Optimizing stakes in simultaneous bets" (arXiv version).
+- `papers/fokkink-meester-pelekis-2023.pdf`, `.txt`: published/source copy
+  already present from earlier rounds.
+- `papers/frankl-1976-on-sperner-families.pdf`, `.txt`: downloaded this round
+  from Peter Frankl's publication page.  This is the actual PDF; the older
+  `papers/frankl-1976.pdf` is only a ScienceDirect HTML/challenge page.
+- `papers/liggett-celebratio.html`: bibliographic metadata for Liggett,
+  "Extensions of the Erdos--Ko--Rado theorem and a statistical application",
+  JCTA 23 (1977), 15--21, DOI `10.1016/0097-3165(77)90075-9`.
+  The attempted `papers/liggett-1977.pdf` is only a ScienceDirect HTML/challenge
+  page; I did not obtain the PDF.
+- `papers/kellerer-1964-linearkombinationen.html`,
+  `papers/kellerer-1964-gdz.html`,
+  `papers/kellerer-1964-manifest.json`,
+  `papers/kellerer_1964_pages/page_403.jpg` through `page_414.jpg`, and
+  `papers/kellerer-1964-linearkombinationen-pages403-414.pdf`: GDZ/EUDML page
+  images for Hans G. Kellerer, "Linearkombinationen zufalliger Grossen und ihre
+  gemeinsame Verteilung", Math. Z. 84 (1964), 403--414.  The PDF is image-only;
+  I found no OCR theorem statement directly usable here.
+- `papers/tokushige-2022-applications-pbiased.pdf`, `.txt` and
+  `papers/tokushige-2023-maximum-measure-3wise.pdf`, `.txt`: biased-measure
+  3-wise intersection references.
+
+## Literature conclusions
+
+### Fokkink--Meester--Pelekis
+
+Let \(\pi(\rho,t)\) denote the supremum of
+\(\Pr(S_\gamma\ge t)\) over convex combinations of iid
+\({\rm Bernoulli}(\rho)\) variables.  The complement target (C) would follow if,
+for every \(q\ge2/3\), one had \(\pi(q,t)\le q\) for every \(t>q\), then let
+\(t\downarrow q\).
+
+In `papers/fmp-arxiv.txt`, Theorem 12 says: if
+\[
+  \frac{k}{k+1}<\rho\le \frac{k+1}{k+2}<t,
+\]
+then bold play is optimal, i.e. \(\pi(\rho,t)=\rho\).  This proves (C) only
+when \(t\) is above the right endpoint \((k+1)/(k+2)\).  For an interior
+\(q\in(k/(k+1),(k+1)/(k+2))\), it leaves the needed strip
+\[
+  q<t\le \frac{k+1}{k+2}.
+\]
+Proposition 13 handles the diagonal endpoint
+\(\rho=t=(k+1)/(k+2)\): bold play is optimal for \(k>1\), while at
+\(k=1\) the equal-thirds example is optimal for the non-strict threshold.
+This is consistent with our strict complement form, but does not prove the
+whole interval.  The authors explicitly say that a zigzag of triangles along
+the hypotenuse remains open in their analysis (`papers/fmp-arxiv.txt`,
+lines 702--704).
+
+So FMP gives important partial support and a cyclic-interval method, but not the
+missing full lemma.
+
+### Liggett
+
+The MathOverflow pointer and Celebratio bibliography identify Liggett's JCTA
+paper.  The theorem quoted on MathOverflow is:
+\[
+  X_i\sim{\rm Bernoulli}(p),\quad S=\sum_i a_iX_i,\quad \sum_i a_i=1
+  \quad\Longrightarrow\quad
+  \Pr(S\ge 1/2)\ge p
+\]
+for \(p\ge1/2\).  This is a threshold-\(1/2\) lower-tail result.  It does not
+imply (C), which asks for an upper tail above \(q\ge2/3\).
+
+### Frankl / biased-measure 3-wise intersection
+
+The Frankl 1976 PDF is now available.  Its main theorem concerns Sperner
+families whose union of any three members is not the whole ground set.  This is
+related to the complement of 3-wise intersection, but it is a cardinality theorem
+for Sperner families, not a \(q\)-biased measure theorem for weighted-threshold
+families.
+
+Tokushige's survey/paper gives the relevant biased-measure boundary.  In
+`papers/tokushige-2022-applications-pbiased.txt`, lines 117--125 state the
+Frankl--Tokushige result and its nonhomogeneous extension: for homogeneous
+\(\mu_p\), if \(p<(r-1)/r\), then every \(r\)-wise intersecting family has
+\(\mu_p(\mathcal A)\le p\); for 3-wise intersecting families the extension
+requires the second-largest coordinate \(p_2<2/3\).  Our complement uses
+homogeneous parameter \(q\ge2/3\), so this is on the wrong side of the
+threshold.  Tokushige 2023 also records that for \(q>2/3\), arbitrary 3-wise
+1-intersecting families can have \(q\)-biased measure tending to 1.  Therefore
+the plain 3-wise intersecting property is insufficient.
+
+### Kellerer / Samuels / Feige
+
+Kellerer's 1964 pages were retrieved, but I did not extract a theorem implying
+the lemma.  The accessible metadata/title suggests a general joint-distribution
+or linear-combination existence paper, not an immediate Bernoulli threshold
+bound.  Samuels/Feige-type results in FMP concern maxima for sums of independent
+nonnegative variables under fixed expectations or more general constraints; I
+found no direct specialization that gives the strict hypotenuse inequality (C).
+
+## Proof-route status
+
+- The complement upper family
+  \(\mathcal F=\{A:\sum_{i\in A}w_i>q\}\) is 3-wise intersecting for
+  \(q\ge2/3\), but the known \(q\)-biased measure theorem stops at \(q\le2/3\)
+  and is false for arbitrary families above \(2/3\).  Any proof must exploit
+  that \(\mathcal F\) is a weighted threshold family.
+- The FMP rational cyclic-interval representation proves adjacent regions by
+  a deterministic bound on the number of heavy intervals.  On the hypotenuse
+  and near it, the tie/equality configurations are exactly the obstruction.
+  FMP resolves only some endpoint/special cases.
+- The pivot inequality in the current notes still looks like the most plausible
+  induction target.  The pivot-plus-dust construction below shows why a proof
+  must allow an infimum approached by one weight just below \(p\) plus many dust
+  weights.
+
+## Computation
+
+New code and outputs:
+
+- `code/round6_search.py`
+- `data/round6_search_output.txt`
+- `data/round6_random_search.csv`
+
+The script ran direct differential evolution, capped-simplex hit-and-run
+sampling in the nontrivial region \(\max_i w_i<p\), structured pivot-plus-dust
+families, and strict chamber MILP probes using the previous pivot MILP with
+\(a=0\).
+
+No counterexample was found.
+
+Best capped-search values found:
+
+| \(p\) | best capped tail | gap tail-\(p\) | typical shape |
+|---:|---:|---:|---|
+| \(1/6\) | 0.330204046639 | +0.163537 | about 7 equal weights, need 2 successes |
+| 0.20 | 0.344640000000 | +0.144640 | about 6 equal weights, need 2 successes |
+| 0.25 | 0.367187500000 | +0.117188 | about 5 equal weights, need 2 successes |
+| \(2/7\) | 0.323198667222 | +0.037484 | about 4 equal weights, need 2 successes |
+| 0.30 | 0.348300000000 | +0.048300 | about 4 equal weights, need 2 successes |
+| \(1/3\) | 0.407407407407 | +0.074074 | about 4 equal weights, need 2 successes |
+
+The direct unconstrained optimizer mostly rediscovered equality from a single
+large weight, with numerical gaps of order \(10^{-16}\).  This is expected,
+since if some \(w_i\ge p\), then that coordinate alone gives probability at
+least \(p\).
+
+The structured pivot-plus-dust family was the only source of near equality with
+all weights below \(p\).  With one weight \(p-\varepsilon\), \(\varepsilon=10^{-3}\),
+and \(N\) equal dust weights, the tail approaches \(p\) from above:
+
+| \(p\) | \(N\) | tail-\(p\) |
+|---:|---:|---:|
+| 0.20 | 2000 | \(2.48\cdot 10^{-8}\) |
+| 0.25 | 1000 | \(1.93\cdot 10^{-9}\) |
+| 0.30 | 500 | \(6.61\cdot 10^{-10}\) |
+| \(1/3\) | 500 | \(7.66\cdot 10^{-15}\) |
+
+Strict chamber MILP probes for \(a=0\) also found no positive violation.  On
+the grid \(p\in\{1/6,1/5,1/4,2/7,3/10,1/3\}\), the \(n=8\) direct checked
+tails were equal to \(p\) up to about \(2\cdot10^{-15}\).  The \(n=9\) runs were
+time-limited for several \(p\)'s and should be treated as probes rather than
+certificates; their incumbents all had nonpositive direct violation.
+
+## Recommendation
+
+The literature search suggests the missing lemma is not an immediate corollary
+of standard EKR/biased-measure theorems.  I would focus the next proof attempt
+on either:
+
+1. a strengthened FMP cyclic-interval argument for weighted-threshold families
+   in the remaining strip \(q<t\le(k+1)/(k+2)\), or
+2. the pivot inequality/four-tail invariant already in the notes, with the
+   pivot-plus-dust examples used as the sharpness model.
+

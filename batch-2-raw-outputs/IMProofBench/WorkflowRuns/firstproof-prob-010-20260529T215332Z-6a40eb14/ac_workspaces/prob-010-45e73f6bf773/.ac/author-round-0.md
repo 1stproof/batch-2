@@ -1,0 +1,11 @@
+# Author round 0
+
+Files changed: ['answer.tex', 'references.bib', 'research_notes.tex']
+Ready: False
+Council question: (none)
+Council to: (default models)
+Parse warnings: (none)
+
+## Thinking summary
+
+Completed. I wrote the canonical files and verified `answer.tex` with `pdflatex`; the compiled PDF is 3 pages and satisfies the stated LaTeX contract.

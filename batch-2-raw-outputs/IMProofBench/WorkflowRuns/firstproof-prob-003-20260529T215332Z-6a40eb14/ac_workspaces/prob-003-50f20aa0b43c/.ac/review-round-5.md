@@ -1,0 +1,320 @@
+## Referee report on the revised draft
+
+### Overall verdict
+
+The revised `answer.tex` is **not answer-ready**. The author has made the partial-solution status clearer and added useful reformulations, but the central sufficiency statement for all \(0\le p\le 1/3\) remains explicitly unproved. Since the problem asks “for which values of \(p\),” a complete solution must prove the whole claimed set
+\[
+[0,1/3]\cup\{1/2,1\}.
+\]
+The draft itself says:
+
+> “I have not closed that lemma…”
+
+and later:
+
+> “The essential missing assertion is Lemma~\ref{lem:missing}.”
+
+This is fatal under the stated readiness criterion.
+
+---
+
+## LaTeX contract check
+
+I compiled the supplied `answer.tex` with `pdflatex` twice.
+
+- Uses exactly `\documentclass[12pt]{article}`.
+- Standalone LaTeX document.
+- Uses `fullpage`, which is permitted.
+- No prohibited `geometry`, manual margin changes, `setspace`, `\linespread`, `\small`, `\footnotesize`, `\fontsize`, etc. appear in the source.
+- Compilation succeeds.
+- The compiled PDF is 5 pages, within the 12-page limit.
+- I found no LaTeX warnings, overfull boxes, undefined references, or errors after recompilation.
+
+So there is **no LaTeX contract violation**. The failure is mathematical completeness.
+
+---
+
+## Literature check
+
+The two references now appearing in `answer.tex` are real bibliographic items. Fokkink–Meester–Pelekis study tail probabilities of convex combinations of iid Bernoulli variables and state that they prove the relevant optimization conjecture only “for a range of \(p\) and \(t\),” not in full generality; their paper also frames the difficulty near the hypotenuse \(t=p\). ([alea.impa.br](https://alea.impa.br/articles/v20/20-07.pdf)) Frankl’s cited paper appears with the stated title, journal, volume, year, and pages. ([sciencedirect.com](https://www.sciencedirect.com/science/article/pii/009731657690073X?utm_source=openai))
+
+However, **neither reference is used to prove any theorem in `answer.tex`**. They are merely listed in the bibliography. Thus they do not close the missing small-\(p\) lemma.
+
+---
+
+## Review of mathematical content
+
+### 1. Problem statement and interpretation
+
+The universal interpretation is clearly and faithfully recorded: the inequality is required for every \(m\) and every nonnegative probability vector \(w\).
+
+This addresses the ambiguity requirement. But the document immediately admits that the sufficiency of \(0\le p\le1/3\) is not proved, so it cannot be a complete answer.
+
+---
+
+### 2. Coloring criterion
+
+The new rational coloring criterion is valid.
+
+Given \(p=a/b\), if every deterministic color-load vector has at least
+\[
+\frac ab\binom ba=\binom{b-1}{a-1}
+\]
+good \(a\)-subsets, then averaging over a random coloring and a uniformly random \(a\)-set of colors gives success probability at least \(a/b\). By color symmetry, the same probability is obtained for any fixed \(a\)-subset of colors. Membership in that fixed \(a\)-set is independent Bernoulli\((a/b)\) across original indices.
+
+No mathematical error found here.
+
+---
+
+### 3. Reciprocal points \(p=1/k\)
+
+The criterion correctly gives \(p=1/k\): among \(k\) nonnegative color weights summing to \(1\), at least one is \(\ge1/k\). This proves all reciprocal points \(1/k\), including \(1/3\).
+
+No issue.
+
+---
+
+### 4. Pair lemma for \(p=2/b\)
+
+The pair lemma is substantially improved: the even/odd arithmetic is now explicit. I still see minor exposition gaps, but no fatal error.
+
+The deletion argument is basically correct. At each step, if \(u+a<1\), the proof shows the maximum \(a\) has at least \(\lfloor s/2\rfloor\) good partners; then deleting the minimum and maximum preserves the invariant.
+
+Minor issue: the inequality
+\[
+s-1-h+a(2h-s+2)\le s/2
+\]
+uses the facts that \(a\ge1/2\) and \(2h-s+2\le0\). These are true: \(a\ge s^{-1}\sum_{z\in R}z\ge1/2\). But the revised proof no longer states this justification. This is easily repaired, but a strict proof should include it.
+
+The final count for both \(b=2r\) and \(b=2r+1\) is correct in the relevant ranges. Thus the proof for \(p=2/b\), \(b\ge6\), is acceptable after minor clarification.
+
+---
+
+### 5. Positive corollary
+
+The corollary correctly proves the listed positive values:
+
+- \(p=0,1\): immediate.
+- \(p=1/k\), \(k\ge3\): coloring criterion.
+- \(p=2/b\), \(b\ge6\): pair lemma plus coloring criterion.
+- \(p=1/2\): symmetry \(X\stackrel d=1-X\).
+
+The \(p=1/2\) proof is correct:
+\[
+\Pr[X<1/2]=\Pr[X>1/2],
+\]
+so
+\[
+\Pr[X\ge1/2]\ge1/2.
+\]
+
+No fatal issue here.
+
+---
+
+### 6. Multiplicative closure
+
+The proof that
+\[
+p,q\in\mathcal G\implies pq\in\mathcal G
+\]
+is correct.
+
+The construction \(v_i=x_i y_i\), with independent \(x_i\sim\Ber(p)\) and \(y_i\sim\Ber(q)\), gives iid \(\Ber(pq)\) variables. Conditional on \(T=\sum_i w_i x_i\ge p\), the normalized weights \(w_i x_i/T\) form a probability vector, and the \(q\)-inequality applies.
+
+No issue.
+
+---
+
+### 7. Reduction to \([1/6,1/3]\)
+
+The corollary is correct **as a conditional reduction**. If the inequality were proved on \([1/6,1/3]\), then multiplying by powers of \(1/2\in\mathcal G\) would give all \(p\in(0,1/3]\).
+
+But this is still conditional; the base interval is not proved.
+
+---
+
+### 8. Negative direction
+
+The negative examples are correct.
+
+For \(1/3<p<1/2\), three equal weights give
+\[
+\Pr[\operatorname{Bin}(3,p)\ge2]=3p^2-2p^3,
+\]
+and
+\[
+3p^2-2p^3-p=p(1-p)(2p-1)<0.
+\]
+
+For \(1/2<p<1\), two equal weights give success probability \(p^2<p\).
+
+Thus the negative direction is complete.
+
+---
+
+### 9. Small-\(p\) lemma
+
+This remains the fatal missing assertion:
+\[
+0\le p\le1/3
+\quad\Longrightarrow\quad
+\Pr\!\left[\sum_i w_i v_i\ge p\right]\ge p.
+\]
+
+The draft explicitly declares it unproved. Therefore the claimed classification is not established.
+
+---
+
+### 10. Sharpness examples
+
+The finite sharpness example is correct: if one weight is at least \(p\) and the total weight of all other coordinates is \(<p\), then success occurs exactly when the large coordinate succeeds, so the probability is exactly \(p\).
+
+The pivot-plus-dust construction is also correct. For
+\[
+a=p-\varepsilon,\qquad
+w_0=a,\qquad
+w_1=\cdots=w_N=\frac{1-a}{N},
+\]
+one has
+\[
+Y_N=\frac{1-a}{N}\operatorname{Bin}(N,p)\to p(1-a)=p(1-p+\varepsilon)
+\]
+in probability, and
+\[
+\varepsilon<p(1-p+\varepsilon)<p.
+\]
+Therefore the success probability tends to \(p\).
+
+Minor wording issue: the draft says this gives a mechanism “with all weights below \(p\).” That is true only for sufficiently large \(N\), since one also needs
+\[
+(1-a)/N<p.
+\]
+This is not a serious error, but should be stated.
+
+---
+
+### 11. Complement formulation
+
+The complement formulation is correct. Since
+\[
+\sum_i w_i v_i\ge p
+\iff
+\sum_i w_i(1-v_i)\le1-p,
+\]
+the desired inequality is equivalent to
+\[
+q\ge2/3,\qquad
+\Pr\!\left[\sum_i w_i\eta_i>q\right]\le q,
+\qquad q=1-p.
+\]
+
+No issue.
+
+---
+
+### 12. Pivot inequality
+
+The equivalence with the pivot inequality is correct.
+
+For \(a=0\), inequality (2) gives
+\[
+U\ge\frac{p}{1-p}(1-U),
+\]
+hence \(U\ge p\).
+
+Conversely, adding a new weight \(a\) and conditioning on its Bernoulli variable gives
+\[
+p\Pr[Y\ge p-a]+(1-p)\Pr[Y\ge p]\ge p.
+\]
+Rearranging gives
+\[
+\Pr[Y\ge p]\ge \frac{p}{1-p}\Pr[Y<p-a].
+\]
+
+This is a valid reformulation, but it is not a proof of the missing lemma.
+
+---
+
+### 13. Convex-hull reformulation
+
+The convex-hull equivalence is mostly correct and improved relative to the previous draft because the coordinatewise down-closed argument is now included.
+
+Forward direction: assuming the convex-hull statement, a failed Bernoulli inequality produces the down-set
+\[
+\mathcal D=\{A:\sum_{i\in A}w_i<p\}
+\]
+with \(\mu_p(\mathcal D)>1-p\). A distribution on \(\mathcal D\) with marginals \(p\) would yield
+\[
+p=\sum_i p w_i=\mathbb E\sum_{i\in A}w_i<p,
+\]
+a contradiction.
+
+Reverse direction: the thinning argument correctly proves coordinatewise down-closedness of \(P(\mathcal D)\). The separation argument is also essentially correct.
+
+Minor issue: the separation step should explicitly justify why the separating vector may be taken nonnegative. This follows because the upper orthant
+\[
+(p,\ldots,p)+\mathbb R_{\ge0}^m
+\]
+is unbounded in all positive coordinate directions; any separator bounded below on this orthant must have nonnegative coordinates. This is true, but the proof compresses it into the phrase “gives a non-zero vector \(c\ge0\).”
+
+This is repairable and not the main problem.
+
+---
+
+### 14. Partition-function formulation
+
+The partition-function implication
+\[
+p\mathbf 1\notin P(\mathcal D)
+\implies
+\sum_{A\in\mathcal D}\lambda^{|A|}
+\le (1+\lambda)^{m-1},
+\qquad \lambda=\frac{p}{1-p},
+\]
+is algebraically equivalent to
+\[
+\mu_p(\mathcal D)\le1-p.
+\]
+
+This is a correct reformulation of the missing convex-hull statement, but again it does not prove the statement.
+
+---
+
+## Previous concerns addressed
+
+The revision addresses several prior concerns:
+
+1. The coordinatewise down-closed proof in the convex-hull section is now included.
+2. The pair-counting arithmetic is clearer and more explicit.
+3. The rational coloring argument has been isolated into a clean proposition.
+4. The document is honest about its incompleteness and does not claim readiness.
+5. The strict complement, pivot, convex-hull, and partition-function formulations are now organized more cleanly.
+
+---
+
+## Previous concerns still remaining
+
+The central gap remains unchanged:
+
+- The small-\(p\) lemma is unproved.
+- The interval \([1/6,1/3]\) is not proved.
+- Therefore the full sufficiency of \([0,1/3]\) is not proved.
+- The claimed final classification is not established.
+
+---
+
+## New or remaining minor issues
+
+These are not the primary reason for rejection, but should be fixed in a polished mathematical manuscript:
+
+1. In the pair lemma, explicitly justify \(a\ge1/2\) before using it.
+2. In the pivot-plus-dust construction, say that all dust weights are below \(p\) only once \(N\) is sufficiently large.
+3. In the convex-hull proof, explicitly justify why the separating vector can be chosen nonnegative.
+4. The bibliography is not cited in the text and no external theorem is actually used. This is harmless but confirms that the references do not repair the proof.
+
+---
+
+## Final assessment
+
+The revised document is a clear partial solution with correct negative examples, correct positive subfamilies, and useful equivalent formulations. But it **does not solve the stated problem**, because the sufficiency of all \(p\in[0,1/3]\) remains an open gap inside the manuscript itself.

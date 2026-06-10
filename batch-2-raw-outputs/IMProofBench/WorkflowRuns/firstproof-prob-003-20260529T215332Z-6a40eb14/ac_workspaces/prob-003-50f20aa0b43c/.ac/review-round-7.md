@@ -1,0 +1,251 @@
+## Referee report on revised `answer.tex`
+
+### Overall verdict
+
+The revision **does not solve the problem**. It still explicitly leaves the central small-\(p\) lemma unproved and includes a “Remaining open issues” section saying that the proof is incomplete. The added material — closedness of \(\mathcal G\) and the unit-gap formulation — appears mathematically valid, but it is only additional reduction/reformulation. It does not prove the missing interval \(0\le p\le 1/3\).
+
+Thus the main concern from the previous review remains unchanged: the claimed classification
+\[
+[0,1/3]\cup\{1/2,1\}
+\]
+is not fully established.
+
+---
+
+## LaTeX contract check
+
+I independently compiled the revised `answer.tex` twice with `pdflatex`.
+
+- Compilation succeeds.
+- The PDF has 7 pages, within the 12-page limit.
+- The document class is exactly `\documentclass[12pt]{article}`.
+- `fullpage` is used and is permitted.
+- No forbidden layout packages or manual margin changes appear.
+- No line-spacing changes appear.
+- No in-document font-size changes such as `\small`, `\footnotesize`, `\fontsize`, etc. appear.
+
+So the LaTeX contract appears satisfied. The rejection is mathematical, not formal.
+
+---
+
+## Literature-source check
+
+The Fokkink--Meester--Pelekis citation is bibliographically accurate: the paper *Optimizing stakes in simultaneous bets* appears in ALEA 20, pages 153–165, and concerns tail probabilities of convex combinations of iid Bernoulli variables. The paper’s abstract states that it proves the relevant Csóka-type conjecture only for a range of parameters, so the draft is right not to treat it as a black-box proof of the whole missing small-\(p\) lemma. ([alea.impa.br](https://alea.impa.br/articles/v20/20-07.pdf?utm_source=openai))
+
+The Frankl citation is also bibliographically accurate: *On Sperner families satisfying an additional condition* appears in Journal of Combinatorial Theory, Series A, Volume 20, Issue 1, pages 1–11. The abstract concerns Sperner families with an additional union condition, related in spirit to the draft’s intersection-family reformulation, but not a direct proof of the weighted-threshold biased-measure inequality needed here. ([sciencedirect.com](https://www.sciencedirect.com/science/article/pii/009731657690073X?utm_source=openai))
+
+---
+
+## Changes since the previous draft
+
+### Addressed / improved
+
+1. **Closedness of \(\mathcal G\)** was added as Proposition `\ref{prop:closed}`. This proposition appears correct.
+
+2. **Unit-gap equivalence** was added as Proposition `\ref{prop:unitgap}`. The equivalence appears correct, modulo a minor notational ambiguity in the converse where the same \(w_i\) notation is reused for the residual weights.
+
+3. The revised “Remaining open issues” section correctly acknowledges that these additions are only reductions and that the small-\(p\) lemma remains unproved.
+
+### Still unresolved
+
+The main unresolved issue is exactly the same as before: Lemma `\ref{lem:missing}` is stated but not proved. This lemma is the positive direction for the entire interval \(0\le p\le 1/3\), and without it the problem is not solved.
+
+### New minor issue
+
+The final intersection-theoretic reformulation defines
+\[
+r=\lfloor 1/p\rfloor.
+\]
+This is undefined at \(p=0\), while Lemma `\ref{lem:missing}` is stated for \(0\le p\le 1/3\). This is only a minor edge-case issue because \(p=0\) is trivial, but the statement should explicitly say \(0<p\le1/3\) in that paragraph.
+
+---
+
+## Detailed mathematical audit
+
+### 1. Problem statement and interpretation
+
+The universal interpretation is faithful: the draft seeks the \(p\in[0,1]\) for which the inequality holds for every finite nonnegative probability vector \(w\).
+
+However, the section immediately says:
+
+> “I have not closed that lemma…”
+
+This is an explicit declaration that the document is incomplete. Under the instructions, this alone prevents answer-readiness.
+
+---
+
+### 2. Coloring criterion
+
+Proposition `\ref{prop:criterion}` remains valid.
+
+The random coloring argument correctly converts a deterministic statement about color-load \(b\)-tuples into the Bernoulli\((a/b)\) inequality. The symmetry step is justified, and for a fixed \(a\)-subset of colors, membership of each original index is iid Bernoulli\((a/b)\).
+
+No issue.
+
+---
+
+### 3. Reciprocal points
+
+The deduction of \(p=1/k\), \(k\ge3\), is correct. Among \(k\) color classes of total weight \(1\), at least one has weight at least \(1/k\), so the coloring criterion applies with \(a=1\), \(b=k\).
+
+No issue.
+
+---
+
+### 4. Pair lemma
+
+Lemma `\ref{lem:pairs}` still appears correct.
+
+The deletion procedure is valid:
+
+- Scaling to \(z_i=bx_i/2\) gives total sum \(b/2\).
+- At each step, if the smallest and largest remaining elements satisfy \(u+a\ge1\), the largest element forms good pairs with all other remaining elements.
+- Otherwise, the contradiction argument shows that the largest element has at least \(\lfloor s/2\rfloor\) good partners.
+- Deleting the smallest and largest preserves the invariant because \(u+a<1\).
+- Counted pairs at different stages are distinct.
+- The final count is at least \(b-1\) for \(b\ge6\).
+
+The proof is a little terse in the stopped odd case, but the displayed formula gives the correct nonnegative excess. No fatal issue.
+
+---
+
+### 5. Corollary of positive values
+
+Corollary `\ref{cor:positive}` is correct for the listed values:
+
+- \(p=0,1\) are immediate.
+- \(p=1/k\), \(k\ge3\), follows from the coloring criterion.
+- \(p=2/b\), \(b\ge6\), follows from the pair lemma plus the coloring criterion.
+- \(p=1/2\) follows from the symmetry \(X\stackrel d=1-X\).
+
+No issue.
+
+---
+
+### 6. Multiplicative closure
+
+Proposition `\ref{prop:closure}` is valid.
+
+The construction \(v_i=x_i y_i\), with \(x_i\sim\operatorname{Ber}(p)\) and \(y_i\sim\operatorname{Ber}(q)\), correctly gives iid Bernoulli\((pq)\) variables. Conditional on \(T=\sum_i w_i x_i\ge p\), the normalized selected weights form a probability vector, so the universal \(q\)-inequality applies. This proves \(pq\in\mathcal G\).
+
+No issue.
+
+---
+
+### 7. New closedness proposition
+
+Proposition `\ref{prop:closed}` appears correct.
+
+For fixed finite weights, the threshold family
+\[
+\{A:w(A)\ge r\}
+\]
+changes only at finitely many subset sums. If \(p_n\to p\) from below, the event eventually equals \(\{w(A)\ge p\}\). If \(p_n\to p\) from above, the event eventually equals \(\{w(A)>p\}\), whose \(\mu_p\)-measure is at most the \(\mu_p\)-measure of \(\{w(A)\ge p\}\). In either case, the limiting inequality gives \(F(p)\ge p\).
+
+This proves \(\mathcal G\) is closed. But it does not itself prove any new interval unless a dense subset of \([0,1/3]\) is proved to lie in \(\mathcal G\). No such dense subset is supplied.
+
+---
+
+### 8. Base-interval corollary
+
+Corollary `\ref{cor:base}` is correct but conditional.
+
+If the inequality were proved for all \(p\in[1/6,1/3]\), multiplicative closure by powers of \(1/2\) would imply it for all \(0<p\le1/3\). But the base interval is still not proved.
+
+---
+
+### 9. Negative direction
+
+Proposition `\ref{prop:negative}` is correct.
+
+For \(1/3<p<1/2\), the equal-weights example with \(m=3\) gives probability
+\[
+3p^2(1-p)+p^3=3p^2-2p^3<p.
+\]
+For \(1/2<p<1\), the equal-weights example with \(m=2\) gives probability \(p^2<p\).
+
+This proves the negative direction outside the proposed set.
+
+---
+
+### 10. Small-\(p\) lemma
+
+This is the fatal gap.
+
+Lemma `\ref{lem:missing}` states the desired positive result for the full interval:
+\[
+0\le p\le1/3
+\quad\Longrightarrow\quad
+\Pr\!\left[\sum_i w_i v_i\ge p\right]\ge p.
+\]
+It is not proved. It is not derived from a cited theorem. The draft explicitly says it remains open in this document.
+
+Therefore the answer is not a complete solution.
+
+---
+
+### 11. Sharpness examples
+
+The finite sharpness example is correct: if one weight is at least \(p\) and the remaining weights sum to less than \(p\), then the event is exactly the success of the large coordinate.
+
+The pivot-plus-dust example is also correct. The convergence
+\[
+Y_N\to p(1-p+\varepsilon)
+\]
+in probability and the strict inequalities
+\[
+\varepsilon<p(1-p+\varepsilon)<p
+\]
+imply that the success probability tends to \(p\). This demonstrates sharpness but does not prove the inequality.
+
+---
+
+### 12. New unit-gap proposition
+
+Proposition `\ref{prop:unitgap}` appears correct.
+
+Forward direction: applying Lemma `\ref{lem:missing}` to the normalized vector
+\[
+(1,b_1,\dots,b_n)/(B+1)
+\]
+and conditioning on the Bernoulli variable attached to the coefficient \(1\) gives
+\[
+p\,\Pr[S\ge p(B+1)-1]+q\,\Pr[S\ge p(B+1)]\ge p,
+\]
+which rearranges exactly to the stated unit-gap inequality.
+
+Converse direction: if an original weight is at least \(p\), the result is immediate. Otherwise, choose a maximal pivot weight \(a<p\), write the other weights as \(w_i=ab_i\), and use \(a(B+1)=1\). The unit-gap inequality becomes the pivot inequality
+\[
+\Pr[Y\ge p]\ge \frac pq\Pr[Y<p-a].
+\]
+Conditioning on the pivot then proves the original inequality.
+
+The only minor issue is notation: in the converse, the \(w_i\)'s after removing the pivot are residual weights, not the full original vector. This should be clarified, but it is not a mathematical gap.
+
+Still, this proposition is only an equivalence. It does not prove the unit-gap inequality.
+
+---
+
+### 13. Complement, pivot, convex-hull, partition-function, and intersection reformulations
+
+These reformulations remain essentially valid.
+
+- The complement formulation with \(q=1-p\) is correct.
+- The two-tail pivot equivalence is correct.
+- The convex-hull equivalence is correct, though the separation argument would be cleaner if the direction and strictness of the separating hyperplane were stated explicitly.
+- The partition-function form follows correctly from
+  \[
+  \mu_p(\mathcal D)
+  =(1-p)^m\sum_{A\in\mathcal D}\left(\frac p{1-p}\right)^{|A|}.
+  \]
+- The intersection-theoretic formulation is correct for \(0<p\le1/3\), but, as noted above, the case \(p=0\) should be excluded from the definition \(r=\lfloor1/p\rfloor\).
+
+None of these reformulations supplies a proof of the missing lemma.
+
+---
+
+## Final assessment
+
+The revised draft is honest and mathematically useful as a record of partial results and equivalent formulations. The new closedness and unit-gap propositions appear valid. However, the central positive direction on \(0\le p\le1/3\) remains unproved, and the document explicitly acknowledges this.
+
+Therefore `answer.tex` is not answer-ready.

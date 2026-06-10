@@ -1,0 +1,184 @@
+# Compute worker reply — round 7
+status: done
+error: (none)
+workspace: /data/output/workflow_runs/firstproof-prob-004-20260529T215332Z-6a40eb14/ac_workspaces/prob-004-edfa3a2c78c9/compute
+zip: /data/output/workflow_runs/firstproof-prob-004-20260529T215332Z-6a40eb14/agents/Compute-c1-91be01/compute_workspace_round_7.zip
+
+---
+
+## Round 7 findings
+
+Files produced:
+
+- `code/round7_weighted_coarea_check.py`
+- `data/round7_weighted_coarea_check.txt`
+- `data/round7_trace_lp_rerun.txt`
+- `data/round7_page_checks/thesis_page_148-1.png`
+
+### 1. Weighted coarea lemma
+
+The weighted coarea lemma is essentially correct, but I would rewrite its proof.  The clean pointwise statement is
+\[
+        \lambda(x)^2 J_2F(x)\le \Dil_2(f)^2\le 1,
+        \qquad F=(f_3,f_4),
+\]
+where \(J_2F=|\Lambda^2 dF|\) and
+\[
+        \lambda=\|d(f_1,f_2)|_{\ker dF}\|
+\]
+at rank-two points of \(dF\).  Then coarea gives directly
+\[
+\int_Q\int_{Z_y}\lambda^2\,d\mathcal H^2\,dy
+=\int_{F^{-1}(Q)}\lambda^2 J_2F\,dx
+\le \Vol(R).
+\]
+This avoids the draft's division by \(J_F\).  The displayed formula
+\[
+\Vol(R)=\int_Q\int_{Z_y}J_F^{-1}\,d\mathcal H^2\,dy
+\]
+is fine only in a smooth submersion discussion; for the actual Lipschitz/piecewise smooth current setup it is safer not to use it.
+
+Pointwise proof: write \(G=(f_1,f_2)\).  At a point with \(\operatorname{rank}dF=2\), let \(T=\ker dF\) and \(N=T^\perp\).  Pick a unit \(v\in T\) with \(|dG(v)|=\lambda\).  For every unit \(n\in N\),
+\[
+df(v)=(dG(v),0),\qquad df(n)=(dG(n),dF(n)).
+\]
+Thus
+\[
+|df(v)\wedge df(n)|\ge |dG(v)|\,|dF(n)|=\lambda |dF(n)|.
+\]
+Since \(\Dil_2(f)\le1\), \(\|dF|_N\|\le \lambda^{-1}\), and hence
+\[
+J_2F=|\det(dF|_N)|\le \lambda^{-2}.
+\]
+If \(\lambda=0\) or \(\operatorname{rank}dF<2\), interpret the inequality as \(\lambda^2J_2F\le1\), which is trivial on the rank-deficient set because \(J_2F=0\) in the coarea integrand.
+
+Necessary hypotheses to state:
+
+- \(f\) Lipschitz/piecewise \(C^1\), so approximate differentials and coarea apply.
+- \(Z_y=\langle [R,\partial R],F,y\rangle\) for a.e. \(y\), not literally every smooth fiber.
+- The relative degree-one statement for \((f_1,f_2)|_{Z_y}\) follows by slicing naturality for a.e. central \(y\).
+- The critical set of \(F\) need not be ignored by hand; it contributes zero to \(\int \lambda^2J_2F\).
+
+I stress-tested the linear algebra numerically in `code/round7_weighted_coarea_check.py`.  For 20,000 random anisotropic \(4\times4\) matrices, the maximum observed ratio
+\[
+\lambda^2J_2F/\|\Lambda^2df\|^2
+\]
+was `0.93728247764`, with no violations above `1+1e-8`.
+
+### 2. Fiber-family energy lower bound
+
+I do not see a proof of
+\[
+        \int_{Z_y}\lambda^2\gtrsim S_1S_2^{1/2}S_3^{1/2}
+\]
+from the listed fiberwise hypotheses.  In fact, as a fiberwise statement it is false.  The missing input has to be a genuinely ambient two-Jacobian constraint, not just:
+
+- relative degree one of \((f_1,f_2)|_{Z_y}\),
+- \(|df_1\wedge df_2|\le1\) on \(Z_y\),
+- \(\Fill_R(Z_y)\gtrsim S_1S_2S_3\),
+- and formal membership in a common fiber family.
+
+The basic degree lower bound only gives
+\[
+\int_{Z_y}\lambda^2\ge \int_{Z_y}|df_1\wedge df_2|\ge S_1S_2.
+\]
+The filling lower bound alone does not force the extra factor \((S_3/S_2)^{1/2}\).
+
+### 3. Model family showing what fails
+
+Here is a precise hard-exponent model.  Let
+\[
+S=(1,1,L,L),\qquad
+R=(L^{-1/5},L^{3/5},cL,cL),
+\]
+with fixed \(0<c<1\).  Coordinates on \(R\) are \(u_1,\ldots,u_4\).  Define the linear map
+\[
+f(u)=\left(\frac{u_3}{cL},\,\frac{u_4}{cL},\,L^{6/5}u_1,\,L^{2/5}u_2\right).
+\]
+Let \(F=(f_3,f_4)\).  For central \(y=(y_3,y_4)\in[L/3,2L/3]^2\),
+\[
+Z_y=\{u_1=y_3L^{-6/5},\ u_2=y_4L^{-2/5}\}\times[0,cL]^2.
+\]
+On \(Z_y\), the map \(G=(f_1,f_2)\) has relative degree one onto \([0,1]^2\), and
+\[
+|df_1\wedge df_2|=(cL)^{-2}\le1.
+\]
+Also
+\[
+\lambda=(cL)^{-1},\qquad
+\int_{Z_y}\lambda^2\,dA=(cL)^{-2}(cL)^2=1,
+\]
+which is far below the desired \(L^{1/2}\).
+
+The filling lower bound is large.  Take a 1-Lipschitz function \(\psi(u_1,u_2)\) on the normal rectangle, zero on its boundary and \(\psi\gtrsim L^{-1/5}\) at central points.  The calibration
+\[
+du_3\wedge du_4\wedge d\psi
+\]
+gives
+\[
+\Fill_R(Z_y)\gtrsim (cL)^2L^{-1/5}=c^2L^{9/5}\gg L=S_1S_2S_3.
+\]
+
+Exactly what it violates: this model is not \(2\)-contracting.  First,
+\[
+J_2F=|df_3\wedge df_4|=L^{6/5}L^{2/5}=L^{8/5}\gg1.
+\]
+Second, it violates the one-tangent/one-normal mixed condition used in the weighted coarea proof.  For \(v=\partial_{u_3}\in T Z_y\) and \(n=\partial_{u_1}\in N Z_y\),
+\[
+|df(v)\wedge df(n)|\ge (cL)^{-1}L^{6/5}=c^{-1}L^{1/5}\gg1.
+\]
+So the false fiber-energy bound is not rescued by the fiberwise hypotheses; the ambient hypothesis must use the full pointwise mixed operator bound \(\lambda\|dF|_N\|\le1\) and also \(J_2F\le1\).
+
+### 4. Guth search
+
+I searched the local Guth thesis/PDF text, arXiv source, and prior extracted notes.  I found no unused lower bound directly implying the needed fiber energy estimate for degree-one pair maps.
+
+Closest match: thesis Ch. 8, inequality B3 for boundary ellipsoids.  It proves a lower bound with the same shape
+\[
+R_2R_3R_4\gtrsim S_2^{1/2}S_3^{3/2}S_4
+\]
+in the case \(R_2^2\gtrsim S_2S_3\), by viewing a solid torus as a family of circles and using filling area \(\gtrsim S_2S_3\).  This is the source of the \(S_2^{1/2}S_3^{3/2}S_4\) pattern.  But it is a boundary/diffeomorphism/ellipsoid argument, not a theorem for arbitrary degree-one maps of pairs \(R\to S\).  I do not see a valid way to apply it to the current fibers without adding a new boundary-degree or boundary-surjectivity argument.
+
+The arXiv area-expanding paper contributes the known Estimate 1 monomials and the relative isoperimetric profile theorem already used in `answer.tex`.  Its Theorem 3 profile estimate is exactly the \(A^{3/2}\) / \(A^2/R_1\) input already in the draft.
+
+I also checked Guth thesis p.148 directly.  The page image confirms the corrected double pinching target is
+\[
+R_1^2/A\times A\times A\times B,
+\]
+not \(R_1/A\times A\times A\times B\).  The OCR text drops the square in two places, but the page image and Step 5 show \(R_1^2/A\).  The corrected image is saved at `data/round7_page_checks/thesis_page_148-1.png`.  The existing corrected exponent search in `code/guth_ch8_exponent_search.py` found no Guth-map construction contradicting the theorem; the old OCR-based counterexamples should be discarded.
+
+### 5. Exponent/LP status
+
+The hard model
+\[
+S=(1,1,L,L),\qquad R=(L^{-1/5},L^{3/5},cL,cL)
+\]
+has volume exponent \(12/5\), while the desired RHS has exponent \(5/2\), leaving a gap \(-1/10\).  It saturates the two relevant known constraints:
+\[
+R_1R_2^2=S_1S_2S_3,\qquad
+R_1^3R_2R_3R_4=S_1^3S_2S_3S_4
+\]
+at exponent level.  The exact margins recorded in `data/round7_weighted_coarea_check.txt` are:
+
+| inequality | exponent margin |
+|---|---:|
+| \(R_1R_2\ge S_1S_2\) | \(2/5\) |
+| \(R_1R_2R_3\ge S_1S_2S_3\) | \(2/5\) |
+| \(R_1^2R_2R_3\ge S_1^2S_2S_3\) | \(1/5\) |
+| \(\Vol(R)\ge\Vol(S)\) | \(2/5\) |
+| \(R_1^3R_2R_3R_4\ge S_1^3S_2S_3S_4\) | \(0\) |
+| \(R_1R_2^2\ge S_1S_2S_3\) | \(0\) |
+
+Rerunning the previous continuous LP over the known monomial and trace-style reductions still gives optimal gap \(-1/10\); see `data/round7_trace_lp_rerun.txt`.  One optimizer is the symmetric long-side model from round 6, but the user-specified hard model above has the same exponent gap and satisfies the same known lower bounds.
+
+The missing inequality, in exponent terms, is exactly
+\[
+R_3R_4\lesssim S_3S_4
+\quad\Longrightarrow\quad
+R_1R_2\gtrsim S_1S_2^{1/2}S_3^{1/2},
+\]
+or equivalently the fiber weighted-energy estimate
+\[
+\int_{Z_y}\lambda^2\gtrsim S_1S_2^{1/2}S_3^{1/2}
+\]
+for many central fibers.  The model above shows this cannot be a purely fiberwise isoperimetric statement; it must exploit the full ambient \(2\)-dilation conditions, especially the pointwise mixed bound \(\lambda\|dF|_N\|\le1\) together with \(J_2F\le1\).

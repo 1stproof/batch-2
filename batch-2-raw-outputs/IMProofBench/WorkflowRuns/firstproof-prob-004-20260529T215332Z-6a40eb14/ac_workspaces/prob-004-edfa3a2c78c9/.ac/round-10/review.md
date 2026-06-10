@@ -1,0 +1,260 @@
+## Referee report on the revised `answer.tex`
+
+### Overall verdict
+
+The revision fixes the **LaTeX compile failure** from the previous version and improves several local rigor issues. However, the draft is still **not answer-ready**, because it remains an explicitly partial proof. The central self-absorbing parametric filling estimate (11) is assumed, not proved, and the document itself ends with “Remaining open issues” stating that the proof is incomplete.
+
+Thus, even though the partial results are useful and several arguments appear correct, `answer.tex` does **not** fully solve the stated problem.
+
+---
+
+## 1. LaTeX contract check
+
+I compiled the revised `answer.tex` with `pdflatex` twice. It compiles successfully and produces a **6-page PDF**, so the previous fatal compile error has been fixed.
+
+Contract status:
+
+- Correct document class: `\documentclass[12pt]{article}`.
+- Uses `fullpage`, which is permitted.
+- No `geometry`, `a4wide`, `typearea`, manual margin changes, or forbidden layout changes detected.
+- No forbidden line-spacing commands detected.
+- No in-document font-size changes detected.
+- PDF length is within the 12-page limit.
+
+So the **LaTeX contract issue from the previous review is addressed**.
+
+---
+
+## 2. Literature validation
+
+The two Guth results cited in the draft are real and are being used in the intended general form. Guth’s arXiv paper is indeed *Area-expanding embeddings of rectangles*, and its stated aim is to estimate when one rectangle embeds into another while expanding \(k\)-dimensional areas up to dimensional constants. ([arxiv.org](https://arxiv.org/abs/0710.0403))
+
+Theorem 3 of Guth’s paper gives the rectangular relative isoperimetric profile: for small \(V\), if \(V\) is written in the appropriate form \(c(n)R_1\cdots R_j\rho^{k-j}\), then
+\[
+I_R^k(V)\le C(n)R_1\cdots R_j\rho^{k-j+1},
+\]
+and in any case \(I_R^k(V)\le C(n)R_{k+1}V\). Specializing to \(k=2\) gives the two branches \(A^{3/2}\) and \(A^2/R_1\), as used in formula (1). ([arxiv.org](https://arxiv.org/pdf/0710.0403))
+
+Guth’s Estimate 1 states that if \(\Phi:(U,\partial U)\to(S,\partial S)\) has positive degree, then
+\[
+\operatorname{dil}_k(\Phi)\ge c(n)Q_1\cdots Q_j(Q_{j+1}\cdots Q_l)^{(k-j)/(l-j)}.
+\]
+With \(j=1,k=2,l=4\) and \(\operatorname{dil}_2\le1\), this yields the draft’s monomial estimate
+\[
+R_1^3R_2R_3R_4\gtrsim S_1^3S_2S_3S_4.
+\]
+The draft’s use of this published estimate is therefore consistent with the source, though the source states it for \(U\) open in \(R\), so the closed-rectangle collaring/exhaustion reduction remains something a final proof should spell out. ([arxiv.org](https://arxiv.org/pdf/0710.0403))
+
+---
+
+## 3. Section-by-section mathematical audit
+
+### Problem statement and interpretation
+
+The interpretation of rectangles as oriented Euclidean boxes and degree as relative homology degree is reasonable. Renaming the theorem’s small constant \(k\) as \(\kappa\) is also reasonable.
+
+However, the second paragraph says the proof is reduced to a “missing genuinely parametric filling estimate.” This is fatal for answer-readiness. A solution to the problem cannot assume an unproved central estimate.
+
+The added sentence about implicit constants and strict inequalities addresses one previous concern. If the proof actually established non-strict estimates with a dimensional constant, then decreasing \(\kappa\) would indeed handle the strict \(>\) inequalities in the problem. But since the main proof is incomplete, this does not rescue the submission.
+
+### Standard tools
+
+The added slicing-naturality identity is an improvement:
+\[
+f_\#\langle T,F,y\rangle
+=
+\langle f_\#T,\pi_{34},y\rangle .
+\]
+This partially addresses the previous request for current-level justification.
+
+Still, for a complete proof, this section remains too compressed. In particular:
+
+1. The passage from relative homology degree to the current identity \(f_\#[R,\partial R]=[S,\partial S]\) in the interior should be justified, e.g. using the constancy theorem or an explicit relative-current argument.
+2. The collaring/exhaustion argument applying Guth’s open-set estimates to closed rectangles is plausible but not written out.
+3. The phrase “piecewise smooth map is first treated on the finitely many smooth pieces and then as the induced integral current” is not fully precise. One needs enough regularity to define pushforwards and slices cleanly.
+
+The linear algebra claim
+\[
+\Dil_2(f)\le1 \implies \Dil_j(f)\le1,\qquad j=3,4,
+\]
+is correct.
+
+The Guth estimates are now cited and used coherently.
+
+### Lemma: central target filling
+
+The revision adds the missing absolute value/comass step:
+\[
+\Mass Y\ge(1+o(1))^{-1}\left|\int_Y\omega\right|.
+\]
+This addresses a previous concern.
+
+The calibration argument is essentially valid. The construction of \(\psi\) is plausible because \(y\) lies in the central third of the \((x_3,x_4)\)-rectangle and \(S_3\le S_4\), so one can choose a \(1\)-Lipschitz function vanishing on the boundary with value \(\gtrsim S_3\) at \(y\).
+
+Minor remaining rigor issue: “\(\partial Y=P_y\) modulo \(\partial S\)” should be formalized in relative-current notation in a final proof. But the lemma itself appears correct.
+
+### Proposition: first alternative
+
+This proposition is the strongest complete part of the draft and appears essentially correct.
+
+The logic is:
+
+1. Slice \(R\) by \(F=(x_3,x_4)\circ f\).
+2. Slicing naturality gives \(f_\#Z_y=P_y\) as a relative current.
+3. Any relative filling of \(Z_y\) pushes forward to a relative filling of \(P_y\).
+4. Since \(\Dil_3(f)\le1\), the source filling volume of \(Z_y\) is at least the target filling lower bound.
+5. Guth’s small-volume isoperimetric estimate then forces \(\Mass Z_y\gtrsim R_1R_2\).
+6. Coarea gives \(R_3R_4\gtrsim S_3S_4\).
+
+The proof still relies on the current-level slicing/degree details mentioned above, but the argument is mathematically credible.
+
+### Consequences of the same slicing
+
+Formula (4) follows correctly from combining the filling lower bound (3) with Guth’s two-branch isoperimetric inequality.
+
+Formula (5) follows by integrating over \(Q\), using coarea and \(J_2F\le1\).
+
+Formula (6) follows correctly from Guth’s monomial estimate and \(R_1\le\kappa S_1\). The algebra showing that this handles the range
+\[
+S_3/S_2\lesssim\kappa^{-6}
+\]
+is also correct up to dimensional constants.
+
+But this section explicitly leaves a complementary high-aspect-ratio range unresolved. It is not a complete proof of the theorem.
+
+### Weighted coarea
+
+The pointwise inequality
+\[
+\lambda^2J_2F\le1
+\]
+is correct. If \(T=\ker dF_x\), \(N=T^\perp\), \(v\in T\) is unit with \(|dG(v)|=\lambda\), and \(n\in N\) is unit, then
+\[
+df(v)=(dG(v),0),\qquad df(n)=(dG(n),dF(n)),
+\]
+so
+\[
+|df(v)\wedge df(n)|\ge \lambda |dF(n)|.
+\]
+Since \(\Dil_2(f)\le1\), this gives \(|dF(n)|\le\lambda^{-1}\), hence \(J_2F\le\lambda^{-2}\).
+
+Formula (9) is also plausible: current pushforward gives that \(G|_{Z_y}\) has relative degree one onto the \(S_1\times S_2\) rectangle, and hence the area formula gives
+\[
+\int_{Z_y} J_2(G|_{Z_y})\ge S_1S_2.
+\]
+Since \(J_2(G|_{Z_y})\le \lambda^2\), (9) follows.
+
+Remaining rigor issue: the argument should explicitly include multiplicities of the sliced current and formulate \(G_\#Z_y=[0,S_1]\times[0,S_2]\) as a current identity.
+
+The section itself admits that the result only recovers the basic volume bound, not the required theorem.
+
+### False averaged estimate and counterexample
+
+The counterexample to the non-absorbing estimate (10) is valid.
+
+For
+\[
+S=(1,1,L,L),\qquad R=(1,M,L,L),
+\]
+and
+\[
+f(u_1,u_2,u_3,u_4)=(u_1,u_2/M,u_3,u_4),
+\]
+the singular values are \(1,1,1,1/M\), so \(\Dil_2(f)=1\). The central slices have mass \(M\), and the calibration gives
+\[
+\Fill_R(Z_y)\gtrsim ML.
+\]
+Thus
+\[
+\int_Q\Fill_R(Z_y)\,dy\gtrsim ML^3.
+\]
+The right-hand terms in (10) scale as
+\[
+ML^2,\qquad M^2L^2,\qquad L^3.
+\]
+Taking \(M=L^{1/2}\) indeed violates (10) by a power of \(L\).
+
+This section is mathematically useful but does not prove the original theorem.
+
+### New section: “A rigorous projection fact”
+
+The projection estimate
+\[
+\int_Q a(y)\,dy\le R_1R_2R_3R_4
+\]
+is plausible and likely correct, modulo standard measurability details.
+
+The reasoning is:
+
+- If \(u\in\pi_{12}(\operatorname{spt}Z_y)\), then \(y\in F(V_u)\), where
+  \[
+  V_u=\{u\}\times[0,R_3]\times[0,R_4].
+  \]
+- Since \(\Dil_2(f)\le1\), the two-dimensional Jacobian of \(F\) restricted to \(V_u\) is at most \(1\).
+- Therefore \(\mathcal L^2(F(V_u))\le R_3R_4\).
+- Integrating over the base gives (10a).
+
+Minor details to supply in a final proof:
+
+1. Measurability of \(a(y)\).
+2. Justification that \(\operatorname{spt}Z_y\subset F^{-1}(y)\) for the relevant slices.
+3. Use of the area formula for \(F(V_u)\), especially for piecewise smooth \(f\).
+
+But the larger issue is that the draft itself acknowledges (10a) is not enough. It does not establish any inequality connecting \(a(y)\) to \(\Fill_R(Z_y)\) in the required way. So this new section does not close the gap.
+
+### Conditional self-absorbing estimate
+
+The conditional proposition is algebraically sound. If estimate (11) were proved, then the theorem would follow by absorption when the first alternative fails:
+\[
+R_3R_4\le \kappa S_3S_4.
+\]
+The estimates
+\[
+R_1I\le \eta\kappa F_0q,
+\qquad
+\frac{I^2}{S_1q}\le \eta^2F_0q
+\]
+are correct under \(R_1\le\kappa S_1\) and \(S_1\le S_2\le S_3\).
+
+However, estimate (11) is precisely the missing essential lemma. The proof of the theorem cannot rest on it as an assumption.
+
+### Remaining open issues
+
+This section explicitly states:
+
+> “The proof is incomplete because (11), or an equivalent parametric filling estimate, has not been proved.”
+
+This alone forces `answer_ready=false`.
+
+---
+
+## 4. Previous concerns: addressed vs. unresolved
+
+### Addressed
+
+- The prior LaTeX compile error is fixed.
+- The PDF compiles to 6 pages and satisfies the formal layout constraints.
+- The calibration lemma now includes the absolute-value/comass step.
+- The draft now states implicit constants are dimensional.
+- The draft explicitly explains how strict inequalities would follow by decreasing \(\kappa\), conditional on having the needed estimates.
+- The current/slicing language is improved.
+- A new projection-averaging fact is added and appears plausible.
+
+### Still unresolved
+
+- The main theorem is not proved.
+- The self-absorbing estimate (11) is unproved.
+- The closed-rectangle reduction from Guth’s open-set estimates is still only sketched.
+- The current-level degree and slicing identities remain compressed and would need fuller justification in a final proof.
+- The weighted coarea degree statement for \(G|_{Z_y}\) still needs a precise current-pushforward formulation.
+- The proof still contains an explicit “Remaining open issues” section.
+
+### New issues introduced
+
+The projection fact (10a) is presented as rigorous, but it still needs minor measure-theoretic details: measurability of \(a(y)\), support properties of sliced currents, and a clean area-formula argument for piecewise smooth maps. These are probably fixable, but since (10a) is not used to complete the proof, they are not the decisive obstruction.
+
+---
+
+## Final assessment
+
+The revision improves the draft substantially as a partial analysis, and it fixes the previous LaTeX contract failure. But it remains an incomplete proof. The essential parametric filling estimate is still missing, and `answer.tex` explicitly says so. Therefore the answer is not ready.

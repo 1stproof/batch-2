@@ -1,0 +1,179 @@
+## Referee report
+
+### Executive verdict
+
+`answer.tex` is **not a complete solution** of the stated problem. It explicitly leaves the central positive assertion for all \(0\le p\le 1/3\) as **Conjecture 1** and ends with a “Remaining open issues” section. Therefore it fails the required mathematical-readiness criterion, regardless of the correctness of the partial reductions.
+
+### LaTeX contract check
+
+I reconstructed and compiled the supplied `answer.tex` with `pdflatex` twice.
+
+- Compile status: **success**, no fatal errors.
+- PDF length: **12 pages**, exactly at the allowed limit.
+- Document class: exactly `\documentclass[12pt]{article}`.
+- Margin/layout: uses `fullpage`, permitted; no `geometry`, manual `\textwidth`, etc. detected.
+- Line spacing/font-size changes: no prohibited `setspace`, `\linespread`, `\small`, `\footnotesize`, etc. detected.
+- Only minor overfull hbox warning, not a contract violation.
+
+So the LaTeX contract itself appears satisfied. The failure is mathematical completeness.
+
+### Literature validation
+
+The Fokkink–Meester–Pelekis citation is real and relevant: their ALEA paper studies maximization of \(\Pr(S_\gamma\ge t)\) over convex combinations of iid Bernoulli variables and defines the function \(\pi(p,t)\) accordingly. ([alea.impa.br](https://alea.impa.br/articles/v20/20-07.pdf)) Their Theorem 4.4 covers a region of the \((p,t)\)-plane, Proposition 4.5 covers boundary points \(p=t=(k+1)/(k+2)\), and the paper itself notes a remaining gap near the hypotenuse in the lower-left block. ([alea.impa.br](https://alea.impa.br/articles/v20/20-07.pdf)) Thus `answer.tex` correctly treats FMP as adjacent literature, not as a proof of the missing near-hypotenuse strip.
+
+The Frankl citation is also bibliographically correct: the listed article is “On Sperner families satisfying an additional condition,” J. Combin. Theory Ser. A 20, pages 1–11, and concerns Sperner families satisfying a union/intersection-type extra condition. ([sciencedirect.com](https://www.sciencedirect.com/science/article/pii/009731657690073X?utm_source=openai)) But `answer.tex` does not extract a theorem from Frankl that proves the needed weighted-threshold biased-measure inequality, and indeed says it does not.
+
+### Mathematical audit
+
+#### Problem statement and interpretation
+
+The universal interpretation is stated clearly: find all \(p\in[0,1]\) for which the inequality holds for every finite nonnegative probability vector \(w\). This is a reasonable interpretation of the problem.
+
+However, the next paragraph already states that the positive direction for \([0,1/3]\) remains an essential gap. This alone prevents readiness.
+
+#### Coloring criterion and reciprocal values
+
+Proposition 1, the coloring criterion, is valid. Randomly coloring indices into \(b\) colors and then selecting a fixed \(a\)-subset of colors indeed produces independent Bernoulli\((a/b)\) selections. The symmetry step is somewhat terse but correct.
+
+The reciprocal case \(p=1/k\) follows correctly: among \(k\) color classes at least one has weight at least \(1/k\), so the average over colors gives probability at least \(1/k\).
+
+#### Pair lemma and \(p=2/b\)
+
+Lemma 2, asserting at least \(b-1\) heavy pairs for \(b\ge6\), appears correct. I checked the deletion/counting argument and the endpoint counts. The proof could spell out the allowed range of the stopping parameter \(t\), but the inequalities are valid for the relevant ranges.
+
+The corollary proving \(p=2/b\), \(b\ge6\), follows from the coloring criterion and the pair lemma.
+
+#### \(p=1/2\)
+
+The proof for \(p=1/2\) is correct. Since \(X\) and \(1-X\) have the same distribution, \(\Pr[X<1/2]=\Pr[X>1/2]\), hence \(\Pr[X\ge1/2]\ge1/2\).
+
+#### Deterministic coloring obstruction
+
+The \(a/b=3/10\) example is correct: seven entries \(1/7\) and three entries \(0\) give only \(\binom73=35\) heavy triples, below the target \(\binom92=36\). This correctly shows that the deterministic fixed-size subset strengthening cannot prove all rational cases.
+
+#### Multiplicative closure
+
+Proposition 4 is valid. The product representation \(v_i=x_i y_i\) gives Bernoulli\((pq)\) variables, and conditioning on the \(x_i\)’s with \(T=\sum w_i x_i\ge p\) correctly invokes the \(q\)-inequality on normalized weights.
+
+#### Closedness of \(\mathcal G\)
+
+The proof that \(\mathcal G\) is closed is correct. For a fixed finite weight vector, only finitely many subset-sum thresholds occur, so along one-sided subsequences the event stabilizes to either \(\{w(A)\ge p\}\) or \(\{w(A)>p\}\), and continuity of the finite product measure gives the desired conclusion.
+
+#### Reduction to \([1/6,1/3]\)
+
+Corollary 5 follows from multiplicative closure and \(1/2\in\mathcal G\). This is correct, conditional on having proved the base interval.
+
+#### Negative direction
+
+Proposition 6 is correct.
+
+- For \(1/3<p<1/2\), equal weights \(1/3,1/3,1/3\) require at least two successes, giving probability \(3p^2-2p^3<p\).
+- For \(1/2<p<1\), equal weights \(1/2,1/2\) require two successes, giving \(p^2<p\).
+
+This fully excludes the open intervals outside the proposed set.
+
+#### Small-\(p\) conjecture
+
+This is the fatal gap. Conjecture 1 is exactly the missing positive direction for the entire interval \(0\le p\le1/3\). It is not proved later. All subsequent material is a reduction, equivalence, partial case, or failed route.
+
+Thus the document does **not** answer “for which \(p\)” completely.
+
+#### Sharpness examples
+
+The finite sharpness example with one weight at least \(p\) and remaining total \(<p\) is correct.
+
+The pivot-plus-dust construction is also correct: \(Y_N\to p(1-a)=p(1-p+\varepsilon)\) in probability, and the inequalities
+\[
+\varepsilon < p(1-p+\varepsilon)<p
+\]
+hold for \(0<\varepsilon<p\). Therefore the probability tends to \(p\).
+
+#### Unit-gap, homogeneous, and centered formulations
+
+The equivalence between Conjecture 1 and the unit-gap form is correct. The conditioning on an added coefficient \(1\) gives the displayed inequality, and the converse using a maximal pivot weight \(a<p\) is valid.
+
+The homogeneous version follows by scaling, and the centered two-tail comparison
+\[
+q\,\Pr[Y\ge p]\ge p\,\Pr[Y<-q]
+\]
+is algebraically equivalent to HUG at shift zero.
+
+But these are only equivalent reformulations of the missing conjecture; they do not prove it.
+
+#### Subcritical shifted unit-gap inequality
+
+Proposition 8 appears correct. The induction decomposition into two brackets is valid, and the shift ranges are checked correctly. The result proves HUG only in the subcritical regime \(B\le qh/p\), which the author explicitly acknowledges does not cover the pivot normalization needed for the full theorem.
+
+So this is a valid partial result, not a completion.
+
+#### Rational cyclic formulation
+
+The cyclic formulation is correct: for fixed cyclic interval length \(r\), each coefficient is included with probability \(r/b\), independently across coefficients, so each \(L_j\) has the target Bernoulli-weighted distribution. Averaging over \(j\) gives equation (8), and equation (9) is equivalent to the rational small-\(p\) case.
+
+The deterministic counterexample at \(2/7\) is correct.
+
+#### Sequential identity
+
+Equation (10) is correct for \(0<p\le1/3\). The increment can cross \(p\) only when \(S_{i-1}\in[p-w_i,p)\) and \(v_i=1\), giving the displayed telescoping identity. The crossing-intensity reformulation is equivalent, but again does not prove the required lower bound.
+
+#### Complement, pivot, convex-hull, and partition-function forms
+
+The complement form is correct: \(\sum w_i v_i\ge p\) is equivalent to \(\sum w_i(1-v_i)\le1-p\), hence the strict complement event is \(>q\).
+
+The two-tail pivot inequality is correctly equivalent to Conjecture 1.
+
+The convex-hull/down-set equivalence is also essentially correct. The separation argument is valid in finite dimension, and the coordinatewise down-closed property of \(P(\mathcal D)\) is proved adequately. The partition-function inequality follows by writing \(\mu_p(\mathcal D)=(1+\lambda)^{-m}Z_\lambda(\mathcal D)\).
+
+However, all of these are equivalent forms of the missing theorem, not proofs.
+
+#### Shifted reduction
+
+The compression reduction is plausible and appears correct. The mass-moving argument in the \((i,j)\)-diamond restores equal \(i,j\)-marginals while moving support back into the original down-set. It could be written a bit more formally, especially the “move mass \(M\)” step, but I do not see a fatal flaw.
+
+Still, it only reduces the open partition-function bound to shifted down-sets.
+
+#### Capped slice lemma
+
+This is explicitly unproved. Since the author says the missing induction would follow from this capped replacement lemma, the absence of its proof is another clear non-readiness point.
+
+#### Intersection-theoretic description
+
+The claim that no \(r=\lfloor1/p\rfloor\) members of \(\mathcal D_w\) cover \([m]\) is correct, because their union has weight \(<rp\le1\). The complement family is therefore \(r\)-wise intersecting. This is a useful observation but not a proof of the biased-measure bound.
+
+#### Coalescence identity and failed route
+
+The coalescence identity (5) is correct with the stated half-open endpoint conventions. The example \(p=3/10\), \(q=7/10\), \(w_i=1/4\) is numerically correct:
+\[
+\Phi_q(w)=6517/10000,\qquad
+\Phi_q(w^{ij})=637/1000,
+\]
+so coalescence decreases the functional.
+
+The general equal-weight obstruction is also correct. It shows that pairwise coalescence cannot be the entire proof strategy.
+
+#### Remaining open issues
+
+This section accurately states that the main assertion remains unproved. But its presence is decisive: a solution with a “Remaining open issues” section identifying the central theorem as missing cannot be answer-ready under the supplied criteria.
+
+### Code cross-checks performed
+
+I used code to check:
+
+- `pdflatex` compilation and page count: successful, 12 pages.
+- Exact arithmetic for the negative equal-weight examples.
+- The \(3/10\) deterministic coloring obstruction \(35<36\).
+- The coalescence example:
+  \[
+  6517/10000 > 637/1000.
+  \]
+- The pivot-plus-dust limiting inequalities for sample rational \(p\).
+
+These checks support the correctness of the local examples, but they do not address the missing proof of Conjecture 1.
+
+### Final assessment
+
+The draft contains many correct partial results and useful reductions. The negative direction is complete, and several positive families are proved. But the problem asks for a full classification of \(p\), and the document does not prove the inclusion
+\[
+[0,1/3]\subseteq \mathcal G.
+\]
+Instead it explicitly states this as an unproved conjecture. Therefore `answer.tex` is not a complete rigorous solution.

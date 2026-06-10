@@ -1,0 +1,373 @@
+## Referee report on revised `answer.tex`
+
+### Verdict
+
+The revision fixes several minor issues from the previous review, but it **still is not answer-ready**. The draft explicitly remains a partial solution: it states the main positive interval \(0\le p\le 1/3\) as **Conjecture \(\ref{conj:missing}\)** and ends with “Remaining open issues.” Under the stated readiness criterion, this alone forces ``.
+
+The proposed classification \([0,1/3]\cup\{1/2,1\}\) is still only conditionally established.
+
+---
+
+## LaTeX contract check
+
+I compiled the revised `answer.tex` with `pdflatex` twice. It compiled successfully and produced a **10-page PDF**, within the 12-page limit. The document uses exactly
+
+```latex
+\documentclass[12pt]{article}
+```
+
+and uses only the permitted `fullpage` package for page layout. I found no forbidden margin/layout commands, line-spacing commands, or in-document font-size commands such as `\small`, `\footnotesize`, or `\fontsize`. The bibliography is manual via `thebibliography`, so the unused `references.bib` entries are irrelevant to compilation.
+
+Thus the LaTeX contract appears satisfied. The failure is mathematical completeness, not formatting.
+
+---
+
+## Literature validation
+
+The Fokkink–Meester–Pelekis citation is accurate: the paper is *Optimizing stakes in simultaneous bets*, ALEA 20 (2023), 153–165, DOI `10.30757/ALEA.v20-07`. The paper defines the optimization problem for convex combinations of iid Bernoulli variables and the function \(\pi(p,t)\), as the draft says. ([alea.impa.br](https://alea.impa.br/articles/v20/20-07.pdf))
+
+The draft’s description of the FMP results is also essentially accurate. Their Theorem 4.4 proves bold-play optimality in a rectangular region, and Proposition 4.5 treats boundary points \(p=t=(k+1)/(k+2)\), with an exception for \(k=1\). The paper explicitly notes that an array of triangles along the hypotenuse remains to be filled, so the draft correctly does **not** claim that FMP proves the missing small-\(p\) assertion. ([alea.impa.br](https://alea.impa.br/articles/v20/20-07.pdf))
+
+The Frankl citation is bibliographically accurate: *On Sperner families satisfying an additional condition*, J. Combin. Theory Ser. A 20(1), 1976, pages 1–11. The abstract concerns Sperner families with an additional union condition, consistent with the draft’s use as surrounding extremal-combinatorial context rather than as a proof of the needed weighted threshold statement. ([sciencedirect.com](https://www.sciencedirect.com/science/article/pii/009731657690073X?utm_source=openai))
+
+---
+
+## Previous concerns: addressed vs. still open
+
+### Addressed
+
+1. **Subcritical HUG weak-inequality typo fixed.**  
+   The previous strict inequality
+   \[
+   qh-pB<qh-pB'
+   \]
+   has been corrected to
+   \[
+   qh-pB\le qh-pB',
+   \]
+   which is the correct form and is sufficient for the induction.
+
+2. **Terminal case in Lemma \(\ref{lem:pairs}\) clarified.**  
+   The revised proof now explicitly explains what happens when two elements remain: their sum is at least \(1\), so the final pair is counted. This resolves the earlier ambiguity.
+
+3. **Explicit \(2/7\) cyclic counterexample added.**  
+   The load vector
+   \[
+   (1/4,1/4,0,1/4,0,1/4,0)
+   \]
+   indeed has adjacent two-interval loads
+   \[
+   1/2,1/4,1/4,1/4,1/4,1/4,1/4,
+   \]
+   so six of seven are light relative to \(2/7\). I cross-checked this computation.
+
+4. **The questionable side claim about equal-weight examples was softened.**  
+   The revised coalescence discussion no longer asserts, without proof, that the desired inequality “itself remains true there” in that paragraph.
+
+### Still open / fatal
+
+1. **The main theorem is not proved.**  
+   Conjecture \(\ref{conj:missing}\) is exactly the missing positive interval:
+   \[
+   0\le p\le 1/3.
+   \]
+   Since the problem asks for all \(p\), this is an essential unresolved gap.
+
+2. **The document explicitly says the small-\(p\) assertion remains an essential gap.**  
+   This directly violates the readiness requirement.
+
+3. **The “Remaining open issues” section remains.**  
+   Under the instructions, a draft with unresolved essential lemmas is not answer-ready.
+
+---
+
+## Detailed mathematical audit
+
+### Problem statement and interpretation
+
+The universal interpretation is clearly stated and is reasonable:
+\[
+\Pr\!\left[\sum_i w_i v_i\ge p\right]\ge p
+\]
+must hold for every finite nonnegative probability vector \(w\). This satisfies the instruction to record the adopted interpretation.
+
+However, the paragraph immediately states that the classification depends on the unproved small-\(p\) assertion. Therefore the draft is openly incomplete.
+
+---
+
+### Coloring criterion
+
+Proposition \(\ref{prop:criterion}\) is valid. The proof correctly randomizes the original indices into \(b\) color classes. For a uniformly chosen \(a\)-subset of colors, the deterministic hypothesis gives success probability at least \(a/b\). Exchangeability of the color-load vector justifies passing from a random \(a\)-subset to any fixed \(a\)-subset. For that fixed subset, each original index is selected independently with probability \(a/b\), giving exactly the Bernoulli model.
+
+No issue here.
+
+---
+
+### Reciprocal points and pair lemma
+
+The reciprocal case \(p=1/k\) follows correctly from the coloring criterion.
+
+Lemma \(\ref{lem:pairs}\) appears sound. The deletion process and counting argument are valid after the terminal clarification added in the revision. The algebra proving the lower bound \(b-1\) good pairs checks out.
+
+Minor stylistic point: the proof uses strict inequalities after deletion and then reverts to a non-strict invariant. This is harmless, but the wording could be streamlined.
+
+---
+
+### Positive special values
+
+Corollary \(\ref{cor:positive}\) is correct. The cases \(p=0,1\) are immediate. The \(p=1/2\) symmetry argument is valid because, when \(p=1/2\),
+\[
+X=\sum_i w_i v_i
+\]
+has the same distribution as
+\[
+1-X=\sum_i w_i(1-v_i).
+\]
+Therefore \(\Pr[X<1/2]=\Pr[X>1/2]\), implying \(\Pr[X\ge1/2]\ge1/2\).
+
+---
+
+### Multiplicative closure
+
+Proposition \(\ref{prop:closure}\) is valid. Writing Bernoulli\((pq)\) variables as products \(x_i y_i\), with \(x_i\sim\Ber(p)\) and \(y_i\sim\Ber(q)\), is correct. Conditional on \(T=\sum_i w_i x_i\ge p\), the normalized coefficients \(w_i x_i/T\) form a probability vector, and applying the \(q\)-inequality gives the result.
+
+No issue.
+
+---
+
+### Closedness of \(\mathcal G\)
+
+Proposition \(\ref{prop:closed}\) is correct. The proof properly uses the finite set of subset sums to stabilize the threshold event along one-sided subsequences \(p_n\to p\). The right-sided case correctly yields
+\[
+\mu_p\{A:w(A)>p\}\ge p,
+\]
+which is enough because this event is contained in \(\{w(A)\ge p\}\).
+
+No issue.
+
+---
+
+### Base interval reduction
+
+Corollary \(\ref{cor:base}\) is valid. If the inequality is known on \([1/6,1/3]\), then any \(0<p\le1/3\) can be multiplied by a suitable power of \(2\) into that interval, and multiplicative closure with \(1/2\in\mathcal G\) brings it back down.
+
+No issue, but this remains a conditional reduction.
+
+---
+
+### Negative examples
+
+Proposition \(\ref{prop:negative}\) is correct.
+
+For \(1/3<p<1/2\), the equal-three-weight example requires at least two successes and has probability
+\[
+3p^2(1-p)+p^3=3p^2-2p^3,
+\]
+with
+\[
+3p^2-2p^3-p=p(1-p)(2p-1)<0.
+\]
+
+For \(1/2<p<1\), the equal-two-weight example has success probability \(p^2<p\).
+
+The negative direction is complete.
+
+---
+
+### Small-\(p\) assertion
+
+Conjecture \(\ref{conj:missing}\) is the central missing theorem. It is not proved. This is the fatal gap.
+
+The sharpness examples are correct. The pivot-plus-dust construction correctly gives near equality while all weights are below \(p\). The convergence argument using
+\[
+Y_N\to p(1-a)=p(1-p+\varepsilon)
+\]
+in probability is valid, and the inequalities
+\[
+\varepsilon<p(1-p+\varepsilon)<p
+\]
+hold for \(0<\varepsilon<p\le1/3\).
+
+---
+
+### Unit-gap and homogeneous unit-gap forms
+
+Proposition \(\ref{prop:unitgap}\) is correct.
+
+The forward direction, assuming the conjecture and conditioning on the unit coefficient, gives
+\[
+p\Pr[S\ge p(B+1)-1]+q\Pr[S\ge p(B+1)]\ge p,
+\]
+which rearranges to UG.
+
+The reverse direction is also correct: if all original weights are below \(p\), choose a maximal weight \(a\), write residual weights as \(u_i=a b_i\), use \(a(B+1)=1\), and condition on the pivot variable. The inequalities with strict lower-tail thresholds are handled correctly.
+
+The homogeneous form HUG is correctly obtained by scaling.
+
+No issue, but these are equivalent reformulations, not a proof of the missing assertion.
+
+---
+
+### Subcritical shifted HUG proposition
+
+The revised induction proof is now correct. The previous typo has been fixed. The base case is valid, and the two residual shifts
+\[
+\delta+pc,\qquad \delta-qc
+\]
+are handled properly.
+
+However, the proposition proves only the subcritical regime
+\[
+B\le qh/p.
+\]
+The draft explicitly acknowledges that this does not cover the pivot normalization needed for the full conjecture. Therefore it is only a partial result.
+
+---
+
+### Rational cyclic formulation
+
+The cyclic expectation identity
+\[
+\Pr\!\left[\sum_i w_i v_i<p\right]
+=\frac1b\,\mathbb E\,\#\{j:L_j<r/b\}
+\]
+is correct. For each fixed cyclic interval of length \(r\), every coefficient is included independently with probability \(r/b\).
+
+The explicit deterministic counterexample for \(r/b=2/7\) is correct and resolves the earlier request for detail.
+
+Minor note: the statement should probably explicitly assume \(r\ge1\), i.e. \(p>0\), since \(p=0\) is trivial and cyclic intervals of length \(0\) are not relevant. This is not fatal.
+
+---
+
+### New sequential crossing identity
+
+The new identity is correct for \(p>0\):
+\[
+\Pr[S_i<p]=\Pr[S_{i-1}<p]
+      -p\,\Pr[p-w_i\le S_{i-1}<p].
+\]
+It follows because \(v_i\) is independent of \(S_{i-1}\), and crossing below-to-above occurs exactly when
+\[
+v_i=1,\qquad p-w_i\le S_{i-1}<p.
+\]
+
+Iterating gives
+\[
+\Pr[S_m<p]
+=1-p\sum_i \Pr[p-w_i\le S_{i-1}<p],
+\]
+provided \(p>0\), since \(\Pr[S_0<p]=1\). Therefore the desired inequality is equivalent to the crossing-intensity bound
+\[
+\sum_i \Pr[p-w_i\le S_{i-1}<p]\ge1.
+\]
+
+New minor issue: as written, this is placed inside the small-\(p\) discussion without explicitly excluding \(p=0\). At \(p=0\), \(\Pr[S_0<p]=\Pr[0<0]=0\), so the displayed iteration with initial value \(1\) is false. Since \(p=0\) is trivial, this is easily fixed by saying “for \(0<p\le1/3\).”
+
+This is not fatal to the paper, but it is a new technical qualification that should be added.
+
+---
+
+### Complement, pivot, convex-hull, and partition-function formulations
+
+The complement formulation is correct:
+\[
+\sum_i w_i v_i\ge p
+\quad\Longleftrightarrow\quad
+\sum_i w_i(1-v_i)\le 1-p.
+\]
+Thus the failure event is the strict upper tail \(>q\).
+
+The pivot inequality formulation is correct.
+
+The convex-hull equivalence is essentially correct. The proof that \(P(\mathcal D)\) is coordinatewise down-closed via thinning is valid. The separation argument is also valid, though it would benefit from explicitly orienting the separating hyperplane before concluding \(c_i\ge0\).
+
+The partition-function reformulation follows correctly from
+\[
+\mu_p(\mathcal D)
+=(1-p)^m\sum_{A\in\mathcal D}\left(\frac p{1-p}\right)^{|A|}.
+\]
+
+No fatal issue here, but these remain reformulations of the unproved conjecture.
+
+---
+
+### Intersection-theoretic reformulation
+
+The statement that no \(r=\lfloor1/p\rfloor\) members of
+\[
+\mathcal D_w=\{A:w(A)<p\}
+\]
+cover \([m]\) is correct: their union has weight \(<rp\le1\), hence cannot be the whole ground set of total weight \(1\).
+
+The complement family
+\[
+\mathcal H_w=\{B:w(B)>1-p\}
+\]
+is therefore \(r\)-wise intersecting. This is valid.
+
+Again, it is only a reformulation and does not prove the desired biased-measure bound.
+
+---
+
+### Coalescence identity and examples
+
+The coalescence identity
+\[
+\Delta
+=pq\Big(
+       \Pr[q-x-y<Z\le q-y]
+       -\Pr[q-x<Z\le q]
+     \Big)
+\]
+is correct. The half-open endpoints are consistent with the strict event
+\[
+\sum_i w_i\eta_i>q.
+\]
+
+The concrete example
+\[
+p=3/10,\quad q=7/10,\quad w_i=1/4
+\]
+checks out:
+\[
+\Phi_q(w)=4q^3(1-q)+q^4=6517/10000,
+\]
+while the coalesced vector gives
+\[
+q(1-(1-q)^2)=637/1000.
+\]
+I cross-checked these numerically.
+
+The general equal-weight obstruction computation is also correct.
+
+---
+
+## Remaining fatal issue
+
+Despite the useful reductions and partial positive families, `answer.tex` does **not** solve the stated problem. It proves:
+
+- all negative values outside \([0,1/3]\cup\{1/2,1\}\);
+- several positive families;
+- closure and reduction results;
+- many equivalent formulations of the missing small-\(p\) assertion.
+
+But it does **not** prove:
+\[
+[0,1/3]\subseteq\mathcal G.
+\]
+
+Therefore it does not determine the full set of probabilities \(p\).
+
+---
+
+## Required changes before readiness
+
+To become answer-ready, the author must provide a rigorous proof of Conjecture \(\ref{conj:missing}\), or cite and correctly apply an existing theorem that proves it with all hypotheses verified. Merely adding more equivalent formulations, partial regimes, or failed routes is insufficient.
+
+Minor fixes recommended if the draft is further developed:
+
+1. State the sequential crossing identity only for \(p>0\).
+2. In the cyclic rational formulation, explicitly exclude \(r=0\) or say \(p=0\) is treated separately.
+3. Slightly clarify the orientation of the separating hyperplane in the convex-hull proof.
+
+These minor points are secondary. The essential obstruction remains the unproved small-\(p\) conjecture.

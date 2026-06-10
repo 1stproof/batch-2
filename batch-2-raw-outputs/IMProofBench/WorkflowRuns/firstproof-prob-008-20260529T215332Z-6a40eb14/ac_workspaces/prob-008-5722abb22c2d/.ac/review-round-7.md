@@ -1,0 +1,147 @@
+## Referee report on the revised `answer.tex`
+
+### Verdict
+
+The revision is more honest and clearer than the previous draft, but it is **not a complete solution**. The document explicitly leaves two essential local-to-global inputs unresolved, states only a **conditional** order-reversal theorem, and ends with “Remaining open issues.” Under the requested standard, this is automatically **not answer-ready**.
+
+I also found a few additional issues in the conditional proof, especially missing edge-case handling in Theorem 3.2.
+
+---
+
+## Literature and external validation
+
+The use of Brandt–Eur–Zhang for the valuated-quotient / tropical-linear-space inclusion dictionary is appropriate: BEZ state that \(\mu\preceq\nu\) iff \(\operatorname{trop}(\mu)\subseteq\operatorname{trop}(\nu)\), and they identify the full arbitrary incidence-Plücker relations with valuated matroid quotients. ([par.nsf.gov](https://par.nsf.gov/servlets/purl/10391296))
+
+The revision correctly retreats from the previous invalid use of Murota–Shioura on a union of two non-adjacent basis layers. Murota–Shioura’s local theorem requires an \(M^\natural\)-convex effective domain and a local exchange property, so it does not automatically imply the desired nested-to-full incidence criterion for two arbitrary non-adjacent ranks. ([educ.titech.ac.jp](https://educ.titech.ac.jp/iee/publications/file/pub_15646.pdf))
+
+Jarra–Lorscheid remains relevant background for flag matroids over tracts and cryptomorphic descriptions, but the revised draft correctly recognizes that a precise nonuniform \(\infty\)-valued adjacent-local criterion still has to be supplied before Proposition 2.4 becomes unconditional. ([sciencedirect.com](https://www.sciencedirect.com/science/article/pii/S000187082300539X))
+
+---
+
+## LaTeX contract check
+
+I compiled the revised `answer.tex` twice with `pdflatex`. It compiled successfully and produced a 5-page PDF. The document class is exactly
+
+```latex
+\documentclass[12pt]{article}
+```
+
+It uses `fullpage`, which is permitted, and I found no prohibited margin/layout, line-spacing, or in-document font-size changes. So I found **no LaTeX-contract violation**.
+
+---
+
+## What the revision fixed from the previous review
+
+1. **Invalid Murota–Shioura shortcut removed.**  
+   The previous draft asserted that the union of two non-adjacent basis layers was a generalized polymatroid / \(M^\natural\)-convex domain. The revision now explicitly acknowledges this was invalid and isolates the nested-to-full incidence implication as an unresolved Criterion.
+
+2. **Circuit-minimum lemma improved.**  
+   The revised proof now chooses one complement \(D\) to the flat \(F=\operatorname{cl}(A\cup C)\), fixing the ambiguity in the previous version.
+
+3. **Ordinary polar-rank argument strengthened.**  
+   The revised Lemma 2.1 gives a more explicit monotonicity/unit-increment/submodularity proof. It is much better than before, though still somewhat compressed.
+
+4. **Open issues are now explicitly acknowledged.**  
+   This is good scholarly practice, but it means the document cannot count as a final solution.
+
+---
+
+## Detailed audit
+
+### Section 0: Conventions and local inputs
+
+The valuated-matroid model of \(\Dr(M)\) is reasonable and supported by BEZ. The answer now says explicitly that it is using this standard model. That addresses part of my previous concern about the identification between tropical linear subspaces and projective valuated matroids.
+
+However, the central **Criterion 0.1** is unproved:
+
+\[
+\text{nested incidence }(N)\quad\Longrightarrow\quad\text{full arbitrary incidence }(A).
+\]
+
+This is not a minor lemma. It is essential to the proof of Theorem 3.2. The draft says this is “the precise remaining place where a proof or reference is still needed.” Therefore the main theorem is conditional.
+
+The one-point completion formula (1) is also still supported only by a broad reference to Murota / Dress–Terhalle. This may be standard, but a final proof should cite a precise theorem or give a self-contained verification that all \(h_j\) are valuated matroids and that \(h_j\preceq h_{j+1}\). The endpoint \(h_r\simeq\mu_M\) is checked, but the internal layers are not proved in the text.
+
+The complete-flag local criterion is also explicitly left open. Since Proposition 2.4 depends on it, Proposition 2.4 is not an unconditional result.
+
+### Section 1: Flat-lattice duality and flat constancy
+
+Lemma 1.1 is essentially correct. A rank-reversing lattice anti-automorphism of the flat lattice forces modularity by applying the anti-automorphism to semimodularity.
+
+Lemma 1.2 is also substantially correct. The revised proof now states the common-complement argument more clearly. The incidence relation with \(\mu_M\) forces equality of values on independent \(k\)-sets spanning the same \(M\)-flat. This part is acceptable.
+
+### Section 2: Polar transform and supports
+
+The definition of
+
+\[
+\nu^{\perp_M}(A)=\bar\nu((\operatorname{cl}A)^\perp)
+\]
+
+for \(M\)-independent \(A\) of size \(r-k\) is well-defined using flat constancy, and involutivity on flat coordinates is plausible.
+
+Lemma 2.1, the ordinary polar-rank lemma, is much improved. The formula
+
+\[
+\rho^\perp(A)=\operatorname{rk}_M(A)-k+\rho_N((\operatorname{cl}A)^\perp)
+\]
+
+does plausibly define a matroid rank function. The proof should still explicitly note that \(\rho_N\) is constant on \(M\)-closures because \(N\) is a quotient of \(M\); this is used in the submodularity and closure-extension argument. But this is probably fixable and not the main fatal issue.
+
+Lemma 2.2, the elementary opposition lemma, is plausible. Some details remain terse, especially in the \(\delta=2\) degeneration cases, but I do not see a clear fatal error there.
+
+Proposition 2.4 is explicitly conditional on the complete-flag local criterion. Since that criterion is not proved or precisely cited, Proposition 2.4 does not establish that \(\nu^{\perp_M}\) is always a point of \(\Dr(M)\). This is one of the two main unresolved gaps.
+
+### Section 3: Conditional order reversal
+
+The circuit-minimum lemma is now acceptable.
+
+The nested-incidence case analysis in Theorem 3.2 remains plausible, but the theorem is only conditional on Proposition 2.4 and Criterion 0.1. Thus it does not prove the required order reversal in \(\Dr(M)\).
+
+There are also some **new or reintroduced edge-case issues**:
+
+1. **Case \(b=r\).**  
+   The proof starts by fixing \(A\subseteq T\) with \(|A|=r-b-1\). If \(b=r\), this gives \(|A|=-1\), so the proof as written is invalid. The previous draft had a separate edge-case paragraph; the revised version removed it.
+
+2. **Case \(a=0\).**  
+   The \(\delta=m\) case would involve a flat \(G\) of rank \(a-1=-1\), although that case may be impossible by rank bounds. This should be stated explicitly.
+
+3. **Case \(a=b\).**  
+   Criterion 0.1 is stated only for \(a<b\). Theorem 3.2 states \(p\preceq q\) without excluding equal ranks. Equal-rank quotient comparisons may be trivial under suitable conventions, but the proof does not say so. A final proof needs a separate equal-rank argument.
+
+These edge cases are not the main reason for non-readiness, but they must be fixed in any complete version.
+
+### Section 4: Agreement with flats
+
+This section is essentially correct, conditional on the polar transform being well-defined on all of \(\Dr(M)\). The modular-rank argument
+
+\[
+Y^\perp\vee F=\hat 1
+\iff
+Y^\perp\wedge F=\hat 0
+\iff
+Y\vee F^\perp=\hat 1
+\]
+
+is sound.
+
+### Remaining open issues section
+
+This section accurately identifies the two fatal missing ingredients:
+
+1. nested incidence \(\Rightarrow\) full arbitrary incidence for two ranks;
+2. complete-flag adjacent-local criterion / direct proof that each polar layer is valuated.
+
+Because these are essential, the document itself acknowledges that the proof is incomplete.
+
+---
+
+## Additional code check
+
+Besides compiling the LaTeX, I ran a small sanity check for the nested-versus-full incidence issue in the uniform \(a=2,b=4,n=6\), \(\{0,1\}\)-valued setting. I found no counterexample in that small search, but this does not prove Criterion 0.1 and does not repair the proof.
+
+---
+
+## Final assessment
+
+The revision successfully turns the previous overclaimed proof into a transparent **conditional argument** with the main gaps isolated. That is an improvement, but it is not a complete rigorous solution to the stated problem. In particular, `answer.tex` still contains unproved essential criteria and explicitly lists remaining open issues.

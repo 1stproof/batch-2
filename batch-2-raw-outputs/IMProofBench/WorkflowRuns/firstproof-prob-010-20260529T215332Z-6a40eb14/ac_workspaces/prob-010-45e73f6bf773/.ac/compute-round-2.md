@@ -1,0 +1,131 @@
+# Compute worker reply — round 2
+status: done
+error: (none)
+workspace: /data/output/workflow_runs/firstproof-prob-010-20260529T215332Z-6a40eb14/ac_workspaces/prob-010-45e73f6bf773/compute
+zip: /data/output/workflow_runs/firstproof-prob-010-20260529T215332Z-6a40eb14/agents/Compute-c1-0e5ee6/compute_workspace_round_2.zip
+
+---
+
+# Round 2 compute report
+
+Local source files used:
+
+- DKEP arXiv source: `sources/DKEP/extracted/DKEP.tex`; PDF/text already in `papers/DKEP_2204.00517.pdf`, `data/DKEP_2204.00517.txt`.
+- CDHJKN arXiv source/PDF downloaded this round: `sources/CDHJKN/extracted/cube.tex`, `papers/CDHJKN_2404.08150.pdf`, `data/CDHJKN_2404.08150.txt`.
+
+## 1. DKEP normal-bidual input for Lemma `finite-boundary`
+
+Verdict: the argument is usable, but `answer.tex` should define the support projections more precisely and cite DKEP Lemma 8.5 plus the normal-corner construction, not just say “boundary calculus.”
+
+Exact DKEP locations:
+
+- Normal \(M\)-\(C^*\)-algebra / normal support projection \(p_{\rm nor}\): `sources/DKEP/extracted/DKEP.tex:464-473`. DKEP define \(p_{\rm nor}\) so that states supported by \(p_{\rm nor}\) restrict normally to \(M\), and define support projections \(q_B\) for sub-\(C^*\)-algebras inside the bidual.
+- Boundary piece definition and \(X_B\): `sources/DKEP/extracted/DKEP.tex:620-638`.
+- \(\mathbb K_X^{\infty,1}\) and \(\mathbb S_X(M)\); relative proper proximality by central states: `sources/DKEP/extracted/DKEP.tex:638-690` and `1181-1204`.
+- The useful nonamenable-factor variant: Proposition `vanishonpiece`, `sources/DKEP/extracted/DKEP.tex:1517-1528`, says if \(M\) has no amenable direct summand, non-relative-proximality can be witnessed by a central state vanishing on \(\mathbb K_X^{\infty,1}(M)\).
+- Bidual support setup and Lemma 8.5: `sources/DKEP/extracted/DKEP.tex:1571-1590`. Here \((\mathbb K_X(M)_J^\sharp)^*\) is a corner in \((\mathbb B(L^2M)_J^\sharp)^*\), with support projection commuting with both \(M\) and \(JMJ\), and
+  \[
+  \widetilde{\mathbb S}_X(M)=\{T: [T,a]\in(\mathbb K_X(M)_J^\sharp)^*\ \forall a\in JMJ\}.
+  \]
+- Lemma 8.6/`approxcentral2`: `sources/DKEP/extracted/DKEP.tex:1704-1710`, useful for choosing a state vanishing on the compact corner when the action is not weakly compact.
+
+Hypotheses needed:
+
+- Separability is needed for DKEP Lemma 8.5.
+- With the trivial group action, DKEP’s ergodicity hypothesis on \(\mathcal Z(N)\) means \(N\) should be a factor. This is present in Lemma `finite-boundary`.
+- Nonamenability is needed to rule out the compact-corner/weak-compactness alternative. For a finite factor, an \(N\)-central state on \(\mathbb B(L^2N)\) extending the trace is Connes amenability.
+
+Suggested edit to the proof:
+
+Define \(q_X\) as the support projection of the corner \((\mathbb K_X(N)_J^\sharp)^*\) in \((\mathbb B(L^2N)_J^\sharp)^*\), and \(q_{\mathcal K}\) similarly for the compact boundary piece. Then for \(T\in\widetilde{\mathbb S}_X(N)\) and \(a\in JNJ\),
+\[
+[q_X^\perp Tq_X^\perp,a]=q_X^\perp[T,a]q_X^\perp=0,
+\]
+because \(q_X\) commutes with \(JNJ\) and supports \((\mathbb K_X(N)_J^\sharp)^*\). Hence
+\[
+q_X^\perp\widetilde{\mathbb S}_X(N)q_X^\perp\subset \widetilde{\mathbb S}(N).
+\]
+If \(\omega(q_X^\perp)>0\), the cut-down \(T\mapsto \omega(q_X^\perp Tq_X^\perp)/\omega(q_X^\perp)\) is again \(N\)-central and normal on \(N\) because everything is inside the normal \(p_{\rm nor}\)-corner. This contradicts relative proper proximality via Lemma 8.5 (or Lemma 8.6 in the nonamenable-factor form). If all \(\omega(q_{X_i}^\perp)=0\), then \(\omega\) is supported on \(\bigwedge_i q_{X_i}=q_{\mathcal K}\). Composing with the natural DKEP \(N\)- and \(JNJ\)-bimodular u.c.p. map \(\mathbb B(L^2N)\to(\mathbb K(N)_J^\sharp)^*\) gives an \(N\)-central hypertrace, forcing amenability.
+
+## 2. CDHJKN fusion rules and the link-boundary meet
+
+Verdict: the meet statement is plausible and I found no counterexample, but the current proof says too much too quickly. CDHJKN do not themselves mention DKEP support projections. What they give is the correspondence decomposition/fusion rule; one must add a DKEP correspondence-boundary support lemma.
+
+Exact CDHJKN locations:
+
+- The introductory “Main Theorem” in the arXiv source is Theorem D: `sources/CDHJKN/extracted/cube.tex:380-397`.
+- The precise decomposition is Theorem 5.4: `sources/CDHJKN/extracted/cube.tex:1197-1218`.
+- The fusion rule is Proposition 5.5: `sources/CDHJKN/extracted/cube.tex:1220-1255`.
+
+Important warning: the arXiv source has a typo in the proof of Proposition 5.5 at `cube.tex:1252-1254`, where the final displayed line says \(V_2\) on the right. The statement of Proposition 5.5 and Theorem D correctly say \(V_3\). Cite the statement, not that proof line.
+
+Correct translation:
+
+For \(U\subset V\), put
+\[
+H_U={}_M L^2(M)\otimes_{M_U}L^2(M)_M.
+\]
+DKEP Example 5.11 (`sources/DKEP/extracted/DKEP.tex:1145-1147`) identifies \(X_{M_U}\) from \(L^2(M)\) as an \(M\)-\(M_U\) correspondence. For the \(M\)-\(M\) correspondence \(H_U\), the same left coefficient boundary is obtained: the coefficient of \(1\otimes 1\) is \(e_{M_U}\), and the \(M,JMJ\)-translates generate exactly the Jones-projection boundary piece of Example 3.4.
+
+The additional lemma needed is:
+
+**Correspondence-support lemma.** If \(X_H\) is DKEP’s boundary piece associated with an \(M\)-\(M\) correspondence \(H\), and \(q_H\) is the support of \((\mathbb K_{X_H}(M)_J^\sharp)^*\), then
+\[
+q_{H_1}\wedge q_{H_2}=q_{H_1\otimes_M H_2}
+\]
+after replacing \(H_1\otimes_M H_2\) by the direct sum of its correspondence summands and using that direct sums give joins of support projections. This follows from the coefficient formula \(T_{\xi\otimes\eta}=T_\eta T_\xi\) in DKEP’s correspondence section (`sources/DKEP/extracted/DKEP.tex:1074-1085`) and the definition of \(X_H\) by coefficients (`1145-1147`), but it is not stated as a named CDHJKN theorem.
+
+With that lemma, CDHJKN Proposition 5.5 gives
+\[
+H_{U_1}\otimes_M H_{U_2}\cong
+\bigoplus_{W\subset U_1\cap U_2} H_W^{\oplus k_{\Gamma}(U_1,U_2,W)}.
+\]
+The empty relative word contributes one copy of \(H_{U_1\cap U_2}\); all other summands have \(W\subseteq U_1\cap U_2\), hence their boundary supports are \(\le q_{U_1\cap U_2}\). Therefore
+\[
+q_{X_{U_1}}\wedge q_{X_{U_2}}=q_{X_{U_1\cap U_2}}.
+\]
+Iterating over finitely many \(U_i\) gives
+\[
+\bigwedge_i q_{X_{U_i}}=q_{X_{\cap_i U_i}}.
+\]
+For links, \(\cap_{v\in V}\operatorname{Lk}(v)=\varnothing\) because the graph has no loops, and \(X_{\varnothing}=X_{\mathbb C}=\mathbb K(L^2M)\). Thus the desired meet is
+\[
+\bigwedge_{v\in V}q_{X_{M_{\operatorname{Lk}(v)}}}=q_{\mathcal K}.
+\]
+
+Required edit: replace “CDHJKN Main Theorem 0.4 implies that the product of support projections…” by the above correspondence-support lemma plus CDHJKN Theorem 5.4/Proposition 5.5. Also say “meet,” not “product,” unless commutation of the support projections has been separately proved.
+
+## 3. Relative Bass-Serre proposition
+
+Verdict: the proposition is correct under the stated hypotheses. The proof should be expanded at the membership step, but the paradoxical inequalities are valid.
+
+Membership \(p,q\in S_{X_B}(N)\):
+
+Let \(N=P*_BQ\), \(Q=B\bar\otimes A\), and let \(p,q\) be the projections onto the reduced-word subspaces whose first letter lies in \(P^\circ=L^2(P)\ominus L^2(B)\) and \(Q^\circ=L^2(Q)\ominus L^2(B)\). For \(x\) in the algebraic AFP, right multiplication by \(x\) changes the first-letter type only when the whole initial reduced word is cancelled down to a \(B\)-coefficient and then rebuilt. Such terms factor through \(L^2(B)\); explicitly they are finite sums of operators in the span defining \(X_B\), i.e. \(aJbJ\,T\,JcJd\) with \(T\in e_B\mathbb B(L^2N)e_B\). Thus
+\[
+[p,JxJ],\ [q,JxJ]\in X_B\subset \mathbb K^{\infty,1}_{X_B}(N)
+\]
+for algebraic AFP \(x\). Since this algebra is ultraweakly dense, DKEP Lemma 6.1 (`sources/DKEP/extracted/DKEP.tex:1163-1177`) gives \(p,q\in S_{X_B}(N)\). The current one-sentence “factor through \(L^2(B)\)” claim is right but should be expanded this way.
+
+Paradoxical inequalities:
+
+- \(E_B(w_i)=0\) means \(w_i\in P^\circ\), so \(w_i q w_i^*\le p\).
+- \(E_B(w_1^*w_2)=0\) implies the ranges \(w_1qL^2N\) and \(w_2qL^2N\) are orthogonal: for \(Q\)-initial vectors, left multiplication by \(w_1^*w_2\in P^\circ\) produces a \(P\)-initial reduced vector, orthogonal to the \(Q\)-initial subspace. Hence
+  \[
+  w_1qw_1^*+w_2qw_2^*\le p.
+  \]
+- For \(a=1\otimes a_0\in Q^\circ\), \(apa^*\le q\).
+
+An \(N\)-central state \(\varphi\) on \(S_{X_B}(N)\) therefore satisfies
+\[
+2\varphi(q)\le \varphi(p)\le\varphi(q),
+\]
+so \(\varphi(p)=\varphi(q)=0\). Finally \(h=w_1a\) is \(B\)-Haar: \(h^n\) is a reduced alternating word with \(E_B(h^n)=0\) for \(n\ne0\), so \(h^nL^2(B)\) are pairwise orthogonal. The projections \(h^ne_Bh^{-n}\) are pairwise orthogonal and all lie in \(S_{X_B}(N)\), hence \(m\varphi(e_B)\le1\) for all \(m\), so \(\varphi(e_B)=0\). Since \(1=e_B+p+q\), contradiction.
+
+No extra mixing, finite-dimensionality, or amenability assumption on \(B\) is needed for this relative statement.
+
+## Bottom-line edits to `answer.tex`
+
+1. Keep Lemma `finite-boundary`, but define \(q_X\) as the normal-bidual support of \((\mathbb K_X(N)_J^\sharp)^*\), cite DKEP `p_{\rm nor}`/Lemma 8.5, and explain the cut-down normality and compact-corner hypertrace as above.
+2. Replace Lemma `links-fill` proof with the correspondence-support lemma plus CDHJKN Theorem 5.4/Proposition 5.5. CDHJKN alone supplies fusion, not DKEP support-projection language.
+3. Keep Proposition `relative-BS`; expand the \(p,q\in S_{X_B}\) paragraph and leave the inequalities essentially as written.

@@ -1,0 +1,705 @@
+{
+    "comp_name": null,
+    "solver_name": null,
+    "timestamp": "0529-23:13:00.749601",
+    "problem_idx": -1,
+    "batch_idx": 0,
+    "request_info": {
+        "nb_executed_tool_calls": {
+            "any": 0
+        },
+        "n_retries": 0
+    },
+    "request": {
+        "model": "gpt-5.5-pro",
+        "tools": [
+            {
+                "type": "code_interpreter",
+                "container": {
+                    "type": "auto",
+                    "file_ids": [
+                        "file-4MWQUpuAAFvceoCsug57E8",
+                        "file-AhyepebgKkq5PYmye32XGf",
+                        "file-XsUGRgd2FRKyfiHVLygzoY",
+                        "file-JPUyV4CDajUk8qi2nA5Agf"
+                    ]
+                }
+            },
+            {
+                "type": "web_search_preview"
+            }
+        ],
+        "input": [
+            {
+                "role": "developer",
+                "content": "Act as a research-level mathematical proof author iterating on a\nwritten deliverable in an Author/Critic loop. You have produced an\ninitial version of three canonical files; a Critic has reviewed them.\nYour job each round is to refine the files in response to the Critic's\nfindings.\n\nYou have two tools:\n  - **code_interpreter**: a Python sandbox with TeX Live + standard\n    scientific libs. Run ``pdflatex`` to verify compile, and use\n    sympy or numpy for computational exploration, verification and\n    sanity checks. The sandbox has NO outbound network \u2014 use\n    web_search_preview for any external URL or paper.\n  - **web_search_preview**: free-form web search.\n\nYour workspace lives at ``/mnt/data/`` and contains three canonical\nfiles. The user message lists, for each, a read-only input path\n(holding the previous round's contents) and a canonical write path\n(``/mnt/data/<name>``) where you must write any updates.\n\nHow to update a file:\n  1. Read its current contents from the listed read-only path.\n  2. Build the new contents.\n  3. Write to the canonical write path with\n     ``Path(\"/mnt/data/<name>\").write_text(...)``. Do not write to\n     ``.new``/``.bak``/sibling paths \u2014 only canonical write paths are\n     picked up.\n  4. Compile-check answer.tex with ``pdflatex`` before claiming\n     readiness.\n\nA file you do not write at the canonical write path is treated as\nunchanged this round.\n\n**``research_notes.tex`` is your persistent scratchpad across rounds.**\nAccumulate definitions, intermediate lemmas, computational sanity-checks,\nalternative-approach sketches, dead ends you ruled out, literature notes\n\u2014 anything you'd want to refer back to in a later round. **Do not turn\nit into a changelog or a reply to the Critic** \u2014 that is what your\nfree-text thinking summary is for. A future Author turn should be able\nto read research_notes.tex and pick up where it left off.\n\nYou may also emit three control blocks in your reply text:\n\n  - **<council>...question...</council>** \u2014 invoke the Advisory\n    Council on a specific sub-question. At most one per round. Use\n    the Council when you are stuck or want a different angle: point\n    it at specific side-problems or issues uncovered by the Critic,\n    ask it to suggest a portfolio of potential approaches, or get a\n    second opinion on a strategic choice. The primary purpose is\n    *not* additional verification \u2014 that is handled in the parallel\n    Critic call. Council members are independent strong models\n    (Pro, Opus, Gemini); their replies arrive at the start of your\n    next turn.\n\n  - **<compute_agent>...instructions...</compute_agent>** \u2014\n    commission an out-of-band codex CLI worker for one focused task\n    per round. At most one per round. Soft timeout 60 min, full\n    network access, persistent workspace where ``code/``, ``data/``,\n    ``papers/``, ``notes/`` survive across rounds, and \u2014 depending\n    on the sandbox image \u2014 possibly a richer CAS toolchain (e.g.\n    SageMath, GAP, Singular, PARI/GP). The worker can probe what is actually\n    installed, so you don't need to know in advance; ask it to\n    verify availability before committing to a particular tool.\n    Best use is heavy computation or multi-round code development\n    that would be too slow or too large for your own code_interpreter\n    (which is ephemeral, has no network, and times out per cell),\n    symbolic-algebra work that benefits from a real CAS rather than\n    ``sympy``, or deeper literature retrieval (downloading actual\n    PDFs / TeX sources from arXiv etc.). Each invocation the worker\n    re-sees a fresh read-only snapshot of your three canonical\n    files; it writes findings to\n    ``responses/response_round_N.md`` and the whole workspace is\n    zipped and attached to your *next* turn as a read-only file you\n    can ``unzip`` via code_interpreter to inspect logs, data, and\n    downloaded papers. The reply arrives at the start of your next\n    turn, alongside any council replies. Give it specific, ordered,\n    executable instructions \u2014 it does not see prior loop history\n    beyond what you tell it and what is in its own persistent\n    workspace.\n\n  - **<ready>true</ready>** \u2014 signal that you believe the answer is\n    ready for submission. See the readiness rules below.\n\nAnything outside those control blocks is treated as a brief free-text\n\"thinking summary\" for the human reviewer and the Critic. Do NOT\npaste file contents in your reply.\n\n---\n\nResearch ambition and problem interpretation. Your goal is to resolve\nthe given question to the fullest extent possible, with the ideal\noutcome being a complete and rigorous solution. The solution may\nrequire novel, creative, and non-trivial elements. If a non-trivial\nlemma, computation, or reduction appears necessary, attempt to prove\nthe lemma, run the computation, or carry out the reduction in this turn\nbefore listing it as a gap. Do not stop at \"this remains to be proved\"\nwhile you still have a plausible route to attack it.\n\nIf the problem statement is ambiguous, inconsistent, missing\ndefinitions, or likely contains a typo, begin answer.tex with a short\nsection titled \"Problem statement and interpretation\". State the\ncleanest faithful correction or restatement, list any assumptions, and\ndo not silently solve a different problem. Record the same\ninterpretation in research_notes.tex so later rounds preserve it. If\nthe problem is already well-defined, no extra interpretation section is\nneeded.\n\nWhen open gaps remain in your treatment, end answer.tex with a section\ntitled \"Remaining open issues\" (or equivalent). For each gap, state:\n(a) what it is mathematically; (b) where in the document it appears;\n(c) what was tried this round or earlier; (d) what would be needed to\nclose it (a specific computation, an alternative approach, a missing\nreference, etc.). If rounds remain and any essential mathematical gap\nis still open, keep working by focusing on closing that gap or\nexploring an alternative approach to the problem.\n\nReadiness rule. Declare ``<ready>true</ready>`` only when you\ngenuinely believe the answer is a complete rigorous solution to the\nstated problem, with no remaining open gaps, no unproved essential\nlemmas, and no missing assumptions. Do not declare\n``<ready>true</ready>`` merely because the last round has been reached\nor because a \"Remaining open issues\" section honestly lists what is\nleft; partial final outputs may list open issues, but they are not\nready. Even then the run terminates only if the Critic also concurs.\n"
+            },
+            {
+                "role": "user",
+                "content": "### Problem ###\nLet $u(x,t)$ be  a real-valued  solution to the following stochastic partial differential equation (SPDE):\n\\begin{align}\\tag{$*$}\\label{maineq}\n    \\frac{\\partial u}{\\partial t}(x,t) &= \\frac{1}{2} \\frac{\\partial^2 u}{\\partial x^2}(x,t) + \\delta_0(u(x,t)) +  \\dot{W}(x,t) \\quad\\text{for }t \\geq 0\\\\\n    u(x,0) &= u_0(x)\\in C_0([0,1])\\nonumber\\\\\n    u(0,t) &= u(1,t)=0\\quad\\text{for all }t\\geq0    \\nonumber\n\\end{align}\nwhere $C_0([0,1]):=\\{f\\in C([0,1],\\R): f(0)=f(1)=0\\}$, $x \\in [0,1]$, $t \\geq 0$, $\\delta_0$ is the Dirac delta\nfunction at $0$, and $\\dot{W}(x,t)$ is space-time white noise, $u_0\\in C_0([0,1])$ is the initial condition. We understand\nthe probabilistically weak PDE mild solution of the equation in the\nsense described in ``Well-posedness of stochastic heat equation with\ndistributional drift and skew stochastic heat equation'' by Siva\nAthreya, Oleg Butkovsky, Khoa L\u00ea, Leonid Mytnik (2024). \nWe assume that the existence, uniqueness, and approximation results of [ABLM24] extend to the SPDE on $[0,1]$ with Dirichlet boundary conditions, i.e. with the Dirichlet heat kernel and initial data $u_0\\in C_0([0,1])$. In\nparticular, we assume that there exists a unique (in law) adapted mild solution to \\eqref{maineq} on $C([0,T],C_0([0,1]))$.\n\n\nWe further assume that if $u^n$ is a solution to this SPDE with the drift $G_{1/n}$ in place of $\\delta_0$, where $G_{1/n}(x):=\\sqrt{\\frac{n}{2\\pi}} \\exp(-\\frac{n x^2}{2})$ is the 1D heat kernel on $\\mathbb{R}$ with variance $1/n$, then for any $t>0$ we have \n\\begin{equation*}\nu^n(t)\\to u(t),\\qquad\\text{weakly, \\,\\, as $n\\to\\infty$}.\n\\end{equation*}\n\nLet $P_t$ be the Markov semigroup associated with the solution $u(t)$, i.e., for any bounded measurable function $f\\colon C_0([0,1])\\to\\R$,\n\\begin{align}\n    P_t f(u_0) = \\mathbb{E}[f(u(\\cdot,t)) | u(\\cdot,0) = u_0(\\cdot)],\\quad u_0\\in C_0([0,1]).\n\\end{align}\n\n\nProve or disprove the following statement:  $P_t$ has at most one invariant probability measure $\\mu$ on $C_0([0,1])$.\n\n### Round 3 of 5 ###\nBudget used so far: $68.62 / $1000.00\n\n### First Proof LaTeX contract ###\nFirst Proof LaTeX submission contract:\n- `answer.tex` must be a complete standalone LaTeX document.\n- Use exactly `\\documentclass[12pt]{article}`.\n- The compiled PDF must be at most 12 pages.\n- The `fullpage` package is permitted.\n- Do not use any other margin/layout changes: no `geometry`, `a4wide`,\n  `typearea`, `anysize`, manual `\\textwidth`, `\\textheight`,\n  `\\oddsidemargin`, `\\evensidemargin`, `\\topmargin`, etc.\n- Do not change line spacing: no `setspace`, `\\linespread`,\n  `\\baselinestretch`, `\\onehalfspacing`, or `\\doublespacing`.\n- Do not change font size inside the document: no `\\small`,\n  `\\footnotesize`, `\\scriptsize`, or `\\fontsize`.\n- Run `pdflatex` and fix compile errors before claiming readiness.\n\n\n### Workspace files ###\n- answer.tex: read from `/mnt/data/file-4MWQUpuAAFvceoCsug57E8-answer.tex` (read-only); write your edited version to `/mnt/data/answer.tex`.\n- research_notes.tex: read from `/mnt/data/file-AhyepebgKkq5PYmye32XGf-research_notes.tex` (read-only); write your edited version to `/mnt/data/research_notes.tex`.\n- references.bib: read from `/mnt/data/file-XsUGRgd2FRKyfiHVLygzoY-references.bib` (read-only); write your edited version to `/mnt/data/references.bib`.\n- compute_workspace_round_2.zip (read-only attachment): `/mnt/data/file-JPUyV4CDajUk8qi2nA5Agf-compute_workspace_round_2.zip`. Zip of the previous round's compute-worker workspace. Unzip via code_interpreter to inspect responses/, code/, data/, papers/, notes/, etc.\n\n### Latest Critic review ###\n## Referee report on the revised draft\n\n### Overall verdict\n\nThe revised draft is clearer and more precise than the previous version, but it is **still not a complete proof** of the stated problem. It explicitly proves only a **conditional uniqueness theorem**, conditional on the unresolved pointwise smoothing/absolute-continuity property\n\\[\nR_\\lambda^P(x,\\cdot)\\ll \\pi \\qquad \\text{for every deterministic }x\\in C_0([0,1]).\n\\]\nThe final section itself states that this remains unproved from the hypotheses of the problem. Under the instructions, a solution with a \u201cRemaining open issues\u201d section and a missing essential lemma is not answer-ready.\n\n---\n\n## LaTeX contract check\n\nI compiled `answer.tex` with `pdflatex` twice. It compiles successfully and produces a 5-page PDF. The document uses exactly\n\n```latex\n\\documentclass[12pt]{article}\n```\n\nand uses only the permitted `fullpage` package for layout. I found no forbidden margin changes, line-spacing changes, or in-document font-size changes. Thus there is **no First Proof LaTeX contract violation**.\n\n---\n\n## Literature validation\n\nThe literature checks support the author\u2019s diagnosis of the remaining gap.\n\n- ABLM\u2019s 2024 paper treats stochastic heat equations with distributional drift and includes \\(b=\\delta_0\\), but the paper itself explicitly does **not** analyze Dirichlet boundary conditions; it treats \\(\\mathbb R\\), periodic boundary conditions, and Neumann boundary conditions, while saying that Dirichlet should be adaptable but is not handled there. This is consistent with the problem statement separately assuming a Dirichlet extension. ([arxiv.org](https://arxiv.org/pdf/2011.13498))\n\n- Bounebache\u2013Zambotti construct a Dirichlet-form Markov solution with Gibbs invariant measure and associated Dirichlet form. Their setup indeed uses a Gibbs measure of the form\n  \\[\n  \\nu(dx)\\propto \\exp\\!\\left(-\\int_0^1 f(x_r)\\,dr\\right)\\mu(dx),\n  \\]\n  so \\(f=-2H_+\\) gives the candidate \\(\\pi\\) in the draft. ([arxiv.org](https://arxiv.org/pdf/1105.2779))\n\n- Bounebache\u2013Zambotti Proposition 2.5 gives a resolvent kernel \\(\\rho_\\lambda(x,dy)\\) with \\(\\rho_\\lambda(x,\\cdot)\\ll\\nu\\) for all \\(x\\), but the representation\n  \\[\n  R_\\lambda\\varphi(x)=\\int \\varphi(y)\\rho_\\lambda(x,dy)\n  \\]\n  is asserted only \\(\\nu\\)-a.e. in \\(x\\). In the proof, the kernel is extended over a zero-capacity exceptional set by definition. This confirms the author\u2019s concern that the BZ result does not automatically give the actual ABLM semigroup\u2019s resolvent for every deterministic initial condition. ([arxiv.org](https://arxiv.org/pdf/1105.2779))\n\n- Bounebache\u2013Zambotti explicitly pass from the stationary solution to quasi-every initial condition, not to every deterministic initial condition. ([arxiv.org](https://arxiv.org/pdf/1105.2779))\n\n- The cited 2025 ABLM weak/mild-equivalence result is relevant background, but its stated settings are \\(\\mathbb R\\), periodic boundary conditions, and Neumann boundary conditions, not Dirichlet. ([link.springer.com](https://link.springer.com/article/10.1007/s40072-025-00392-x))\n\n---\n\n## Previous concerns: addressed vs. still remaining\n\n### Addressed or improved\n\n1. **The proof no longer falsely claims full BZ\u2013ABLM identification.**  \n   The previous version asserted that the BZ Dirichlet-form process and the ABLM semigroup coincide for all deterministic initial data. The revised draft now correctly identifies this as an unresolved issue.\n\n2. **The candidate invariant measure is handled carefully.**  \n   The definition\n   \\[\n   \\pi(dv)=Z^{-1}\\exp\\!\\left(2\\int_0^1\\mathbf 1_{\\{v(x)>0\\}}\\,dx\\right)\\gamma(dv)\n   \\]\n   is correct, and the measurability and zero-occupation arguments are now included.\n\n3. **The regularized reversible measures \\(\\pi_n\\) and their convergence to \\(\\pi\\) are treated more rigorously.**  \n   The total-variation convergence \\(\\pi_n\\to\\pi\\) is valid.\n\n4. **The uniqueness argument is now cleanly separated from the missing smoothing input.**  \n   Lemma 2 correctly proves uniqueness if one assumes pointwise resolvent absolute continuity.\n\n5. **The strong-Feller and entrance lemmas are useful reductions.**  \n   These are valid conditional tools: either strong Feller/resolvent strong Feller, or entrance from the exceptional set, would indeed imply the needed pointwise absolute continuity.\n\n### Still unresolved\n\nThe fatal unresolved issue remains:\n\n\\[\nR_\\lambda^P(x,\\cdot)\\ll\\pi\n\\quad\\text{for every deterministic }x\\in C_0([0,1]).\n\\]\n\nWithout this, the proof excludes invariant measures absolutely continuous with respect to \\(\\pi\\), but it does not exclude a hypothetical invariant probability concentrated on a \\(\\pi\\)-null exceptional set. A symmetric \\(L^2(\\pi)\\) semigroup with a spectral gap does not by itself rule out such additional invariant measures on sets invisible to \\(\\pi\\).\n\n---\n\n## Detailed mathematical audit\n\n### 1. Problem statement and interpretation\n\nThe gradient identity\n\\[\n\\delta_0=-\\frac12\\frac{d}{dr}(-2H_+)\n\\]\nhas the correct sign. The Gibbs measure \\(\\pi\\) is also the correct formal reversible candidate.\n\nThe section is honest that the proof is conditional on a pointwise smoothing input. However, because the problem asks to prove or disprove uniqueness, this already signals that the document will not be a complete solution unless the final missing input is supplied.\n\n### 2. Consequences of the smooth approximations\n\nThe total-variation convergence \\(\\pi_n\\to\\pi\\) is correct. The Brownian bridge spends zero Lebesgue time at level \\(0\\), so\n\\[\n\\int_0^1 B_n(v(x))\\,dx\\to \\int_0^1\\mathbf 1_{\\{v(x)>0\\}}\\,dx\n\\]\nfor \\(\\gamma\\)-a.e. \\(v\\), and dominated convergence applies.\n\nThe reversibility calculation for \\(P_t^n\\) is standard and essentially correct. One minor technical overstatement is the claim that the Nemytskii map \\(v\\mapsto G_{1/n}(v)\\) is \u201csmooth\u201d as an \\(L^2\\)-map. It is bounded and Lipschitz \\(L^2\\to L^2\\), which is enough for the SPDE; full Fr\u00e9chet smoothness \\(L^2\\to L^2\\) is more delicate and generally false for Nemytskii maps beyond first-order statements. This does not destroy the proof, but the wording should be weakened.\n\nThe invocation of the \u201cstandard gradient SPDE/Dirichlet-form theorem\u201d is acceptable as a standard result, but a final rigorous solution should cite a precise theorem or state the needed result explicitly.\n\n### 3. Proposition 1: invariance, symmetry, spectral gap\n\nUnder assumption (4),\n\\[\nP_t^n\\Phi(x)\\to P_t\\Phi(x)\n\\]\nfor every bounded continuous \\(\\Phi\\), every \\(x\\), and every \\(t>0\\), the passage of invariance and symmetry from \\((P_t^n,\\pi_n)\\) to \\((P_t,\\pi)\\) is valid.\n\nHowever, note that (4) is a semigroup-level strengthening of the approximation assumption. The original problem statement says weak convergence of \\(u^n(t)\\to u(t)\\), but it is somewhat ambiguous whether this is meant uniformly for every deterministic starting point or only for a fixed initial condition. The draft explicitly assumes the stronger semigroup form, so the proof is conditional on that interpretation.\n\nThe spectral-gap passage is also basically sound: Gaussian Poincar\u00e9 for \\(\\gamma\\), uniformly bounded perturbations \\(d\\pi_n/d\\gamma\\), and reversibility give a uniform \\(L^2\\) exponential decay estimate, which passes to the limit for bounded continuous \\(f\\) and then extends by density.\n\n### 4. Lemma 2: uniqueness from pointwise resolvent absolute continuity\n\nThis lemma is correct. If every invariant \\(\\eta\\) satisfies \\(\\eta\\ll\\pi\\), then the \\(L^2(\\pi)\\) spectral gap and symmetry force the density \\(d\\eta/d\\pi\\) to be constant.\n\nThe truncation argument with \\(h_a=h\\wedge a\\) is standard and valid.\n\n### 5. Lemma 3: strong Feller or resolvent strong Feller implies (8)\n\nThis lemma is correct, provided strong Feller is meant with respect to the topology of \\(E=C_0([0,1])\\). Since Brownian bridge measure has full support on \\(E\\) and \\(\\pi\\sim\\gamma\\), a nonnegative continuous function with zero \\(\\pi\\)-integral is identically zero.\n\nBut this remains only a sufficient condition. The draft does not prove strong Feller or resolvent strong Feller for this singular SPDE. Bounebache\u2013Zambotti themselves state that the process is not known to be strong Feller, or at least that proving it is out of reach in their framework. ([arxiv.org](https://arxiv.org/pdf/1105.2779))\n\n### 6. \u201cWhat Bounebache\u2013Zambotti gives\u201d\n\nThis section is mostly accurate and is an improvement over earlier drafts. It correctly distinguishes the \\(L^2(\\pi)\\)/quasi-everywhere Dirichlet-form information from the desired pointwise all-starting-points assertion.\n\nOne overstatement remains: the sentence saying that combining BZ with ABLM weak/mild uniqueness identifies the constructions quasi-everywhere is not fully justified as written. To make that precise, one would still need to verify that the BZ local-time solution satisfies the hypotheses of the ABLM weak/mild equivalence theorem in the Dirichlet setting, including the relevant regularity class. The cited 2025 theorem does not itself include Dirichlet boundary conditions. ([link.springer.com](https://link.springer.com/article/10.1007/s40072-025-00392-x))\n\nThis is not the main fatal issue, since the draft does not rely on this as a completed proof of all-starting-points uniqueness, but it should be toned down.\n\n### 7. Entrance lemma\n\nThe entrance lemma is mathematically valid as a conditional reduction: if the ABLM process immediately avoids the BZ exceptional set, then the quasi-everywhere absolute-continuity information upgrades to all starting points.\n\nA minor technical point: BZ\u2019s Dirichlet form is naturally formulated on \\(H=L^2(0,1)\\), whereas the present semigroup is on \\(E=C_0([0,1])\\). To make the entrance statement fully rigorous, the relationship between the exceptional set \\(N\\subset H\\) and the \\(E\\)-valued process must be specified.\n\nAgain, this is conditional and not a complete proof of (8).\n\n### 8. Remaining open issues\n\nThis section is fatal for readiness. The draft explicitly says that the desired statement is proved only once an additional smoothing/absolute-continuity property is known, and that this property remains unproved from the hypotheses of the problem.\n\nTherefore the document does not prove or disprove the original uniqueness statement.\n\n---\n\n## New issues introduced or made explicit in this revision\n\n1. **The solution is now explicitly conditional.**  \n   This is honest and mathematically useful, but it fails the task of giving a complete proof or disproof.\n\n2. **The semigroup convergence assumption (4) is stronger than the original wording may provide.**  \n   The proof should either justify that the problem\u2019s approximation assumption implies (4), or explicitly state that it is adding an assumption beyond the problem.\n\n3. **The Nemytskii smoothness claim should be weakened.**  \n   Bounded Lipschitz is enough; full \\(L^2\\)-smoothness is not generally true.\n\n4. **The BZ\u2013ABLM quasi-everywhere identification is still not fully proved.**  \n   It is plausible but requires verification of hypotheses, especially in the Dirichlet setting.\n\n---\n\n## Required fixes before acceptance\n\nTo become answer-ready, the author must remove the conditional \u201cRemaining open issues\u201d by proving or citing a theorem establishing at least one of the following for the actual ABLM Dirichlet semigroup:\n\n1. pointwise resolvent absolute continuity:\n   \\[\n   R_\\lambda^P(x,\\cdot)\\ll\\pi\n   \\quad\\forall x\\in C_0([0,1]);\n   \\]\n2. strong Feller or resolvent strong Feller;\n3. entrance into the BZ non-exceptional set:\n   \\[\n   P_s(x,N)=0,\\qquad x\\in E,\\ s>0;\n   \\]\n4. strict all-starting-points identification of the ABLM semigroup with a BZ Dirichlet-form process whose resolvent kernel represents the true resolvent at every \\(x\\).\n\nWithout one of these, the proof establishes only conditional uniqueness, not the statement in the problem.\n\n### Workflow compile/format feedback ###\nNo LaTeX compile or formatting issues detected.\n\n### Advisory Council replies (if you requested any last turn) ###\n### Council member: gpt-55-pro (models/openai/gpt-55-pro) ###\nYes \u2014 I would try to close the gap via **capacity/smooth-measure regularity of invariant laws**, rather than pointwise transition AC.\n\nThe useful target is:\n\n> **Lemma A (invariant laws are smooth).** Every invariant probability \\(\\eta\\) of the all-starting-points ABLM semigroup charges no \\(\\mathcal E\\)-exceptional set for the BZ Dirichlet form.\n\nThen the q.e. BZ absolute continuity is enough. Indeed, let \\(N\\) be the exceptional set outside which ABLM and BZ are identified and \\(R_\\lambda(y,\\cdot)\\ll\\pi\\). If \\(\\eta(N)=0\\), then for \\(\\pi(A)=0\\),\n\\[\n\\eta(A)=\\lambda\\int R_\\lambda^P(y,A)\\,\\eta(dy)=0,\n\\]\nso \\(\\eta\\ll\\pi\\), and your spectral-gap argument finishes uniqueness.\n\nA concrete sufficient estimate for Lemma A is the finite-energy/capacity bound\n\\[\n\\left|\\int \\varphi\\,d\\eta\\right|\n   \\le C_\\eta\\,\\mathcal E_1(\\varphi,\\varphi)^{1/2},\n   \\qquad \\varphi\\in D(\\mathcal E)\\cap C_b(E),              \\tag{FEI}\n\\]\nor even just\n\\[\n\\eta(O)\\le C_\\eta\\,{\\rm Cap}_{\\mathcal E}(O)^\\alpha\n\\]\nfor open \\(O\\). FEI implies this by testing with equilibrium potentials, hence \\(\\eta\\) is smooth in the Dirichlet-form sense. This is exactly the non-pointwise replacement for resolvent AC.\n\nHow to prove FEI? I would formulate the missing analytic input as a **stationary Krylov-capacity estimate**. For the ABLM process, or first uniformly for the regularized processes,\n\\[\n\\mathbf E_\\mu\\int_0^T \\varphi(X_s^n)\\,ds\n \\le C_T\\Bigl(1+\\int V\\,d\\mu\\Bigr)\\,\n      \\mathcal E_{1,n}(\\varphi,\\varphi)^{1/2},              \\tag{K}\n\\]\nwith constants independent of \\(n\\). Here \\(V\\) is a Lyapunov function controlled by invariant laws. Since \\(d\\pi_n/d\\gamma\\) are uniformly bounded above/below, the capacities/energies \\(\\mathcal E_{1,n}\\) are comparable to the limiting one. Passing \\(n\\to\\infty\\), starting from \\(\\mu=\\eta\\), and using stationarity gives\n\\[\nT\\int \\varphi\\,d\\eta\n =\\mathbf E_\\eta\\int_0^T\\varphi(X_s)\\,ds\n \\le C_{\\eta,T}\\mathcal E_1(\\varphi,\\varphi)^{1/2},\n\\]\nwhich is FEI.\n\nThe hard part is proving (K) without constants involving\n\\(\\|G_{1/n}\\|_\\infty\\) or \\(\\|G_{1/n}\\|_{L^2}\\), which blow up. The estimate must exploit the bounded primitive \\(0\\le B_n\\le1\\), or the local-time formulation, not naive Girsanov.\n\nA finite-dimensional Fokker\u2013Planck route would need essentially the same strength: if \\(\\eta_m=(\\Pi_m)_\\#\\eta\\), finite-dimensional ellipticity may give \\(\\eta_m\\ll \\pi_m\\), but that alone is useless in infinite dimension. One needs\n\\[\n\\sup_m H(\\eta_m\\mid \\pi_m)<\\infty,\n\\]\nthen projective entropy gives \\(\\eta\\ll\\pi\\). I would target entropy relative to \\(\\pi_m\\), not Fisher relative to \\(\\gamma_m\\), since the BV potential makes Fisher estimates suspect.\n\nI would not rely on Markov uniqueness or \\(L^2(\\pi)\\) spectral gap plus Feller irreducibility alone; those do not exclude invariant measures living on exceptional sets. Asymptotic strong Feller plus an accessible point would prove uniqueness without AC, but that is a different major estimate.\n\n### Council member: opus_47_max (models/anthropic/opus_47_max) ###\n**TL;DR.** Yes. The route I would bet on is **asymptotic strong Feller + topological irreducibility** (Hairer\u2013Mattingly 2006). It is purpose-built to *bypass* pointwise transition AC. Markov uniqueness is clean but does not by itself exclude \u03b7 \u22a5 \u03c0. The finite-dim stationary-FP / Fisher-info route is the most direct attack on \u03b7 \u226a \u03c0 but is technically the heaviest because of the distributional drift.\n\n**(i) Asymptotic strong Feller (ASF) + topological irreducibility.** HM06 Thm. 3.16 (and HM11 Thm. 3.4): if P_t is ASF at every x and topologically irreducible, the invariant probability is unique. ASF is a quantitative gradient bound that *can* blow up as t\u21920, so it's genuinely weaker than strong Feller. The input you need:\n\n\u2014 A uniform-in-n Bismut\u2013Elworthy\u2013Li gradient bound for the regularized P_t^n,\n|D P_t^n f(x)[h]|\u00b2 \u2264 C(t) ||f||_\u221e\u00b2 ||h||_E\u00b2,\nwith C(t) depending only on the *bounded potential* (0 \u2264 B_n \u2264 1, B_n' \u2265 0 monotone ramp), **not** on ||G_{1/n}||_\u221e or ||G_{1/n}||_2. This is the technical heart.\n\u2014 It's enough to obtain the weaker \"approximate gradient bound\" |\u2207P_t f|_E \u2264 \u03b5||f||_\u221e + \u03b4(t)||\u2207f||_E (with \u03b4(t)\u21920 quickly enough), uniformly in n; pass to the limit.\n\nTopological irreducibility should be cheap: approximate controllability of \u2202_t v = \u00bd\u0394_D v + bounded forcing on [0,1] is classical, and the noise has full Cameron\u2013Martin support.\n\n**(ii) Asymptotic coupling** (HM \"Yet another look at Harris\", Glatt-Holtz\u2013Mattingly\u2013Richards). Equivalent in spirit but constructive. Couple (u^x, \u0169^y) using a Girsanov shift g so \u0394_t = u^x_t \u2212 \u0169^y_t \u2192 0 in C_0. Specific lemmas:\n(L1) Continuous dependence x \u21a6 u^x in C([0,T], C_0) in probability (from ABLM 2024 stability \u2014 verify their estimates are uniform on bounded initial data).\n(L2) Novikov-type bound \ud835\udd3c exp(\u00bd\u222b\u2080^T ||g_s||\u00b2 ds) \u2264 C on compacts.\n(L3) \u0394_t \u2192 0 in probability under the shifted measure.\nThe reason this should work: gradient of *bounded* potential \u21d2 controllable Girsanov entropy; Dirichlet spectral gap \u03c0\u00b2 gives linear contraction in the absence of drift mismatch.\n\n**(iii) Markov uniqueness** (Eberle 1999 Lect. Notes; Albeverio\u2013R\u00f6ckner; Stannat 1999 Mem. AMS). The BZ form on smooth cylinders FC_b^\u221e should be **essentially m-dissipative** \u21d2 unique Markovian L\u00b2(\u03c0) extension \u21d2 ABLM and BZ generate the same L\u00b2(\u03c0) semigroup. But this still gives only \"\u03c0-AC invariant measure is unique\" \u2014 exactly the round-1 conclusion. To eliminate \u03b7 \u22a5 \u03c0 you need (i), (ii), or (iv).\n\n**(iv) Finite-dim FP + Fisher info** (Bogachev\u2013Krylov\u2013R\u00f6ckner\u2013Shaposhnikov \"FPK Equations\" AMS 2015; Da Prato\u2013R\u00f6ckner\u2013Stannat 2003). For any invariant \u03b7, project \u03b7_N onto first N Dirichlet\u2013Fourier modes; aim for I(\u03b7_N | \u03c0_N) \u2264 C uniformly in N, then \u03b7 \u226a \u03c0 in the projective limit. Obstruction: the projected stationary FP equation\n\u222b L_N^* F d\u03b7_N = 0 for cylinder F\ncontains \u03b4_0(u(x_*)) tested against derivatives of F; you need a *robust* interpretation of this against an arbitrary invariant \u03b7. The bounded-potential gradient structure is in your favor (write \u03b4_0 = \u00bd(2H_+)' and integrate by parts at the level of \u03b7 in cylinder coordinates), but I am uncertain how clean this becomes.\n\n**(v) Weak Feller + L\u00b2 gap + topological irreducibility is NOT enough.** Classical Doob needs strong Feller (or a small set / minorization). The standard replacement *is* (i).\n\n**Concrete recommendation.** Push hard on (i). The bounded-potential structure is precisely the mechanism that made your uniform Poincar\u00e9 (5) survive the limit; it should *also* make a Bismut-type gradient bound survive the limit because the relevant quantity is the *energy* of B_n, not the sup-norm of G_{1/n}. Useful template: HM 2018 \"Strong Feller for singular SPDEs\" \u2014 their parabolic-Anderson-style argument is the closest analogue. Also worth a look: Komorowski\u2013Peszat\u2013Szarek (Ann. Probab. 2010) **e-property** framework, often easier to verify than ASF.\n\n### Council member: gemini-31-pro (models/gemini/gemini-31-pro) ###\nThis is an excellent setup. You have already done the heavy lifting by securing the $L^2(\\pi)$ spectral gap without relying on quasi-everywhere Dirichlet form abstractions. \n\nTo close the uniqueness gap **without** proving pointwise transition or resolvent absolute continuity, you should lean on topological and dynamical arguments. Here are the three most promising routes, along with a warning about Route 1.\n\n### A Warning on Route 1 (Uniform Densities)\nI advise against trying to prove uniform $L^p(\\pi_n)$ density bounds for $P_t^n(x, \\cdot)$. In infinite dimensions, Gaussian reference measures do not support ultracontractivity (i.e., local Sobolev inequalities fail, so there is no $L^2 \\to L^\\infty$ smoothing). The transition probabilities simply do not have $L^2$ densities with respect to the invariant measure, so uniform bounds will blow up. \n\n### Route A: The Topological Upgrade (The e-property)\nYou can completely sidestep absolute continuity and exceptional sets by upgrading your $L^2(\\pi)$ convergence to pointwise convergence using equicontinuity. \n\n**The missing lemma:** \nAssume $P_t f \\to \\pi(f)$ in $L^2(\\pi)$ for any bounded Lipschitz $f$. Suppose the semigroup has the *e-property*: for such $f$, the family of functions $\\{P_t f\\}_{t \\ge 1}$ is equicontinuous on compacts of $E$. Then $P_t f(x) \\to \\pi(f)$ for **every** $x \\in E$.\n\n*Proof sketch:* Fix $x$. By equicontinuity, any sequence $t_k \\to \\infty$ has a subsequence where $P_{t_k} f$ converges uniformly on compacts to a continuous function $g$. Since convergence also holds in $L^2(\\pi)$, we must have $g = \\pi(f)$ for $\\pi$-a.e. $y$. Because $\\pi$ is equivalent to Brownian bridge, it has full topological support in $E$. A continuous function equal to a constant on a dense, full-support set must equal that constant everywhere. Thus, $g(x) = \\pi(f)$, forcing everywhere pointwise convergence. \n\nIf $P_t f(x) \\to \\pi(f)$ everywhere, the Dominated Convergence Theorem guarantees that any invariant measure $\\eta$ satisfies $\\eta(f) = \\int P_t f \\,d\\eta = \\pi(f)$, yielding unique ergodicity directly. \n\n**What you need:** You only need to extract a continuous dependence estimate from the ABLM (2024) strong well-posedness proof. If the pathwise distance between solutions $\\mathbb{E}\\|u^x(t) - u^y(t)\\| \\le C_t \\|x-y\\|$ doesn't blow up too violently, tightness gives the e-property. \n\n### Route B: Stationary Fokker\u2013Planck and Capacity\nIf you prefer to leverage the Bounebache\u2013Zambotti (BZ) Dirichlet form, use the structure of stationary solutions to avoid exceptional sets.\n\nLet $\\eta$ be an arbitrary invariant measure, and $u(t)$ be the stationary process with marginal $\\eta$. Because $u(t)$ weakly solves the mild equation, it decomposes as $u(t) = Z(t) + V(t)$, where $Z(t)$ is the stationary OU process (law $\\gamma$) and $V(t) = \\int_{-\\infty}^t S_{t-s} d\\ell_s$. \nBecause the local time $\\ell_s$ is a positive additive functional, $V(t)$ enjoys much higher spatial regularity (e.g., $H_0^1$) than the Gaussian noise. By using the Cameron\u2013Martin shift or by testing the stationary martingale problem against standard cylinder functions (the \"Markov Uniqueness\" approach of Bogachev\u2013Krylov\u2013R\u00f6ckner), one can show that the convolution-like structure of $Z(t) + V(t)$ forces $\\eta$ to have finite zero-order Dirichlet energy. By Fukushima's theory, finite-energy measures absolutely cannot charge sets of zero Gaussian capacity, meaning $\\eta(N) = 0$. This instantly links you to your Lemma 4.\n\n### Route C: Asymptotic Coupling\nSince ABLM establishes strong pathwise well-posedness without Girsanov or Zvonkin transformations, they likely construct a robust synchronous coupling. If you can show that two solutions driven by the same noise satisfy $\\mathbb{P}(\\|u^x(t) - u^y(t)\\| > \\epsilon) \\to 0$ as $t \\to \\infty$, you get unique ergodicity immediately (Hairer\u2013Mattingly\u2013Scheutzow 2011). This relies only on the dissipativity of the Dirichlet Laplacian outside the origin, using the bounded potential to control the origin-crossings.\n\n**Recommendation:** Look closely at Route A. You already possess the $L^2(\\pi)$ gap and full support; marrying them with standard continuous-dependence estimates is usually the path of least resistance.\n\n### Compute worker reply (if you commissioned one last turn) ###\n### Compute worker reply ###\nstatus: done\nworkspace zip attached as: compute_workspace_round_2.zip\n\n# Round 2: all-starting-point resolvent absolute continuity\n\n## Bottom line\n\nI did **not** find a theorem in ABLM, Bounebache--Zambotti, Dirichlet-form texts, distorted Brownian motion papers, or singular-SPDE strong-Feller papers that proves\n\\[\nR_\\lambda^P(x,\\cdot)\\ll \\pi,\\qquad x\\in C_0([0,1]),\n\\]\nfor the actual Dirichlet ABLM mild/regularized semigroup with drift \\(\\delta_0(u)\\).\n\nThe current `answer.tex` is right to isolate this as a genuine remaining gap. BZ Proposition 2.5 is the closest result, but it does **not** identify its all-\\(x\\) kernel with the actual process resolvent on the exceptional set. I recommend not citing it as closing the all-starting-point gap.\n\nNew PDFs/texts downloaded this round:\n\n| item | path |\n|---|---|\n| Baur--Grothaus--Stilgenbauer, \\(L^p\\)-strong Feller via Dirichlet forms | `papers/pdf/1112.4960_BaurGrothausStilgenbauer_Lp_strong_Feller.pdf`, `papers/text/1112.4960_BaurGrothausStilgenbauer_Lp_strong_Feller.txt` |\n| Shin--Trutnau, stochastic regularity of distorted Brownian motions | `papers/pdf/1405.7585_ShinTrutnau_stochastic_regular_distorted_BM.pdf`, `papers/text/1405.7585_ShinTrutnau_stochastic_regular_distorted_BM.txt` |\n| Hairer--Mattingly, strong Feller for singular SPDEs | `papers/pdf/1610.03415_HairerMattingly_strong_Feller_singular_SPDE.pdf`, `papers/text/1610.03415_HairerMattingly_strong_Feller_singular_SPDE.txt` |\n| Grothaus--Wittmann, Mosco convergence for non-convex BV potentials | `papers/pdf/2105.05140_GrothausWittmann_Mosco_nonconvex.pdf`, `papers/text/2105.05140_GrothausWittmann_Mosco_nonconvex.txt` |\n| Rockner--Trutnau, infinite-dimensional skew/reflected OU | `papers/pdf/1508.05824_RocknerTrutnau_skew_reflected_OU.pdf`, `papers/text/1508.05824_RocknerTrutnau_skew_reflected_OU.txt` |\n| Kunze, perturbation of strong Feller semigroups | `papers/pdf/1101.2369_Kunze_perturbation_strong_Feller.pdf`, `papers/text/1101.2369_Kunze_perturbation_strong_Feller.txt` |\n| Albeverio--Ma--Rockner, quasi-regular forms and stochastic quantization | `papers/pdf/1404.2757_AlbeverioMaRockner_quasi_regular_quantization.pdf`, `papers/text/1404.2757_AlbeverioMaRockner_quasi_regular_quantization.txt` |\n\n## What BZ gives, exactly\n\nIn `papers/src_extracted/1105.2779_BZ2014/karim_lorenzo.tex`, BZ explicitly say the process is not known to be strong Feller:\n\n- lines 250--270: \"the process is not Strong-Feller, or at least a proof of this property is out of our reach\"; they instead prove absolute continuity in Proposition 2.5.\n- lines 555--642: Proposition 2.5 gives a measurable kernel \\(\\rho_\\lambda(x,dy)\\) with \\(\\rho_\\lambda(x,\\cdot)\\ll\\nu\\) for all \\(x\\), but the identity\n  \\[\n  R_\\lambda\\varphi(x)=\\int \\varphi(y)\\rho_\\lambda(x,dy)\n  \\]\n  is only for \\(\\nu\\)-a.e. \\(x\\).\n- in the proof, they use FOT Theorem 7.2.1 to obtain a zero-capacity set \\(N\\) and a Markov kernel on \\(N^c\\). After proving AC on \\(N^c\\), they set \\(\\rho_\\lambda(x,dy)\\equiv0\\) on \\(N\\). Thus the all-\\(x\\) kernel is not asserted to be the true resolvent from \\(x\\in N\\).\n- lines 642--725: after Proposition 3.1 they state that the absolute-continuity condition lets them pass from the stationary solution to quasi-every initial condition.\n- lines 1000--1035: the continuity/nonstationary argument uses that for \\(x\\in N^c\\), the law of \\(X_\\varepsilon\\) is absolutely continuous with respect to \\(\\nu\\).\n\nSo BZ proves the desired resolvent AC for the Dirichlet-form process outside an exceptional set, not for every deterministic ABLM initial condition.\n\n## ABLM and later weak/mild papers\n\nI rechecked the local sources from round 1:\n\n- `papers/src_extracted/2011.13498_ABLM2024/CPAM.tex`: Theorem 2.6/2.8/2.10 give existence, uniqueness, and convergence of smooth approximations in the ABLM settings. Lines 490--496 explicitly say Dirichlet boundary conditions are not analyzed in the paper. Searches for \"absolute continuity\", \"resolvent\", \"capacity\", \"invariant\", and \"strong Feller\" produced no transition/resolvent AC theorem.\n- `papers/src_extracted/2410.06599_ABLM2025_weak_mild/mildweak_v2_space.tex`: Theorem 2.10 proves weak-regularized/mild-regularized equivalence, but the formal convention is periodic/Neumann, not Dirichlet, and there is no all-starting-point transition density or resolvent theorem.\n- `papers/src_extracted/2405.13780_BM2024/weakU_final_copy.tex`: this gives weak uniqueness/convergence for singular stochastic equations in periodic/Neumann SHE settings, but no invariant-measure or transition AC result.\n\nGrothaus--Wittmann 2024/2025 extends the Mosco-convergence framework for the same non-convex BV-potential class and explicitly summarizes the BZ skew heat equation as giving weak solutions for all starting values except a capacity-zero set. It reinforces, rather than removes, the q.e. limitation.\n\n## Positive theorems found, and why they do not apply\n\n### 1. Strong Feller / resolvent strong Feller\n\nFOT, p.165, defines the absolute-continuity condition as\n\\[\np_t(x,\\cdot)\\ll m,\\qquad t>0,\\ x\\in X,\n\\]\nand notes that it is useful for upgrading quasi-everywhere statements to everywhere ones. The same page has the standard exercise that strong Feller plus full support implies this condition.\n\nThis is exactly the reduction already in `answer.tex`: if \\(P_t:B_b(E)\\to C_b(E)\\), or \\(R_\\lambda:B_b(E)\\to C_b(E)\\), then null-set avoidance follows for every \\(x\\). I found no source proving this property for the ABLM/BZ skew heat equation.\n\n### 2. \\(L^p\\)-strong Feller Dirichlet-form construction\n\nBaur--Grothaus--Stilgenbauer prove a very relevant abstract theorem, but in a locally compact finite-dimensional framework. Their Theorem 1.3 constructs a diffusion on a locally compact separable metric space \\(E_1\\) whose semigroup is \\(L^p\\)-strong Feller. Their Theorem 2.8 gives\n\\[\nP_t(x,dy)=p_t(x,y)\\,\\mu(dy),\\qquad x\\in E_1,\\ t>0.\n\\]\nTheir proof also shows directly that if \\(\\mu(U)=0\\), then \\(R_1{\\bf1}_U(x)=0\\) for every \\(x\\in E_1\\).\n\nThis would close the gap if available for \\(E=C_0([0,1])\\). But their hypotheses use local compactness and finite-dimensional elliptic regularity. The paper's applications are elliptic diffusions on subsets of \\(\\mathbb R^d\\), not Gaussian path-space forms.\n\n### 3. Shin--Trutnau strict Fukushima machinery\n\nShin--Trutnau is useful mainly as a warning. In the introduction they say that even if the \\(L^2\\)-semigroup is strong Feller, a Hunt process obtained abstractly from the Dirichlet form is unique only q.e., and the absolute-continuity condition may fail at capacity-zero points. Their tools then construct Hunt processes satisfying the AC condition under explicit heat-kernel assumptions on locally compact spaces, especially distorted Brownian motions in \\(\\mathbb R^d\\) with Muckenhoupt weights.\n\nThis is philosophically the right technology, but it is not directly applicable: \\(C_0([0,1])\\) is not locally compact and no comparable pointwise heat-kernel estimates for the BZ/ABLM path-space form are established there.\n\n### 4. Kunze bounded-drift strong Feller theorem\n\nKunze proves that for\n\\[\ndX=(AX+F(X))dt+G\\,dW\n\\]\non a Banach space, bounded measurable \\(F:E\\to E\\) preserves strong Feller under strong assumptions on the linear OU semigroup. Theorem 6.2 covers a one-dimensional Dirichlet stochastic heat equation on \\(C_0(0,1)\\) with bounded measurable function-valued drift \\(F:C_0(0,1)\\to C_0(0,1)\\), yielding strong Feller and a unique invariant measure.\n\nThis applies to each fixed smooth regularization \\(F_n(u)=G_{1/n}(u)\\) (bounded, continuous, \\(C_0\\)-valued), but not uniformly in \\(n\\), and not to the limiting distribution-valued drift \\(\\delta_0(u)\\). The theorem does not give a limiting strong-Feller or density estimate.\n\n### 5. Hairer--Mattingly strong Feller for singular SPDEs\n\nHairer--Mattingly prove strong Feller for a broad class of regularity-structure singular SPDEs, and use it to prove uniqueness of invariant measures when a full-support invariant measure is known. But their assumptions are on the solution map in a regularity-structure model, with differentiable local nonlinearities and a nondegenerate noise coefficient \\(G\\). I do not see a way to encode the Nemytskii distribution \\(u\\mapsto \\delta_0(u)\\) in their framework. This is a useful analogy, not a citation for the present equation.\n\n### 6. BV/distorted OU and stochastic quantization\n\nFukushima's \"BV functions and distorted Ornstein Uhlenbeck processes over the abstract Wiener space\" constructs quasi-regular distorted OU processes for BV densities on abstract Wiener space and gives Fukushima decompositions involving the BV surface measure. This is close in spirit but again quasi-regular/q.e.; I found no all-starting-point transition or resolvent AC theorem there.\n\nAlbeverio--Ma--Rockner emphasize the same issue in stochastic quantization: quasi-regular Dirichlet forms produce processes properly associated with the \\(L^2\\) semigroup, but identities and martingale problems are normally on a large invariant set, outside exceptional sets.\n\n## Abstract Dirichlet-form question\n\nFor\n\\[\n\\pi=\\rho\\gamma,\\qquad 0<c\\le \\rho\\le C,\\qquad\n\\mathcal E(F,F)=\\frac12\\int\\|DF\\|^2\\,d\\pi,\n\\]\nI found no theorem saying that every properly associated continuous-path Markov process which is merely Feller has \\(P_t(x,\\cdot)\\ll\\pi\\) or \\(R_\\lambda(x,\\cdot)\\ll\\pi\\) for every \\(x\\).\n\nThe obstacle is structural. Feller means \\(P_t:C_b(E)\\to C_b(E)\\). Absolute continuity requires testing indicators of arbitrary \\(\\pi\\)-null Borel sets. Without strong Feller, resolvent strong Feller, \\(L^p\\)-strong Feller, or an explicit heat kernel/capacity estimate, Feller continuity on continuous observables does not control null sets. Weak convergence from AC measures also does not preserve AC: singular measures can be weak limits of absolutely continuous ones.\n\nThe clean positive abstract statement remains:\n\n```tex\n\\begin{lemma}[Sufficient \\(L^p\\)-strong Feller input]\nLet \\(m\\) have full support on a Polish space \\(E\\), and let \\(R_\\lambda\\)\nbe the resolvent of a Markov process with invariant measure \\(m\\).\nIf, for some \\(p\\ge1\\), \\(R_\\lambda\\) maps \\(L^p(m)\\) to continuous\nfunctions on \\(E\\), then \\(R_\\lambda(x,\\cdot)\\ll m\\) for every \\(x\\in E\\).\n\\end{lemma}\n\\begin{proof}\nIf \\(m(A)=0\\), then \\({\\bf1}_A=0\\) in \\(L^p(m)\\). Hence\n\\(R_\\lambda{\\bf1}_A\\) is a continuous version of the zero \\(L^p\\)-class.\nIt has zero \\(m\\)-integral and, since \\(m\\) has full support, it must vanish\nidentically. Thus \\(R_\\lambda(x,A)=0\\) for every \\(x\\).\n\\end{proof}\n```\n\nBut this \\(L^p\\)-strong Feller hypothesis is exactly not known for the BZ/ABLM semigroup.\n\n## Bounded-density perturbations and capacities\n\nThe bounded density \\(\\pi\\sim\\gamma\\) does give useful uniform comparability:\n\\[\nc\\,\\mathcal E_\\gamma(F,F)\\le \\mathcal E_\\pi(F,F)\\le C\\,\\mathcal E_\\gamma(F,F),\n\\qquad\nc'\\operatorname{Cap}_\\gamma(A)\\le \\operatorname{Cap}_\\pi(A)\\le C'\\operatorname{Cap}_\\gamma(A).\n\\]\nThe same holds uniformly for the regularized \\(\\pi_n\\)'s because their densities are bounded above and below uniformly.\n\nThis identifies the polar sets and gives spectral-gap/compactness information, but it does not give pointwise transition estimates. BZ's Hilbert-Schmidt estimate gives \\(p_t\\in L^2(\\pi\\otimes\\pi)\\), i.e. density information integrated over the starting point. It says nothing at a fixed deterministic \\(x\\) in a \\(\\pi\\)-null exceptional set.\n\nFor the smooth equations, \\(P_t^n(x,\\cdot)\\ll\\pi_n\\) for every \\(x\\), but I found no uniform estimate strong enough to pass to the limit. A naive Girsanov route degenerates: the drift \\(G_{1/n}\\) has size growing like \\(n^{1/2}\\), and the Novikov/entropy term involves\n\\[\n\\int_0^t\\|G_{1/n}(u_s)\\|_{L^2(0,1)}^2\\,ds,\n\\]\nwhose natural expectation blows up at least on the order of \\(n^{1/2}\\). Any successful proof would need to exploit the bounded primitive/potential, not the drift norm.\n\n## Suggested insertion\n\nNo unconditional LaTeX insertion closing the proof is justified by the literature I found. The most accurate insertion is a cautionary one:\n\n```tex\n\\paragraph{Status of the pointwise absolute-continuity input.}\nBounebache--Zambotti, Proposition 2.5, proves an absolutely continuous\nresolvent kernel for the \\(L^2(\\pi)\\) Dirichlet-form semigroup, but the\nrepresenting identity is only \\(\\pi\\)-a.e. in the starting point; in the proof\nthe kernel is extended over the exceptional set by setting it equal to zero.\nThus their result yields \\(R_\\lambda(x,\\cdot)\\ll\\pi\\) only outside a properly\nexceptional set for the associated process. The standard Dirichlet-form\nabsolute-continuity condition, strong Feller property, or an \\(L^p\\)-strong\nFeller resolvent would upgrade this to every \\(x\\), but no such theorem is\npresently available for the Dirichlet ABLM mild/regularized semigroup with\ndrift \\(\\delta_0(u)\\). Consequently the uniqueness argument below remains\nconditional on the all-starting-point resolvent absolute continuity\nassumption.\n```\n\nThe most promising route remains the entrance lemma from round 1:\n\\[\nP_s^P(x,N)=0,\\qquad x\\in C_0([0,1]),\\ s>0,\n\\]\nwhere \\(N\\) is the BZ exceptional set. A uniform \\(L^p\\)-density bound, a uniform capacity hitting estimate, or a strict-version theorem identifying the ABLM process with a BZ kernel satisfying the AC condition would prove it. I found no existing source that supplies any of these for this equation.\n\n\nEdit the canonical files via code_interpreter cells as described in\nthe system prompt. Optionally invoke ``<council>`` on at most one\nspecific sub-question, and/or ``<compute_agent>`` on at most one\nfocused computation/code/literature task, or set\n``<ready>true</ready>`` if you believe the answer is ready for\nsubmission. Do NOT paste the canonical files in your reply.\n"
+            }
+        ],
+        "timeout": 11400,
+        "reasoning": {
+            "summary": "auto",
+            "effort": "xhigh"
+        },
+        "max_output_tokens": 200000,
+        "background": true
+    },
+    "response_info": {},
+    "response": {
+        "id": "resp_01a2efdbeef2dc7e006a1a1d7d1e3881969273b2601bb8b039",
+        "created_at": 1780096381.0,
+        "error": null,
+        "incomplete_details": null,
+        "instructions": null,
+        "metadata": {},
+        "model": "gpt-5.5-pro-2026-04-23",
+        "object": "response",
+        "output": [
+            {
+                "id": "rs_01a2efdbeef2dc7e006a1a2136f0748196854cb844083fd752",
+                "summary": [
+                    {
+                        "text": "**Exploring semigroup convergence**\n\nI'm considering whether using semigroup convergence at a fixed time, along with tightness and continuity, can show that the invariant \u03b7 is a limit. We know the regularized P^n has a unique invariant \u03c0_n converging to \u03c0. If P^n_t converges pointwise, does this imply uniqueness for P? Well, there are counterexamples, so I'd need to explore further, possibly looking at uniform ergodicity. There\u2019s a uniform L^2 spectral gap, and I'm curious if that applies to all initial measures. Using small Gaussian convolution might approximate \u03b7 by adding noise, but I'll need to delve deeper into that concept!",
+                        "type": "summary_text"
+                    },
+                    {
+                        "text": "**Analyzing noise and drift**\n\nI'm thinking about the possibility of convolution with a nondegenerate Gaussian that is independent of the drift, especially if I can split the noise in time. A mild solution at time t can be represented as a combination of terms involving stochastic convolution, which indicates that the Gaussian noise over a certain interval is independent of the past. However, the drift within that same interval isn't truly independent. Using concepts like the Da Prato-Debussche method might help break this down, but it feels complex. I'm considering how topological irreducibility and Lyapunov's existence may lead to unique invariant measures under ergodic conditions, but there's a challenge with full support.",
+                        "type": "summary_text"
+                    },
+                    {
+                        "text": "**Considering Markov processes**\n\nI'm thinking about a finite-dimensional analogy with a Markov process on a Polish space that has an invariant measure \u03c0. If P_t is symmetric in L2(\u03c0) with a spectral gap, there can be additional invariant measures that are singular when the semigroup isn't defined using the same kernel on a \u03c0-null set. A modification, like making one point absorbing, wouldn't change \u03c0 if the point has measure zero. However, this might cause continuity issues and raise questions about whether it preserves the Feller property. It\u2019s complex!",
+                        "type": "summary_text"
+                    },
+                    {
+                        "text": "**Examining singular invariants**\n\nI'm considering whether a singular invariant with full support can exist alongside a deterministic irrational rotation that preserves the Lebesgue measure. It seems like such a process could be Feller and invariant under Lebesgue, but it wouldn't have a spectral gap. Maybe I could construct a Feller semigroup with an L2(\u03c0) spectral gap and an additional singular invariant. To ensure Feller continuity, I'd need to manage discontinuities, especially if \u03c0's support is full. If P_t is Feller, it raises questions about continuity in dense sets, which complicates things!",
+                        "type": "summary_text"
+                    },
+                    {
+                        "text": "**Investigating invariant measures**\n\nI'm looking into the invariant \u03b7 and its relationship with continuous functions. If \u03c0-almost everywhere P_t f converges exponentially, that doesn't necessarily imply pointwise continuity since P_t f can be continuous while L2 converges to \u03c0f. I'm realizing that continuous functions with small L2(\u03c0) values can still be large on small neighborhoods, leading to a lack of equicontinuity. This makes me wonder if an invariant \u03b7 paired with a Feller semigroup might imply \u03b7 is absolutely continuous, but then I'm considering counterexamples. It\u2019s tricky!",
+                        "type": "summary_text"
+                    },
+                    {
+                        "text": "**Exploring continuity properties**\n\nI'm considering the idea that the e-property might be replaceable with \"eventual continuity at one accessible point,\" which I know from asymptotic strong Feller properties. I think I could potentially prove this using additive noise, but I still have some reservations. I also want to inspect my previous answer to clarify my thoughts further. It feels like I need to dig a bit deeper to confirm whether these properties hold in my specific context. Let\u2019s see!",
+                        "type": "summary_text"
+                    }
+                ],
+                "type": "reasoning",
+                "content": null,
+                "encrypted_content": null,
+                "status": null
+            },
+            {
+                "id": "ci_01a2efdbeef2dc7e006a1a2143a92c819683fcee5bdb7965b8",
+                "code": "from pathlib import Path\npaths = {\n\"answer\":\"/mnt/data/file-4MWQUpuAAFvceoCsug57E8-answer.tex\",\n\"notes\":\"/mnt/data/file-AhyepebgKkq5PYmye32XGf-research_notes.tex\",\n\"bib\":\"/mnt/data/file-XsUGRgd2FRKyfiHVLygzoY-references.bib\"\n}\nfor k,p in paths.items():\n    print(\"----\",k,Path(p).exists(),Path(p).stat().st_size)\n    txt=Path(p).read_text()\n    print(txt[:1000],\"\\n...\\n\",txt[-500:])",
+                "container_id": "cntr_6a1a1d850c84819096b1ccb0667a9275038c800b27f9f0ef",
+                "outputs": null,
+                "status": "completed",
+                "type": "code_interpreter_call"
+            },
+            {
+                "id": "rs_01a2efdbeef2dc7e006a1a2144c9ec81968cff519ccb9979a7",
+                "summary": [],
+                "type": "reasoning",
+                "content": null,
+                "encrypted_content": null,
+                "status": null
+            },
+            {
+                "id": "ci_01a2efdbeef2dc7e006a1a2144d7f08196af565dcbe78de45b",
+                "code": "print(Path(paths[\"answer\"]).read_text())",
+                "container_id": "cntr_6a1a1d850c84819096b1ccb0667a9275038c800b27f9f0ef",
+                "outputs": null,
+                "status": "completed",
+                "type": "code_interpreter_call"
+            },
+            {
+                "id": "rs_01a2efdbeef2dc7e006a1a2149977c8196896594bb5ddd34f2",
+                "summary": [],
+                "type": "reasoning",
+                "content": null,
+                "encrypted_content": null,
+                "status": null
+            },
+            {
+                "id": "ci_01a2efdbeef2dc7e006a1a2149aaac81969f28d8e391f87704",
+                "code": "import zipfile, os, textwrap, re, json, shutil, pathlib, sys, subprocess, math, statistics\nzip_path=\"/mnt/data/file-JPUyV4CDajUk8qi2nA5Agf-compute_workspace_round_2.zip\"\nprint(Path(zip_path).exists(), Path(zip_path).stat().st_size)\nextract=\"/mnt/data/compute_r2\"\nif Path(extract).exists():\n    shutil.rmtree(extract)\nwith zipfile.ZipFile(zip_path) as z:\n    z.extractall(extract)\nprint(os.listdir(extract)[:20])\nfor root,dirs,files in os.walk(extract):\n    if root.count(os.sep)-extract.count(os.sep)<2:\n        print(root, dirs[:5], files[:5])\n",
+                "container_id": "cntr_6a1a1d850c84819096b1ccb0667a9275038c800b27f9f0ef",
+                "outputs": null,
+                "status": "completed",
+                "type": "code_interpreter_call"
+            },
+            {
+                "id": "rs_01a2efdbeef2dc7e006a1a214a1dec8196b2b28ee453df328a",
+                "summary": [],
+                "type": "reasoning",
+                "content": null,
+                "encrypted_content": null,
+                "status": null
+            },
+            {
+                "id": "ci_01a2efdbeef2dc7e006a1a214a2c04819691398192a7110644",
+                "code": "# list papers text files\nfor root, dirs, files in os.walk(extract+\"/papers\"):\n    for f in files:\n        if f.endswith(\".txt\") or f.endswith(\".tex\"):\n            print(os.path.join(root,f))\n            # break\n    # \n",
+                "container_id": "cntr_6a1a1d850c84819096b1ccb0667a9275038c800b27f9f0ef",
+                "outputs": null,
+                "status": "completed",
+                "type": "code_interpreter_call"
+            },
+            {
+                "id": "ci_01a2efdbeef2dc7e006a1a214a501c81968bbe071adab03aa4",
+                "code": "ablm=Path(extract+\"/papers/src_extracted/2011.13498_ABLM2024/CPAM.tex\").read_text(errors='ignore')\nfor pat in [\"Theorem\", \"strong\", \"Feller\", \"H\u00f6lder\", \"Lipschitz\", \"stability\", \"continuous\", \"initial\", \"pathwise\", \"Wasserstein\", \"total variation\"]:\n    print(pat, [m.start() for m in re.finditer(pat, ablm, re.I)][:10])\n",
+                "container_id": "cntr_6a1a1d850c84819096b1ccb0667a9275038c800b27f9f0ef",
+                "outputs": null,
+                "status": "completed",
+                "type": "code_interpreter_call"
+            },
+            {
+                "id": "ci_01a2efdbeef2dc7e006a1a214a86208196a95e522d30528a21",
+                "code": "# show abstract and main theorems around occurrences\nfor pos in [18000,30000,38000,62000,143000]:\n    print(\"==== pos\",pos)\n    print(ablm[pos:pos+5000])\n",
+                "container_id": "cntr_6a1a1d850c84819096b1ccb0667a9275038c800b27f9f0ef",
+                "outputs": null,
+                "status": "completed",
+                "type": "code_interpreter_call"
+            },
+            {
+                "id": "rs_01a2efdbeef2dc7e006a1a2151d5e08196b6db258d35262587",
+                "summary": [
+                    {
+                        "text": "**Exploring mathematical boundaries**\n\nI\u2019m trying to figure out how to position x between two stationary conditions Y^- and Y^+ while still respecting their distributions, which should be continuous to \u03c0. It's intriguing to consider constructing the conditions by conditioning \u03c0 on order below or above x. I wonder if there are samples below or above deterministic x that hold positive probability. I'm curious about how a Brownian bridge behaves in these contexts, especially near barriers and their respective probabilities. It raises some interesting questions!",
+                        "type": "summary_text"
+                    },
+                    {
+                        "text": "**Analyzing Brownian calculations**\n\nI\u2019m diving into some properties of the Brownian bridge starting at zero, and I see that it has a probability of remaining above zero on the interval (0, 1) that's actually zero for the standard bridge. Brownian excursions show a similar pattern with zero under the bridge. I\u2019m contemplating adding deterministic shifts to \u03c0 and considering the requirements for remaining above x. It\u2019s complex, but the idea of using shifts combined with conditioning might open new possibilities, even if it\u2019s a bit tricky!",
+                        "type": "summary_text"
+                    },
+                    {
+                        "text": "**Exploring Markov properties**\n\nI'm pondering if an order-preserving Markov process with minimal and maximal invariant measures could imply equality when combined with an ordered \u03c0. But it seems no. I then shift to examining the strong Feller property, possibly utilizing the Bismut formula based on the drift's dissipativity. I\u2019m curious about Gaussian derivatives and their behaviors. While navigating these calculations, I wonder about local time estimates and their implications for transition densities in finite-dimensional settings. It's getting technical, but I might ask compute_agent for insights on this!",
+                        "type": "summary_text"
+                    },
+                    {
+                        "text": "**Refining project files**\n\nI need to edit some files now and consider asking the council or compute for guidance on the route. Since this round is about improving answers through reductions, I\u2019m not quite ready yet. I want to respond to the critic by refining the files: maybe I should weaken the Nemytskii smoothness criteria, clarify semigroup convergence, and tone down BZ identification. Additionally, I plan to add a new lemma regarding the e-property, which could imply uniqueness. It\u2019s a lot, but I think focusing on promising routes might help!",
+                        "type": "summary_text"
+                    },
+                    {
+                        "text": "**Clarifying invariant laws**\n\nI\u2019m considering how to formulate invariant laws without exceptional sets, possibly proving a criterion based on finite energy. I want to keep my notes concise since the answer should be a maximum of 12 pages. Currently, I\u2019m at 5 pages, so there's room to expand. I wonder if it might be more effective to conclude that \"No unconditional conclusion follows from stated hypotheses,\" and provide a counterexample. It seems essential to parse the problem statement carefully to determine if my assumptions are indeed insufficient or if the statement remains underdetermined.",
+                        "type": "summary_text"
+                    },
+                    {
+                        "text": "**Exploring proof expectations**\n\nThe user seems to expect a full proof or disproof within the mathematical context rather than just logical consistency. I'm starting to wonder if the assumption of \"uniqueness in law\" relates to every initial distribution. If two invariant measures exist, does that imply stationary processes have different marginals? It makes me think about how unique solutions relate to the SPDE with identical initial laws. I want to consider finite-dimensional projections for invariant measures and how they relate to the initial process, especially with Gaussian stochastic convolutions. There\u2019s definitely more to investigate here!",
+                        "type": "summary_text"
+                    },
+                    {
+                        "text": "**Analyzing noise decomposition**\n\nI'm exploring how to decompose noise into finite-dimensional high and low components to demonstrate that finite-dimensional marginals have densities. Since noise enters linearly in every finite-dimensional projection, and drift might have finite variation, I\u2019m considering the behavior of semimartingales with both a nondegenerate Brownian component and an adapted drift. I wonder if the time-t laws are always absolutely continuous with respect to Lebesgue measure. It seems like the behavior of the drift can be crucial in determining singularities. I\u2019m delving into specific examples to clarify these relationships!",
+                        "type": "summary_text"
+                    },
+                    {
+                        "text": "**Investigating density and projections**\n\nI\u2019m considering the implications of the Tanaka SDE and wondering if density always holds. In our finite-dimensional projections, the noise covariance is positive definite, and I think drift projections from local time could have finite variation but may be singular. There\u2019s a theorem stating that a semimartingale with absolutely continuous nondegenerate martingale brackets has an occupation density, yet the terminal law might still have atoms. I need to think more about the relationship between the drift and the Brownian motion in terms of independence and density implications!",
+                        "type": "summary_text"
+                    },
+                    {
+                        "text": "**Exploring finite projections and densities**\n\nI\u2019m considering how many singular measures can still have equivalent finite projections with densities, like Gaussian measures with certain covariances. It seems that Brownian motion with differing diffusion coefficients can exhibit absolutely continuous finite marginals despite having singular path measures. Now, I\u2019m curious if we can derive uniform entropy or Hellinger from stationary energy estimates. Adding a small time shift might help me in approximating the invariant distributions, especially regarding their relationship to transition laws and entropy. I have to keep exploring these ideas!",
+                        "type": "summary_text"
+                    },
+                    {
+                        "text": "**Examining martingale problems and invariance**\n\nI\u2019m considering whether the martingale problem generator is symmetric with respect to \u03c0. If \u03b7 is invariant and sufficiently regular, then h could be harmonic. I might prove that invariant \u03b7 is equivalent to \u03c0 through integration by parts involving local time. By exploring stationary processes with marginal \u03b7 and using cylinder tests, I wonder if I could establish an integration by parts relation while recognizing how the drift term defines a signed measure. I need to think this through further!",
+                        "type": "summary_text"
+                    },
+                    {
+                        "text": "**Exploring invariant equations and measures**\n\nI'm working through the invariant equation, where I have to consider the integral involving the trace and derivatives regarding \u03b7 and \u03bd. I\u2019m pondering whether \u03bd has a density for \u03c0 based on surface measures. To identify \u03b7, I could look at integration by parts, but I need to ensure the uniqueness of measures satisfying IBP with bounded potential. There\u2019s this complexity about having singular initial \u03b7 and the potential regularized approximations\u2014 I wonder if I can still make sense of convergence as t approaches infinity!",
+                        "type": "summary_text"
+                    },
+                    {
+                        "text": "**Analyzing convergence and approximations**\n\nI\u2019m looking at the convergence of the approximation and how \u03b7P_t^n f approaches \u03b7P_t f while \u03c0_n converges to \u03c0. The differences seem to vanish as n increases, but I notice that the convergence isn't uniform, which complicates things. I might need to incorporate some smoothing and consider the uniform spectral gap to ensure density. So I have to keep a close eye on my norm bounds and think about whether the potential being bounded could help maintain uniform L2 density.",
+                        "type": "summary_text"
+                    },
+                    {
+                        "text": "**Exploring OU transition densities**\n\nI\u2019m diving into the infinite-dimensional Ornstein-Uhlenbeck process and trying to figure out the transition density in L^p(\u03b3) for large t. I need to consider the eigenvalues of OU and the covariance conditions. Specifically, the covariance function Q_t must meet certain criteria in relation to Q\u221e. For the L\u00b2 density to be finite, I\u2019m finding that 2Q_t must exceed Q\u221e. If I establish the right conditions, I might conclude that OU processes have L\u00b2 densities after an appropriate threshold time t0.",
+                        "type": "summary_text"
+                    },
+                    {
+                        "text": "**Examining OU semigroup properties**\n\nI\u2019m analyzing the hypercontractivity of the Ornstein-Uhlenbeck semigroup, which allows mapping from L^p to L^q, but it doesn't allow transitioning from L\u00b9 to L\u00b2 until after a certain threshold time. With bounded perturbations, I find that the log-Sobolev constant remains uniform. However, even with hypercontractivity, the uniform L\u00b2 density of transitions from any deterministic x doesn't hold. The initial measure might not be absolutely continuous, and while applying P_s^n helps, hypercontractivity alone isn\u2019t enough to regularize singular measures in infinite dimensions.",
+                        "type": "summary_text"
+                    },
+                    {
+                        "text": "**Analyzing initial measures and convergence**\n\nI'm considering arbitrary initial measures that are invariant in the limit and whether such measures have finite moments. Integrating transition densities seems necessary for uniformity, but I wonder if combining log-Sobolev, strong Feller, and compact embedding helps. The challenge is determining if \u03b7P_s^n is stochastically dominated by \u03c0_n and understanding the implications for the L\u00b2 norm. If \u03b7 is singular, densities might diverge as n increases. I\u2019m also pondering if unique invariant measures and mixing in Wasserstein can be achieved with bounded drift and how that relates to Dirichlet forms.",
+                        "type": "summary_text"
+                    },
+                    {
+                        "text": "**Examining Dirichlet forms and heat kernels**\n\nI\u2019m wondering if the bounded nature of \u03c1 allows us to draw comparisons to Ornstein-Uhlenbeck (OU) forms. If Dirichlet forms are comparable, does that mean the corresponding heat kernels are also mutually absolutely continuous for all x after time t? When it comes to local regular Dirichlet forms, comparable forms could imply stability in polar sets and parabolic Harnack, but pointwise kernels still puzzle me. In Euclidean spaces, uniformly elliptic divergence with bounded coefficients produces positive heat kernels, yet in infinite dimensions, I\u2019m unsure if that translates similarly. I might need to explore this further or see if time-change methods could help.",
+                        "type": "summary_text"
+                    },
+                    {
+                        "text": "**Exploring Dirichlet forms and time changes**\n\nI\u2019m considering strongly local Dirichlet forms that share the same carr\u00e9 du champ but have different speed measures \u03c1 and \u03b3. In a finite-dimensional 1D setting, could this be a time change of Brownian motion under the PCAF framework with Revuz measure \u03c1\u03b3? I think changing the measure in the symmetric form alters both speed and drift, so it\u2019s not just a straightforward time change of OU. If I let Y_t represent the time-changed OU, it has a different energy-weighted form than just \u222b\u0393 \u03c1 dm. I wonder if I can approximate \u03c1 with continuous bounded densities\u2014perhaps there\u2019s a way to demonstrate continuous dependence on initial conditions.",
+                        "type": "summary_text"
+                    },
+                    {
+                        "text": "**Analyzing solution maps and convergence**\n\nI\u2019m looking at a theorem that discusses smooth approximations, specifically regarding whether the solution map from initial condition u0 to the law of u(t) is continuous. It states that if b^n approximates b and sequences u0^n converge to u0, then the corresponding solutions u^n converge in probability to u. But what if I choose b^n equal to b when b isn\u2019t smooth? There seems to be a corollary about singular SPDEs driven by the same W having converging solutions. The key is ensuring that the drift estimates are independent of u0. I wonder if this implies continuity for different initial data under the same noise.",
+                        "type": "summary_text"
+                    },
+                    {
+                        "text": "**Exploring the ABLM theorem**\n\nIn the ABLM theorem, I'm considering the limiting drift correction, \\(\\tilde u = u - P_t u0\\), and whether it's a functional of V and b that\u2019s independent of u0. But since K actually depends on u via the equation \\(u = P_t u0 + K + V\\), it seems it does depend on u0. If u0^n converges to u0 and b^n is fixed, does that lead to a stability proposition? The strong solution issue complicates things, but maybe uniqueness in paths can provide convergence in probability for the sequences. I need to ensure I also consider the weak Feller and continuous dependence regarding equicontinuity across the family of solutions.",
+                        "type": "summary_text"
+                    },
+                    {
+                        "text": "**Analyzing Feller properties**\n\nIf \\(P_1\\) is a strong Feller operator with a modulus for bounded functions, it should imply the e-property. But I\u2019m wondering if \\(P_1\\) could just be Feller and whether the modulus depends on \\(P_{t-1}f\\), leading to a lack of uniformity. Alternatively, I might explore using an asymptotic gradient bound from the \\(L^2\\) gap. For large \\(t\\), \\(P_{t-1}f\\) is nearly constant in \\(L^2\\). If \\(P_1\\) maps \\(L^2\\) to continuous functions, that would mean a strong Feller property in a specific resolvent context. BZ might have insights related to this, so I need to inspect their work further to understand the implications for mappings and uniqueness under the e-property.",
+                        "type": "summary_text"
+                    },
+                    {
+                        "text": "**Exploring weak Feller and invariant measures**\n\nI'm thinking about proving that if we have weak Feller properties, the transition from a point \\(x\\) at small time can be absolutely continuous. I wonder if the \"unique invariant measure\" follows from the conditions that \\(\\pi\\) has full support and that \\(P_t\\) is irreducible and strong Feller. But what if \\(\\eta \\neq \\pi\\) is invariant? Since both measures might have full support, we could find a continuous function such that \\(\\eta f \\neq \\pi f\\). The \\(L^2\\) spectral gap suggests \\(P_t f\\) converges to \\(\\pi f\\) for almost every \\(\\pi\\). If \\(\\eta\\) is singular, it might only focus on an exceptional set where the limit diverges from \\(\\pi f\\). I should check if this set is invariant under \\(P_t\\)\u2014perhaps the averaging properties of the Markov process hold here?",
+                        "type": "summary_text"
+                    },
+                    {
+                        "text": "**Analyzing exceptional sets and irreducibility**\n\nI'm considering whether the exceptional set could be absorbing in the support of \\(\\eta\\), and if that's compatible with topological irreducibility. If \\(P_s(x,O)>0\\) for all open sets and \\(A\\) is dense with full \\(\\eta\\) measure but null under \\(\\pi\\), that seems plausible. However, can a Feller process have a dense invariant set? I wonder about processes like deterministic flows on rationals versus irrationals\u2014would additive noise still apply? It seems topological irreducibility doesn't rule out the existence of absorbing dense Borel sets, even if the kernels support full topological measures.",
+                        "type": "summary_text"
+                    },
+                    {
+                        "text": "**Exploring path-connectedness and Feller processes**\n\nI'm considering that set \\(A\\) could be a dense, path-connected null set, like Cameron-Martin \\(H^1_0\\) in \\(C_0\\). The process might stay in \\(H\\) if it starts there with continuous paths, but what happens if it starts outside? Would it follow the Ornstein-Uhlenbeck (OU) process? Is that compatible with being Feller? If I define a deterministic contraction that injects noise in \\(H\\), can its law still be singular yet maintain full support? This seems to affect the potential for invariant measures and might hint at the noise staying rough.",
+                        "type": "summary_text"
+                    },
+                    {
+                        "text": "**Clarifying stochastic convolution properties**\n\nI need to formalize the idea that the stochastic convolution has roughness that's independent while the drift term is smoother\u2014this seems key! I can decompose the mild solution as \\(u(t) = V(t) + R(t)\\), where \\(V(t)\\) represents the stochastic convolution over \\([0,t]\\) and \\(R(t)\\) combines \\(S_t x\\) with the drift convolution \\(K_t\\). ABLM regularity estimates show that \\(K_t\\) might have better spatial regularity than \\(V\\). If \\(K_t\\) is suitably regular, does it mean \\(u(t)\\)'s law is absolutely continuous relative to \\(V(t)\\)? It gets tricky with dependencies, though!",
+                        "type": "summary_text"
+                    },
+                    {
+                        "text": "**Exploring quasi-invariance in mappings**\n\nI'm considering if \\(\u03a6\\) can map to Cameron-Martin with an adapted triangular structure. The Ramer theorem might provide quasi-invariance if \\(T = Id + K\\) where \\(K\\) is \\(H\\)-smooth. However, \\(K\\) may be nonanticipative and regularizing. It seems the \"It\u00f4 map\" acts as a measurable map from Gaussian noise to the solution. For finite-dimensional SDEs with local time drift, the mapping from Brownian to skew Brownian motion isn't quasi-invariant regarding the Brownian path, but it may meet fixed-time absolute continuity requirements. By possibly conditioning on noise, we might achieve absolute continuity, but covariance matching for infinite-dimensional cases must be ensured.",
+                        "type": "summary_text"
+                    },
+                    {
+                        "text": "**Understanding stochastic convolution and Gaussian law**\n\nI'm analyzing the stochastic convolution at time \\(t\\) which has a Gaussian law \\(\u03b3_t = N(0, Q_t)\\) that becomes equivalent to \\(\u03b3\\) (invariant) for large \\(t\\). The ratio of eigenvalues in \\(Q_t\\) relative to their decay suggests that \\(\u03b3_t\\) shifted remains equivalent to \\(\u03b3\\) for all \\(t > 0\\). The Feldman-Hajek condition requires a finite summation, ensuring that the differences are summable. If the drift convolution \\(K_t\\) is more regular than the Cameron-Martin space, we might achieve absolute continuity by mixing shifts of \\(\u03b3\\) conditioned on \\(K_t\\), even if it depends on noise. I could also explore splitting noise into independent parts with modes.",
+                        "type": "summary_text"
+                    },
+                    {
+                        "text": "**Exploring additive noise and drift contributions**\n\nI'm considering how additive noise can be decomposed into independent Gaussian components with covariances. The solution depends on both parts, particularly conditional on \\(W^2\\). The mapping from \\(W^1\\) to \\(u_t\\) isn\u2019t straightforward. I could explore using Girsanov or Malliavin techniques. I\u2019m thinking about decomposing noise into high-frequency and low-frequency modes. The drift may primarily depend on high-frequency noise, but it gets smoothed out. I also need to ensure that the drift contributions are spatially regular, possibly considering \\(H^1\\) or even \\(H^{1/2-}\\) for forcing.",
+                        "type": "summary_text"
+                    },
+                    {
+                        "text": "**Analyzing local time and measures**\n\nI'm exploring the idea of \u03b4(u) as a measure in space-time, and it's a bit rough. Could the local time term be treated as a function of x with finite variation? I'm considering whether the local time \u2113_{t,x} is continuous in x, particularly in the equation with \u2202_{tx}\u2113. If K_t is in H, that makes sense. But what about \u03b40(u)? It seems like it's a spatial function but not a finite measure. If u_s is H\u00f6lder<1/2, the zero set could be fractal, altering local time as well. There are complexities with how this could impact the measures and density.",
+                        "type": "summary_text"
+                    },
+                    {
+                        "text": "**Exploring stochastic laws and potentials**\n\nI'm considering whether, for every deterministic start, the law at large t is absolutely continuous (AC) to \u03c0, potentially true via the Dirichlet form. I might leverage a \"drift potential bounded\" to show that the transition law from x can be AC using Feynman-Kac with approximations that involve uniform L^p densities from Girsanov. When looking at finite-dimensional gradient SDE in R^d, I want to derive a dimension-free Harnack inequality for the finite-dimensional generator, considering the associated bounded potentials. This could connect to a known Harnack inequality for symmetric Dirichlet forms. Let's dig into this!",
+                        "type": "summary_text"
+                    },
+                    {
+                        "text": "**Investigating Hessians and potentials**\n\nI\u2019m thinking that the Hessian \\( V_n \\) isn't uniformly lower bounded, as the second derivative in the function space can vary greatly. However, I wonder if under curvature lower bounds, something like Wang's Harnack could apply? I\u2019m checking heat kernel comparisons using bounded potentials through Feynman-Kac, but it includes terms that aren't bounded. In finite dimensions, there's a positive heat kernel for bounded potentials, even with jumps. I might explore coupling by changing measures or look into density formulas related to diffusion and SPDEs. The connections to reversible processes and intrinsic metrics are intriguing!",
+                        "type": "summary_text"
+                    },
+                    {
+                        "text": "**Exploring invariant measures and paths**\n\nI\u2019m pondering over theorems related to having at most one invariant measure, which might be proved using the \\(L^2(\\pi)\\) spectral gap and weak Feller conditions, along with the continuity of sample paths and full support of \\( \\pi \\). If \\( \\eta \\) is an invariant singular measure, the ergodic theorem could help with time averages. Continuous paths could leave any \\( \\pi \\)-null exceptional set, provided it has no interior. However, if noise introduces roughness, that complicates things. I think topological irreducibility and continuous sample paths could play a key role in determining supports for invariant measures!",
+                        "type": "summary_text"
+                    },
+                    {
+                        "text": "**Developing a new theorem**\n\nI\u2019m considering a new theorem: if a semigroup is weakly Feller, \u03c0-invariant with an \\( L^2 \\) spectral gap, and possesses the e-property, then there\u2019s uniqueness. I wonder if we can use the ABLM continuous dependence estimate to establish the e-property. For Lipschitz bounded functions, the coupling might show that the distance between states shrinks. However, it seems challenging to maintain continuity uniformly across all initial states, especially with random initial values. But with the right estimates, pathwise uniqueness might help tackle this!",
+                        "type": "summary_text"
+                    },
+                    {
+                        "text": "**Exploring uniqueness via regularization**\n\nI'm thinking about using \"regularization estimates\" in ABLM to tackle this problem. The solution's drift \\( K \\) has some regularity, and the difference between two initial conditions with the same noise would look like \\( u^x_t - u^y_t = S_t(x - y) + K^x_t - K^y_t \\). It seems likely that a pathwise uniqueness proof could show that if the initial conditions are the same, the difference is zero. If they\u2019re different, perhaps the difference is bounded by some constant times \\( |S_t(x-y)| \\). I need to search for a uniqueness lemma to help with this.",
+                        "type": "summary_text"
+                    }
+                ],
+                "type": "reasoning",
+                "content": null,
+                "encrypted_content": null,
+                "status": null
+            },
+            {
+                "id": "ci_01a2efdbeef2dc7e006a1a21baa7248196b3d4492b8b85cf8a",
+                "code": "# find lemma condun\nfor pat in [\"condun\", \"conditional uniqueness\", \"comparison\", \"K_t\", \"same initial\", \"u-v\", \"difference\", \"pathwise uniqueness\"]:\n    print(\"----\",pat)\n    for m in re.finditer(pat, ablm, re.I):\n        if m.start()>70000 and m.start()<130000:\n            print(m.start(), ablm[m.start()-300:m.start()+700].replace(\"\\n\",\" \")[:1000])\n            break\n",
+                "container_id": "cntr_6a1a1d850c84819096b1ccb0667a9275038c800b27f9f0ef",
+                "outputs": null,
+                "status": "completed",
+                "type": "code_interpreter_call"
+            },
+            {
+                "id": "ci_01a2efdbeef2dc7e006a1a21bbb1fc8196b812037efe927368",
+                "code": "# find L:condun definition/proof around 70000?\nfor m in re.finditer(r\"label\\{L:condun\\}\", ablm):\n    print(m.start())\n    print(ablm[m.start()-1000:m.start()+4000])\n",
+                "container_id": "cntr_6a1a1d850c84819096b1ccb0667a9275038c800b27f9f0ef",
+                "outputs": null,
+                "status": "completed",
+                "type": "code_interpreter_call"
+            },
+            {
+                "id": "rs_01a2efdbeef2dc7e006a1a21bd8cf08196b711ba75c6f472ce",
+                "summary": [
+                    {
+                        "text": "**Exploring uniqueness proof**\n\nI'm considering whether I could reach a global contraction after some positive time by looking into the uniqueness proof. It seems I need to inspect the uniqueness proof to see how it estimates the difference with the initial condition. There's something intriguing about the potential of this approach! I want to figure out if it truly leads to a global contraction over time. Let's dive into this and see what insights I can uncover!",
+                        "type": "summary_text"
+                    }
+                ],
+                "type": "reasoning",
+                "content": null,
+                "encrypted_content": null,
+                "status": null
+            },
+            {
+                "id": "ci_01a2efdbeef2dc7e006a1a21befe9c8196a6c2ae53c6afba60",
+                "code": "# Extract uniqueness proof section S:uniq\nfor m in re.finditer(r\"label\\{S:uniq\\}\", ablm):\n    print(m.start())\n    print(ablm[m.start()-500:m.start()+8000])\n",
+                "container_id": "cntr_6a1a1d850c84819096b1ccb0667a9275038c800b27f9f0ef",
+                "outputs": null,
+                "status": "completed",
+                "type": "code_interpreter_call"
+            },
+            {
+                "id": "ci_01a2efdbeef2dc7e006a1a21bf6be08196833554fcb7e30e43",
+                "code": "print(ablm[134000:140500])\n",
+                "container_id": "cntr_6a1a1d850c84819096b1ccb0667a9275038c800b27f9f0ef",
+                "outputs": null,
+                "status": "completed",
+                "type": "code_interpreter_call"
+            },
+            {
+                "id": "rs_01a2efdbeef2dc7e006a1a21c469b8819688fd18b2f3b8f958",
+                "summary": [],
+                "type": "reasoning",
+                "content": null,
+                "encrypted_content": null,
+                "status": null
+            },
+            {
+                "id": "ci_01a2efdbeef2dc7e006a1a21c47db88196aee953c68a331cf4",
+                "code": "bz=Path(extract+\"/papers/src_extracted/1105.2779_BZ2014/karim_lorenzo.tex\").read_text(errors='ignore')\n# print intro around not strong feller\nprint(bz[2000:8000])\n",
+                "container_id": "cntr_6a1a1d850c84819096b1ccb0667a9275038c800b27f9f0ef",
+                "outputs": null,
+                "status": "completed",
+                "type": "code_interpreter_call"
+            },
+            {
+                "id": "ci_01a2efdbeef2dc7e006a1a21c6372c81969fdfc31e58809c92",
+                "code": "print(bz[8000:14000])\n",
+                "container_id": "cntr_6a1a1d850c84819096b1ccb0667a9275038c800b27f9f0ef",
+                "outputs": null,
+                "status": "completed",
+                "type": "code_interpreter_call"
+            },
+            {
+                "id": "rs_01a2efdbeef2dc7e006a1a21c8609881968463e5b185b50801",
+                "summary": [],
+                "type": "reasoning",
+                "content": null,
+                "encrypted_content": null,
+                "status": null
+            },
+            {
+                "id": "ci_01a2efdbeef2dc7e006a1a21c872d881968056db12b60a3820",
+                "code": "for m in re.finditer(\"r_lambdaabs\", bz):\n    print(m.start())\n    print(bz[m.start()-1000:m.start()+2500])\n",
+                "container_id": "cntr_6a1a1d850c84819096b1ccb0667a9275038c800b27f9f0ef",
+                "outputs": null,
+                "status": "completed",
+                "type": "code_interpreter_call"
+            },
+            {
+                "id": "rs_01a2efdbeef2dc7e006a1a21cca2088196a11dd5df7a211bb8",
+                "summary": [
+                    {
+                        "text": "**Clarifying assumptions and structure**\n\nI need to clarify the semigroup convergence assumption and restructure my answer. It starts with \"conditional...\" and mentions \"Remaining open issues,\" but I might add a \"Theorem\" section to outline what's proved. Since the problem is about proving or disproving, I can say, \"Under the current assumptions, I can prove a conditional statement but am not fully prepared.\" I wonder if I should use web sources, considering the user's provided literature critiques, but it seems unnecessary since we have what we need in the workspace. I'll focus on writing a standalone revised answer in Python, incorporating references for the bibliography while keeping an eye on page count.",
+                        "type": "summary_text"
+                    },
+                    {
+                        "text": "**Drafting the revised answer**\n\nI need to revise my answer with some key changes. First, in problem interpretation, I'm using weak convergence for each deterministic initial datum, and I should make clear that bounded continuous convergence is required as I pass semigroups. I\u2019ll change \u201cThe following proves uniqueness conditional\u2026\u201d to \u201cThe unconditional issue is isolated.\u201d \n\nNext, for smooth approximations, I need to confirm that G_n as an L2 map is globally Lipschitz, with finite derivative; avoiding the term \"smooth.\" \n\nLastly, I\u2019ll clarify that the semigroup convergence relates to the weak convergence I'm using. I\u2019ll also introduce a new lemma about the \"e-property criterion\" based on some council findings.",
+                        "type": "summary_text"
+                    },
+                    {
+                        "text": "**Discussing equicontinuity and convergence**\n\nI assume that for every bounded Lipschitz function f, the family {P_t f: t\u2265t0} is equicontinuous on compact subsets, which implies that P_t f(x) approaches \u03c0f for each x. I need to prove this carefully, considering L2 convergence due to the spectral gap for f in L\u00b2. For a fixed x and a sequence t_k approaching infinity, I\u2019m wondering if equicontinuity alone on compact sets including x is sufficient to establish convergence at nearby points.\n\nI need to find a point y close to x such that P_{t_k} f(y) is near P_{t_k} f(x), ensuring y is in a good set with full measure. I need to establish that equicontinuity holds uniformly in t. If I choose an appropriate neighborhood U of x for a given \u03b5, then |P_t f(y) - P_t f(x)| will be less than \u03b5 for all t\u2265t0. Since \u03c0 has full support, it follows that \u03c0(U) is greater than 0. With L2 convergence and bounds on the integral, I can establish necessary conditions for this scenario.",
+                        "type": "summary_text"
+                    },
+                    {
+                        "text": "**Establishing uniqueness through equicontinuity**\n\nI recognize that uniform equicontinuity allows me to establish that |P_t f(x) - \u03c0f| is bounded by \u03b5 plus an average term. More specifically, I can express this as |P_t f(x) - \u03c0f| being no greater than the supremum of the differences over a neighborhood U, plus a term that approaches zero. This shows I only need equicontinuity at point x, alongside full support, without needing the compact condition.\n\nFor the invariant \u03b7, I can then use dominated convergence to conclude that \u03b7f equals \u03c0f for bounded Lipschitz functions, which proves uniqueness\u2014easy and effective! \n\nI also want to add a new lemma about \"smooth invariant laws.\" If N has a resolvent AC on its complement and every invariant \u03b7 has \u03b7(N) equal to zero, that indicates uniqueness. I\u2019ll need to work through the equilibrium potential for open sets and energy inequalities to strengthen this lemma based on feedback.",
+                        "type": "summary_text"
+                    },
+                    {
+                        "text": "**Finalizing the details and notes**\n\nI think I should include something before or after the BZ section. In the \"Remaining open issues,\" I could mention \"What I tried this round.\" I explored replacing the all-starting AC with e-property and finite-energy capacity; both help close the gap but need proof. However, I shouldn't change the answer.tex if it\u2019s just research notes, not a changelog.\n\nIn the BZ section, I want to ensure the tone states that if it's verified in the Dirichlet setting, the BZ solution is in the ABLM class, but I won't overclaim that.\n\nI also need to update the remaining open issues to reflect new possible closures and add notes about the e-property criterion with proof sketches, capacity smooth invariant, ABLM uniqueness, and continuous dependence thoughts. The references.bib may not be needed for the answer, but canonical ones like HairerMattingly and Komorowski should probably be included. I wonder if I should keep them unchanged or write a canonical version.",
+                        "type": "summary_text"
+                    },
+                    {
+                        "text": "**Crafting the answer and structure**\n\nThe instructions state that I need to write updates for the files, so I could just write the same bibliography to the canonical one. I think I'll do that. I need to compile the document with pdflatex and craft the answer text carefully, ensuring I stick to the required font size \u2014 no forbidden sizes. I should use the fullpage option, avoid \\small, and utilize enumerate.\n\nNow, regarding the theorem, I might include something like, \"Under the stated assumptions alone, I cannot...\" but the answer with remaining open issues is still partial and not ready. A stronger assertion could be: \"The statement is not established by the listed assumptions; the proof below outlines the additional condition needed.\" This feels more honest, yet the problem asks to prove or disprove, so I could say, \"At the current assumptions level, neither a proof nor disproof is provided.\" I recognize this gap, and the critic might point it out. Instead of framing it as just a gap, I wonder if I should present it as a \"Disproof of the proposed proof strategy\" rather than as a statement. A bit of editing is indeed needed.",
+                        "type": "summary_text"
+                    }
+                ],
+                "type": "reasoning",
+                "content": null,
+                "encrypted_content": null,
+                "status": null
+            },
+            {
+                "id": "ci_01a2efdbeef2dc7e006a1a21e6809c8196b478d3795fe6cc59",
+                "code": "from pathlib import Path\nold_answer = Path(\"/mnt/data/file-4MWQUpuAAFvceoCsug57E8-answer.tex\").read_text()\nnew_answer = r\"\"\"\\documentclass[12pt]{article}\n\\usepackage{fullpage}\n\\usepackage{amsmath,amssymb,amsthm}\n\n\\newtheorem{lemma}{Lemma}\n\\newtheorem{proposition}{Proposition}\n\\newtheorem{assumption}{Assumption}\n\\newcommand{\\R}{\\mathbb R}\n\\newcommand{\\E}{\\mathbb E}\n\\newcommand{\\1}{\\mathbf 1}\n\\newcommand{\\cE}{\\mathcal E}\n\\newcommand{\\Var}{\\operatorname{Var}}\n\\newcommand{\\Cap}{\\operatorname{Cap}}\n\n\\begin{document}\n\n\\begin{center}\n{\\bf Invariant measures for the Dirichlet skew stochastic heat equation}\n\\end{center}\n\n\\section*{Problem statement and interpretation}\n\nLet \\(E=C_0([0,1])\\), and let \\(S_t\\) be the Dirichlet heat semigroup.\nI use the ABLM regularized/mild interpretation specified in the problem,\nincluding the assumed Dirichlet extension.  When passing from the\nregularized equations to semigroups I use the following pointwise\ninterpretation of the stated weak convergence: for every bounded continuous\n\\(\\Phi:E\\to\\R\\), deterministic \\(x\\in E\\), and \\(t>0\\),\n\\[\n        P_t^n\\Phi(x)\\longrightarrow P_t\\Phi(x).      \\tag{A}\n\\]\nThe distributional drift has the gradient form\n\\[\n        \\delta_0=-\\frac12\\frac{d}{dr}(-2H_+),\\qquad\n        H_+(r)=\\1_{\\{r>0\\}} .\n\\]\nThus the natural reversible measure is a bounded Gibbs perturbation of\nBrownian bridge measure.  Let \\(\\gamma\\) be the law on \\(E\\) of the\nstandard Brownian bridge from \\(0\\) to \\(0\\), and set\n\\[\n   \\Lambda(v)=\\int_0^1\\1_{\\{v(x)>0\\}}\\,dx,\\qquad\n   \\pi(dv)=Z^{-1}e^{2\\Lambda(v)}\\gamma(dv).       \\tag{1}\n\\]\nThe map \\(\\Lambda\\) is Borel.  Since \\(0\\le\\Lambda\\le1\\), \\(\\pi\\sim\\gamma\\)\nwith density bounded above and below.  The value assigned to \\(H_+(0)\\)\nis irrelevant because a Brownian bridge spends zero Lebesgue time at\nlevel \\(0\\):\n\\[\n   \\E_\\gamma\\int_0^1\\1_{\\{\\beta(x)=0\\}}\\,dx\n    =\\int_0^1\\mathbb P(\\beta(x)=0)\\,dx=0 .\n\\]\n\n\\section*{Consequences of the smooth approximations}\n\nPut\n\\[\n   B_n(r)=\\int_{-\\infty}^rG_{1/n}(s)\\,ds,\\qquad\n   \\pi_n(dv)=Z_n^{-1}\\exp\\!\\left(2\\int_0^1B_n(v(x))\\,dx\\right)\\gamma(dv).\n\\]\nThen \\(0\\le B_n\\le1\\), \\(B_n(r)\\to H_+(r)\\) for \\(r\\ne0\\), and hence\n\\[\n       \\|\\pi_n-\\pi\\|_{\\rm TV}\\longrightarrow0 .          \\tag{2}\n\\]\nIndeed, the normalized densities converge in \\(L^1(\\gamma)\\) by dominated\nconvergence and the zero-occupation identity above.\n\nLet \\(P_t^n\\) be the semigroup of the regularized equation.  For each\nfixed \\(n\\), the Nemytskii drift \\(v\\mapsto G_{1/n}(v)\\) is bounded and\nglobally Lipschitz as an \\(L^2(0,1)\\)-valued map.  The standard\ngradient-SPDE/Dirichlet-form theorem identifies its mild semigroup with\nthe symmetric diffusion generated, on smooth cylinder functions, by\n\\[\n L_nF(v)=\\frac12{\\rm Tr}\\,D^2F(v)\n       +\\left\\langle \\frac12\\Delta_Dv+G_{1/n}(v),DF(v)\\right\\rangle ,\n\\]\nand by the closed form\n\\[\n   \\cE_n(F,G)=\\frac12\\int_E\\langle DF,DG\\rangle_{L^2(0,1)}\\,d\\pi_n .\n\\]\nEquivalently,\n\\[\n   \\int G\\,L_nF\\,d\\pi_n\n   =-\\frac12\\int\\langle DF,DG\\rangle_{L^2(0,1)}\\,d\\pi_n\n   =\\int F\\,L_nG\\,d\\pi_n.                         \\tag{3}\n\\]\nThus \\(P_t^n\\) is reversible with invariant law \\(\\pi_n\\).\n\n\\begin{proposition}\\label{prop:limit}\nUnder (A), \\(\\pi\\) is invariant for \\(P_t\\), \\(P_t\\) is symmetric on\n\\(L^2(\\pi)\\), and the \\(L^2(\\pi)\\)-semigroup has a spectral gap.\n\\end{proposition}\n\n\\begin{proof}\nFor \\(f,g\\in C_b(E)\\), dominated convergence with respect to \\(\\pi\\),\n(2), and invariance of \\(\\pi_n\\) give\n\\[\n \\int P_tf\\,d\\pi\n =\\lim_n\\int P_t^nf\\,d\\pi\n  =\\lim_n\\int P_t^nf\\,d\\pi_n\n  =\\lim_n\\int f\\,d\\pi_n\n  =\\int f\\,d\\pi .\n\\]\nSimilarly, using (3),\n\\[\n \\int g\\,P_tf\\,d\\pi\n =\\lim_n\\int g\\,P_t^nf\\,d\\pi_n\n  =\\lim_n\\int f\\,P_t^ng\\,d\\pi_n\n  =\\int f\\,P_tg\\,d\\pi .\n\\]\nSince \\(C_b(E)\\) is dense in \\(L^2(\\pi)\\), this extends to all of\n\\(L^2(\\pi)\\).\n\nThe Brownian bridge satisfies the Gaussian Poincare inequality\n\\[\n     \\Var_\\gamma(F)\\le C_0\\int\\|DF\\|_{L^2(0,1)}^2\\,d\\gamma .\n\\]\nBecause the densities \\(d\\pi_n/d\\gamma\\) are bounded above and below\nuniformly in \\(n\\), there is \\(C<\\infty\\) such that\n\\[\n     \\Var_{\\pi_n}(F)\\le C\\,\\cE_n(F,F).             \\tag{4}\n\\]\nThe spectral theorem for the reversible semigroup generated by\n\\(\\cE_n\\) therefore gives, with \\(c>0\\) independent of \\(n\\),\n\\[\n     \\Var_{\\pi_n}(P_t^n f)\n       \\le e^{-2ct}\\Var_{\\pi_n}(f).                \\tag{5}\n\\]\nPassing to the limit for bounded continuous \\(f\\) and then using\n\\(L^2(\\pi)\\)-density yields\n\\[\n     \\Var_{\\pi}(P_t f)\\le e^{-2ct}\\Var_\\pi(f),\n     \\qquad f\\in L^2(\\pi).                         \\tag{6}\n\\]\n\\end{proof}\n\n\\section*{Uniqueness once an all-starting-points upgrade is known}\n\n\\begin{lemma}\\label{lem:criterion}\nAssume Proposition \\ref{prop:limit}.  If, for some \\(\\lambda>0\\),\n\\[\n     R_\\lambda^P(x,\\cdot)\\ll \\pi,\\qquad\n     R_\\lambda^P(x,A):=\\int_0^\\infty e^{-\\lambda t}P_t(x,A)\\,dt,\n     \\quad x\\in E,                                  \\tag{7}\n\\]\nthen \\(\\pi\\) is the only invariant probability measure of \\(P_t\\).\n\\end{lemma}\n\n\\begin{proof}\nLet \\(\\eta\\) be invariant.  If \\(\\pi(A)=0\\), then (7) and invariance give\n\\[\n   \\eta(A)=\\lambda\\int_E R_\\lambda^P(x,A)\\,\\eta(dx)=0.\n\\]\nThus \\(\\eta=h\\pi\\).  For bounded \\(\\varphi\\),\n\\[\n \\int \\varphi h\\,d\\pi=\\int P_t\\varphi\\,h\\,d\\pi\n   =\\int \\varphi\\,P_t h\\,d\\pi ,\n\\]\nfirst for bounded \\(h\\), then by truncation.  Hence \\(P_t h=h\\) in\n\\(L^1(\\pi)\\).  With \\(h_a=h\\wedge a\\), concavity and the Markov property\ngive \\(h_a=(P_th)\\wedge a\\ge P_t h_a\\).  The two sides have the same\n\\(\\pi\\)-integral, so equality holds.  Since \\(h_a\\in L^2(\\pi)\\), (6)\nforces \\(\\Var_\\pi(h_a)=0\\).  Letting \\(a\\) vary shows \\(h\\equiv1\\).\n\\end{proof}\n\n\\begin{lemma}\\label{lem:sf}\nEither of the following implies (7): \\(P_t\\) is strong Feller for every\n\\(t>0\\), or, for one \\(\\lambda>0\\), \\(R_\\lambda^P\\) maps bounded Borel\nfunctions to continuous functions.\n\\end{lemma}\n\n\\begin{proof}\nIf \\(\\pi(A)=0\\), then \\(x\\mapsto P_t(x,A)\\), respectively\n\\(x\\mapsto R_\\lambda^P(x,A)\\), is a nonnegative continuous function with\nzero \\(\\pi\\)-integral.  Since \\(\\pi\\sim\\gamma\\) and Brownian bridge\nmeasure has full support on \\(E\\), that function is identically zero.\n\\end{proof}\n\nA weaker topological replacement for strong Feller would also suffice.\n\n\\begin{lemma}[eventual equicontinuity criterion]\\label{lem:eprop}\nAssume Proposition \\ref{prop:limit}.  Suppose that for every bounded\nLipschitz \\(f:E\\to\\R\\), every \\(x\\in E\\), and every \\(\\varepsilon>0\\),\nthere are a neighbourhood \\(U\\) of \\(x\\) and \\(t_0>0\\) such that\n\\[\n        |P_t f(y)-P_t f(x)|\\le\\varepsilon,\n        \\qquad y\\in U,\\ t\\ge t_0 .                  \\tag{8}\n\\]\nThen \\(\\pi\\) is the unique invariant probability measure.\n\\end{lemma}\n\n\\begin{proof}\nBy (6), \\(P_t f\\to \\pi(f)\\) in \\(L^2(\\pi)\\).  Fix \\(x\\) and choose \\(U\\)\nas in (8).  Full support gives \\(\\pi(U)>0\\).  For \\(t\\ge t_0\\),\n\\[\n |P_t f(x)-\\pi(f)|\n \\le \\varepsilon\n +\\left(\\pi(U)^{-1}\\int_U |P_t f(y)-\\pi(f)|^2\\,\\pi(dy)\\right)^{1/2}.\n\\]\nLetting \\(t\\to\\infty\\), then \\(\\varepsilon\\downarrow0\\), gives\n\\(P_t f(x)\\to\\pi(f)\\) for every \\(x\\).  If \\(\\eta\\) is invariant, dominated\nconvergence yields\n\\[\n     \\eta(f)=\\int P_t f\\,d\\eta \\longrightarrow \\pi(f).\n\\]\nBounded Lipschitz functions determine probability measures on the Polish\nspace \\(E\\), so \\(\\eta=\\pi\\).\n\\end{proof}\n\n\\section*{The Dirichlet-form exceptional set}\n\nFor the bounded-variation potential \\(f=-2H_+\\), the Bounebache--Zambotti\nDirichlet form is\n\\[\n        \\cE(F,G)=\\frac12\\int_E\\langle DF,DG\\rangle_{L^2(0,1)}\\,d\\pi .\n\\]\nTheir Proposition 2.5 gives a resolvent kernel absolutely continuous with\nrespect to \\(\\pi\\), but the representing identity is only \\(\\pi\\)-a.e. in\nthe starting point; in the proof the kernel is extended over a\nzero-capacity exceptional set.  Therefore it gives the needed resolvent\nabsolute continuity only away from a properly exceptional set \\(N\\).\nVerification that the BZ local-time process lies in the Dirichlet ABLM\nweak/mild class would identify the constructions at most quasi-everywhere;\nthis does not by itself settle deterministic \\(x\\in N\\).\n\nThe following two reductions avoid asking for pointwise absolute\ncontinuity on all of \\(E\\).\n\n\\begin{lemma}\\label{lem:entrance}\nLet \\(N\\) be a BZ properly exceptional set such that\n\\(R_\\lambda^P(y,\\cdot)\\ll\\pi\\) for \\(y\\notin N\\).  If\n\\[\n          P_s(x,N)=0,\\qquad x\\in E,\\ s>0,              \\tag{9}\n\\]\nthen (7) holds for every \\(x\\in E\\).\n\\end{lemma}\n\n\\begin{proof}\nLet \\(\\pi(A)=0\\).  For \\(y\\notin N\\), \\(R_\\lambda^P(y,A)=0\\).  For\n\\(\\varepsilon>0\\),\n\\[\n R_\\lambda^P(x,A)\n \\le \\varepsilon\n  +e^{-\\lambda\\varepsilon}\\int_E R_\\lambda^P(y,A)P_\\varepsilon(x,dy)\n \\le \\varepsilon+\\lambda^{-1}P_\\varepsilon(x,N).\n\\]\nUse (9) and let \\(\\varepsilon\\downarrow0\\).\n\\end{proof}\n\n\\begin{lemma}\\label{lem:capacity}\nAssume that every invariant probability \\(\\eta\\) satisfies the finite\nenergy bound\n\\[\n       \\left|\\int \\varphi\\,d\\eta\\right|\n       \\le C_\\eta\\,\\cE_1(\\varphi,\\varphi)^{1/2},\n       \\qquad \\varphi\\in D(\\cE)\\cap C_b(E).          \\tag{10}\n\\]\nThen every invariant \\(\\eta\\) charges no BZ exceptional set.  Consequently\nthe quasi-everywhere BZ resolvent absolute continuity implies\n\\(\\eta\\ll\\pi\\), and Lemma \\ref{lem:criterion} gives uniqueness.\n\\end{lemma}\n\n\\begin{proof}\nLet \\(O\\) be open and let \\(e_O\\) be an equilibrium potential with\n\\(e_O\\ge1\\) on \\(O\\) and\n\\(\\cE_1(e_O,e_O)\\le 2\\Cap(O)\\).  Applying (10) to bounded truncations of\n\\(e_O\\) gives\n\\[\n       \\eta(O)\\le \\int e_O\\,d\\eta\n          \\le \\sqrt2\\, C_\\eta\\,\\Cap(O)^{1/2}.\n\\]\nOuter regularity of capacity implies that \\(\\eta(N)=0\\) whenever\n\\(\\Cap(N)=0\\).  If \\(\\pi(A)=0\\), invariance and the BZ resolvent identity\non \\(N^c\\) give\n\\[\n   \\eta(A)=\\lambda\\int_{N^c}R_\\lambda^P(y,A)\\,\\eta(dy)=0.\n\\]\nThus \\(\\eta\\ll\\pi\\), and the last step is Lemma \\ref{lem:criterion}.\n\\end{proof}\n\n\\section*{Remaining open issues}\n\nThe argument proves uniqueness once any one of the all-starting-points\nupgrades above is available.  What is still unproved from the hypotheses\nstated in the problem is an upgrade excluding invariant probabilities\nliving on the \\(\\pi\\)-null exceptional set.  Concretely, one still needs\none of the following.\n\n\\begin{enumerate}\n\\item Prove the pointwise resolvent absolute continuity (7), or prove the\nstrong-Feller/resolvent-strong-Feller sufficient condition in Lemma\n\\ref{lem:sf}.\n\\item Prove the eventual equicontinuity estimate (8).  The \\(L^2(\\pi)\\)\nspectral gap plus full support would then imply pointwise convergence\n\\(P_t f(x)\\to\\pi(f)\\) by Lemma \\ref{lem:eprop}.\n\\item Prove entrance into the BZ non-exceptional set, namely (9).\n\\item Prove the finite-energy/capacity estimate (10) for every stationary\nlaw.  This would show that invariant laws are smooth measures for the BZ\nDirichlet form and hence cannot charge exceptional sets.\n\\end{enumerate}\n\nThis round I checked two non-pointwise routes: the eventual\nequicontinuity route, which would upgrade \\(L^2(\\pi)\\) mixing to pointwise\nmixing, and the finite-energy route, which would only need invariant laws\nto ignore capacity-zero sets.  Both reductions are rigorous as stated, but\nthe required estimates are not consequences of the assumptions currently\nlisted in the problem.  Therefore the present document proves uniqueness\namong invariant measures absolutely continuous with respect to \\(\\pi\\) and\ngives several exact sufficient criteria for full uniqueness, but it does\nnot yet constitute an unconditional proof or disproof of the statement.\n\n\\begin{thebibliography}{9}\n\\bibitem{ABLM}\nS. Athreya, O. Butkovsky, K. L\\^e and L. Mytnik,\n\\emph{Well-posedness of stochastic heat equation with distributional drift\nand skew stochastic heat equation}, Comm. Pure Appl. Math. 77 (2024),\n2708--2777.\n\n\\bibitem{ABLMweakmild}\nS. Athreya, O. Butkovsky, K. L\\^e and L. Mytnik,\n\\emph{Analytically weak and mild solutions to stochastic heat equation with\nirregular drift}, Stoch. PDE: Anal. Comp. (2025).\n\n\\bibitem{BZ}\nS. K. Bounebache and L. Zambotti,\n\\emph{A skew stochastic heat equation}, J. Theoret. Probab. 27 (2014),\n168--201.\n\\end{thebibliography}\n\n\\end{document}\n\"\"\"\nPath(\"/mnt/data/answer.tex\").write_text(new_answer)\nprint(len(new_answer), new_answer[:500])\n",
+                "container_id": "cntr_6a1a1d850c84819096b1ccb0667a9275038c800b27f9f0ef",
+                "outputs": null,
+                "status": "completed",
+                "type": "code_interpreter_call"
+            },
+            {
+                "id": "rs_01a2efdbeef2dc7e006a1a21e749188196b8df7dbf3937fc3b",
+                "summary": [],
+                "type": "reasoning",
+                "content": null,
+                "encrypted_content": null,
+                "status": null
+            },
+            {
+                "id": "ci_01a2efdbeef2dc7e006a1a21e8114c8196bdeb7184f35791fd",
+                "code": "# Adjust capacity lemma wording\np=Path(\"/mnt/data/answer.tex\")\ntxt=p.read_text()\ntxt=txt.replace(\nr\"\"\"Assume that every invariant probability \\(\\eta\\) satisfies the finite\nenergy bound\n\\[\n       \\left|\\int \\varphi\\,d\\eta\\right|\n       \\le C_\\eta\\,\\cE_1(\\varphi,\\varphi)^{1/2},\n       \\qquad \\varphi\\in D(\\cE)\\cap C_b(E).          \\tag{10}\n\\]\"\"\",\nr\"\"\"Assume that every invariant probability \\(\\eta\\) satisfies the finite\nenergy bound\n\\[\n       \\left|\\int \\varphi\\,d\\eta\\right|\n       \\le C_\\eta\\,\\cE_1(\\varphi,\\varphi)^{1/2}       \\tag{10}\n\\]\nfor every bounded nonnegative element of \\(D(\\cE)\\), represented by its\nquasi-continuous version.\"\"\"\n)\ntxt=txt.replace(\nr\"\"\"Let \\(O\\) be open and let \\(e_O\\) be an equilibrium potential with\n\\(e_O\\ge1\\) on \\(O\\) and\n\\(\\cE_1(e_O,e_O)\\le 2\\Cap(O)\\).  Applying (10) to bounded truncations of\n\\(e_O\\) gives\"\"\",\nr\"\"\"Let \\(O\\) be open and let \\(e_O\\) be an equilibrium potential with\n\\(e_O\\ge1\\) quasi-everywhere on \\(O\\) and\n\\(\\cE_1(e_O,e_O)\\le 2\\Cap(O)\\).  Applying (10) to bounded truncations of\nthe quasi-continuous version of \\(e_O\\) gives\"\"\"\n)\np.write_text(txt)\nprint(\"written\", len(txt))\n",
+                "container_id": "cntr_6a1a1d850c84819096b1ccb0667a9275038c800b27f9f0ef",
+                "outputs": null,
+                "status": "completed",
+                "type": "code_interpreter_call"
+            },
+            {
+                "id": "rs_01a2efdbeef2dc7e006a1a21e863b08196a17605fe7df0c29b",
+                "summary": [],
+                "type": "reasoning",
+                "content": null,
+                "encrypted_content": null,
+                "status": null
+            },
+            {
+                "id": "ci_01a2efdbeef2dc7e006a1a21e87b008196ae17386f2f10e7ed",
+                "code": "import subprocess, os, textwrap, pathlib, json, sys, shutil, re, time\ncmd = [\"pdflatex\", \"-interaction=nonstopmode\", \"-halt-on-error\", \"answer.tex\"]\nproc = subprocess.run(cmd, cwd=\"/mnt/data\", stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, timeout=300)\nprint(proc.returncode)\nprint(proc.stdout[-4000:])\n",
+                "container_id": "cntr_6a1a1d850c84819096b1ccb0667a9275038c800b27f9f0ef",
+                "outputs": null,
+                "status": "completed",
+                "type": "code_interpreter_call"
+            },
+            {
+                "id": "rs_01a2efdbeef2dc7e006a1a21e917748196b8fecb8096362e50",
+                "summary": [],
+                "type": "reasoning",
+                "content": null,
+                "encrypted_content": null,
+                "status": null
+            },
+            {
+                "id": "ci_01a2efdbeef2dc7e006a1a21e93178819686e823f97bdca018",
+                "code": "p=Path(\"/mnt/data/answer.tex\")\ntxt=p.read_text().replace(r\"\\newcommand{\\Cap}{\\operatorname{Cap}}\", r\"\\newcommand{\\capacity}{\\operatorname{Cap}}\")\ntxt=txt.replace(r\"\\Cap(\", r\"\\capacity(\")\np.write_text(txt)\nproc = subprocess.run([\"pdflatex\",\"-interaction=nonstopmode\",\"-halt-on-error\",\"answer.tex\"], cwd=\"/mnt/data\", stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, timeout=300)\nprint(proc.returncode)\nprint(proc.stdout[-4000:])\n",
+                "container_id": "cntr_6a1a1d850c84819096b1ccb0667a9275038c800b27f9f0ef",
+                "outputs": null,
+                "status": "completed",
+                "type": "code_interpreter_call"
+            },
+            {
+                "id": "rs_01a2efdbeef2dc7e006a1a21ea053881968a543cfb83c80942",
+                "summary": [],
+                "type": "reasoning",
+                "content": null,
+                "encrypted_content": null,
+                "status": null
+            },
+            {
+                "id": "ci_01a2efdbeef2dc7e006a1a21ea1aac8196a58174d53ef43b9e",
+                "code": "proc = subprocess.run([\"pdflatex\",\"-interaction=nonstopmode\",\"-halt-on-error\",\"answer.tex\"], cwd=\"/mnt/data\", stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, timeout=300)\nprint(proc.returncode)\nprint(proc.stdout[-2000:])\n",
+                "container_id": "cntr_6a1a1d850c84819096b1ccb0667a9275038c800b27f9f0ef",
+                "outputs": null,
+                "status": "completed",
+                "type": "code_interpreter_call"
+            },
+            {
+                "id": "rs_01a2efdbeef2dc7e006a1a21ebc0848196b0507c953d82276c",
+                "summary": [],
+                "type": "reasoning",
+                "content": null,
+                "encrypted_content": null,
+                "status": null
+            },
+            {
+                "id": "ci_01a2efdbeef2dc7e006a1a21ebd3808196b7ca122a13c757fe",
+                "code": "p=Path(\"/mnt/data/answer.tex\")\ntxt=p.read_text()\ntxt=txt.replace(\n\"Prove the pointwise resolvent absolute continuity (7), or prove the\\nstrong-Feller/resolvent-strong-Feller sufficient condition in Lemma\\n\\\\ref{lem:sf}.\",\n\"Prove (7), or prove one of the strong-Feller sufficient conditions in\\nLemma \\\\ref{lem:sf}.\"\n)\np.write_text(txt)\nproc = subprocess.run([\"pdflatex\",\"-interaction=nonstopmode\",\"-halt-on-error\",\"answer.tex\"], cwd=\"/mnt/data\", stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, timeout=300)\nproc2 = subprocess.run([\"pdflatex\",\"-interaction=nonstopmode\",\"-halt-on-error\",\"answer.tex\"], cwd=\"/mnt/data\", stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, timeout=300)\nprint(proc2.returncode)\nprint(proc2.stdout[-1500:])\n",
+                "container_id": "cntr_6a1a1d850c84819096b1ccb0667a9275038c800b27f9f0ef",
+                "outputs": null,
+                "status": "completed",
+                "type": "code_interpreter_call"
+            },
+            {
+                "id": "rs_01a2efdbeef2dc7e006a1a21ee24908196b1ee80b906520222",
+                "summary": [],
+                "type": "reasoning",
+                "content": null,
+                "encrypted_content": null,
+                "status": null
+            },
+            {
+                "id": "ci_01a2efdbeef2dc7e006a1a21ee3b348196b17586786b96ce8e",
+                "code": "old_notes=Path(\"/mnt/data/file-AhyepebgKkq5PYmye32XGf-research_notes.tex\").read_text()\nprint(old_notes[-2000:])\n",
+                "container_id": "cntr_6a1a1d850c84819096b1ccb0667a9275038c800b27f9f0ef",
+                "outputs": null,
+                "status": "completed",
+                "type": "code_interpreter_call"
+            },
+            {
+                "id": "rs_01a2efdbeef2dc7e006a1a21ef638c8196b0cc72f294adae62",
+                "summary": [
+                    {
+                        "text": "**Updating notes for clarity**\n\nI need to add an appendix before the \\end{document} tag. I want to include more details about the e-property proof, the concept of finite energy capacity, and the continuous dependence from the ABLM uniqueness proof, maybe. Additionally, I should mention the equivalence of the BZ equation concerning \u03b40(u) and the local time derivative. No changelog is necessary. Let's get those updated notes put together!",
+                        "type": "summary_text"
+                    }
+                ],
+                "type": "reasoning",
+                "content": null,
+                "encrypted_content": null,
+                "status": null
+            },
+            {
+                "id": "ci_01a2efdbeef2dc7e006a1a21f1f9cc8196a42a013b8ba6b882",
+                "code": "append = r\"\"\"\n\n\\section*{Additional reductions for the exceptional-set gap}\n\nEventual equicontinuity/e-property route.  Suppose $P_t$ is already known\nto be reversible with invariant $\\pi$, and $P_t f\\to\\pi(f)$ in\n$L^2(\\pi)$ for every bounded Lipschitz $f$.  If for every $x\\in E$ and\n$\\varepsilon>0$ there are a neighbourhood $U$ of $x$ and $t_0$ such that\n\\[\n  |P_t f(y)-P_t f(x)|\\le \\varepsilon,\\qquad y\\in U,\\quad t\\ge t_0,\n\\]\nthen $P_t f(x)\\to\\pi(f)$ for every $x$.  The proof avoids compactness:\nsince $\\pi$ has full support, $\\pi(U)>0$, and\n\\[\n |P_t f(x)-\\pi(f)|\n \\le \\varepsilon+\n \\left(\\pi(U)^{-1}\\int_U |P_t f(y)-\\pi(f)|^2\\,\\pi(dy)\\right)^{1/2}.\n\\]\nThe second term goes to $0$.  Then any invariant law $\\eta$ satisfies\n$\\eta(f)=\\int P_t f\\,d\\eta\\to\\pi(f)$; bounded Lipschitz functions\nseparate probability measures on $E$.  This route would prove uniqueness\nwithout all-starting-point absolute continuity.  The analytic missing\ninput is the eventual equicontinuity estimate.  Ordinary finite-time\nFeller continuity is not enough, because the modulus may deteriorate as\n$t\\to\\infty$.\n\nPossible use of ABLM stability estimates.  In the ABLM uniqueness proof\nfor two solutions driven by the same noise and with the same initial\ncondition, the local estimate has the form\n\\[\n\\|z_t-P_{t-s}z_s\\|\\lesssim\nD_{s,t}(t-s)^{1/2+\\delta}+D_{s,t}|\\log D_{s,t}|(t-s),\n\\]\nwhere $D_{s,t}=\\sup_{r\\in[s,t]}\\|z_r\\|$.  For different initial data the\nsame local identity should still hold for the nonlinear drift part,\nwhile $P_tz_0$ remains as an inhomogeneous term.  This suggests finite\ntime continuous dependence (hence weak Feller), perhaps by an Osgood\nargument.  It does not immediately imply the eventual equicontinuity\nneeded above; one would need either a uniform-in-time modulus or an\nasymptotic-strong-Feller estimate in which the heat semigroup\ndissipation beats the logarithmic loss.\n\nCapacity-smooth invariant measures route.  Let $N$ be the BZ exceptional\nset on whose complement the resolvent kernel represents the actual\nresolvent and is absolutely continuous with respect to $\\pi$.  It is\nenough to show that every invariant probability $\\eta$ is smooth for the\nBZ Dirichlet form, in particular $\\eta(N)=0$.  A sufficient finite-energy\ninequality is\n\\[\n  \\left|\\int \\varphi\\,d\\eta\\right|\n  \\le C_\\eta \\mathcal E_1(\\varphi,\\varphi)^{1/2}\n\\]\nfor bounded nonnegative quasi-continuous $\\varphi\\in D(\\mathcal E)$.\nIndeed, applying this to equilibrium potentials gives\n\\[\n  \\eta(O)\\le C_\\eta\\,\\operatorname{Cap}(O)^{1/2}\n\\]\nfor open $O$, hence $\\eta$ charges no zero-capacity set.  Once\n$\\eta(N)=0$, for any $\\pi$-null set $A$,\n\\[\n  \\eta(A)=\\lambda\\int_{N^c}R_\\lambda(y,A)\\,\\eta(dy)=0,\n\\]\nso $\\eta\\ll\\pi$ and the $L^2(\\pi)$ spectral gap forces $\\eta=\\pi$.\nA possible way to prove the finite-energy inequality would be a\nstationary Krylov/capacity estimate for the regularized processes with\nconstants depending on the bounded primitives $B_n$ rather than on\n$\\|G_{1/n}\\|_\\infty$.\n\nLocal-time form of the drift.  Bounebache--Zambotti write the SPDE with\na local-time-in-space term\n\\[\n -\\frac12\\int_\\mathbb R f(da)\\,\\partial_\\theta \\ell^a_{t,\\theta}.\n\\]\nFor $f=-2H_+$, $df=-2\\delta_0$, so this term is\n$\\partial_\\theta\\ell^0_{t,\\theta}$, which is formally\n$\\delta_0(u(t,\\theta))$ by the occupation density formula in the spatial\nvariable.  Thus their Dirichlet form matches the Gibbs measure\n$\\pi\\propto\\exp(2\\int_0^1{\\bf1}_{\\{v>0\\}})\\,d\\gamma$, but their Markov\nsolution is constructed only outside a properly exceptional set.\n\nFinite-dimensional projection/entropy route.  For an invariant law\n$\\eta$, finite-dimensional projections onto the first $m$ Dirichlet\nmodes should have Lebesgue densities because the projected dynamics has\na nondegenerate Brownian martingale part.  This by itself is insufficient\nfor $\\eta\\ll\\pi$ in infinite dimensions.  A useful target would be\nuniform relative entropy\n\\[\n  \\sup_m H((\\Pi_m)_\\#\\eta\\mid(\\Pi_m)_\\#\\pi)<\\infty,\n\\]\nwhich would imply $\\eta\\ll\\pi$ by projective convergence of entropy.\nThe difficulty is to derive such a bound from the stationary martingale\nproblem with the distributional drift; the drift contribution is a\nsurface/local-time measure rather than an $L^2$ vector field.\n\nRoughness decomposition idea.  At fixed $t>0$, the linear stochastic\nconvolution has a Gaussian law equivalent to Brownian bridge.  If the\ndrift convolution were an independent Cameron--Martin shift, absolute\ncontinuity would follow immediately.  In reality it is adapted and\ndepends on the same noise.  A possible approach is to split the driving\nnoise into independent high-frequency or late-time pieces and show that\nthe singular drift contribution cannot cancel the nondegenerate Gaussian\nroughness.  This would amount to a Malliavin or conditional-density\nargument for the singular/local-time SPDE.\n\"\"\"\nnotes = old_notes.replace(\"\\n\\\\end{document}\\n\", append + \"\\n\\\\end{document}\\n\")\nPath(\"/mnt/data/research_notes.tex\").write_text(notes)\nprint(len(notes))\n",
+                "container_id": "cntr_6a1a1d850c84819096b1ccb0667a9275038c800b27f9f0ef",
+                "outputs": null,
+                "status": "completed",
+                "type": "code_interpreter_call"
+            },
+            {
+                "id": "rs_01a2efdbeef2dc7e006a1a21facbf081968c3ef346a843e516",
+                "summary": [],
+                "type": "reasoning",
+                "content": null,
+                "encrypted_content": null,
+                "status": null
+            },
+            {
+                "id": "ci_01a2efdbeef2dc7e006a1a21fae16881968f7fbdd9e8a629d6",
+                "code": "proc = subprocess.run([\"pdflatex\",\"-interaction=nonstopmode\",\"-halt-on-error\",\"research_notes.tex\"], cwd=\"/mnt/data\", stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, timeout=300)\nprint(proc.returncode)\nprint(proc.stdout[-1500:])\n",
+                "container_id": "cntr_6a1a1d850c84819096b1ccb0667a9275038c800b27f9f0ef",
+                "outputs": null,
+                "status": "completed",
+                "type": "code_interpreter_call"
+            },
+            {
+                "id": "rs_01a2efdbeef2dc7e006a1a21fb8f2481969612235f5b7e7361",
+                "summary": [
+                    {
+                        "text": "**Researching document organization**\n\nI see there\u2019s a section titled \"Additional reduction lemmas...\" in the research notes. It seems overfull, but that might not pose any issues. I should consider copying references.bib to the canonical source without changing anything. Keeping the structure intact might be important, and I want to ensure everything stays organized. I'll just confirm that copying it is the best course of action to maintain clarity in my references.",
+                        "type": "summary_text"
+                    }
+                ],
+                "type": "reasoning",
+                "content": null,
+                "encrypted_content": null,
+                "status": null
+            },
+            {
+                "id": "ci_01a2efdbeef2dc7e006a1a21fddde481969c9f023d1f3a88e8",
+                "code": "bib_text=Path(\"/mnt/data/file-XsUGRgd2FRKyfiHVLygzoY-references.bib\").read_text()\nPath(\"/mnt/data/references.bib\").write_text(bib_text)\nprint(len(bib_text))\n",
+                "container_id": "cntr_6a1a1d850c84819096b1ccb0667a9275038c800b27f9f0ef",
+                "outputs": null,
+                "status": "completed",
+                "type": "code_interpreter_call"
+            },
+            {
+                "id": "rs_01a2efdbeef2dc7e006a1a21fe802081968a1d18331f129f97",
+                "summary": [],
+                "type": "reasoning",
+                "content": null,
+                "encrypted_content": null,
+                "status": null
+            },
+            {
+                "id": "ci_01a2efdbeef2dc7e006a1a21fe94b88196af7eb3abb79e862d",
+                "code": "proc=subprocess.run([\"pdfinfo\",\"/mnt/data/answer.pdf\"],stdout=subprocess.PIPE,stderr=subprocess.STDOUT,text=True)\nprint(proc.stdout)\n",
+                "container_id": "cntr_6a1a1d850c84819096b1ccb0667a9275038c800b27f9f0ef",
+                "outputs": null,
+                "status": "completed",
+                "type": "code_interpreter_call"
+            },
+            {
+                "id": "rs_01a2efdbeef2dc7e006a1a21ff90b881969ce07f488892ea23",
+                "summary": [],
+                "type": "reasoning",
+                "content": null,
+                "encrypted_content": null,
+                "status": null
+            },
+            {
+                "id": "msg_01a2efdbeef2dc7e006a1a22000610819686f6e1530d28bb80",
+                "content": [
+                    {
+                        "annotations": [],
+                        "text": "Updated the canonical files and compiled `answer.tex` successfully with `pdflatex` twice; it produces a 5-page PDF and respects the LaTeX contract.\n\nMain changes:\n- Weakened the Nemytskii drift wording from \u201csmooth\u201d to the needed bounded/Lipschitz statement.\n- Made the semigroup convergence interpretation explicit.\n- Added a rigorous \u201ceventual equicontinuity/e-property\u201d criterion that would upgrade the \\(L^2(\\pi)\\) spectral gap to pointwise convergence from every deterministic initial condition.\n- Added a finite-energy/capacity criterion showing that it suffices for invariant laws to charge no Bounebache\u2013Zambotti exceptional sets.\n- Toned down the BZ\u2013ABLM identification language.\n- Expanded `research_notes.tex` with the new reduction strategies and obstacles.\n\nI am **not** declaring readiness, since the all-starting-points upgrade is still not proved from the stated hypotheses.\n\n<council>\nFor the SPDE with drift \\(\\delta_0(u)\\), suppose \\(\\eta\\) is an arbitrary invariant law of the all-starting-points ABLM Dirichlet semigroup. Is there a viable way to prove that \\(\\eta\\) charges no Bounebache--Zambotti exceptional set, preferably via a finite-energy/capacity estimate\n\\[\n\\left|\\int \\varphi\\,d\\eta\\right|\\le C_\\eta \\mathcal E_1(\\varphi,\\varphi)^{1/2}\n\\]\nor a stationary Krylov estimate? Please give a concrete proof strategy with the exact intermediate lemmas needed, and indicate whether ABLM\u2019s local-time/regularization estimates plausibly supply those lemmas. Avoid relying on full strong Feller unless you can explain how to prove it in this singular setting.\n</council>\n\n<compute_agent>\nPlease focus on closing the remaining uniqueness gap for the Dirichlet stochastic heat equation with drift \\(\\delta_0(u)\\).\n\nTasks:\n\n1. Read the current canonical `answer.tex` and `research_notes.tex`.\n\n2. Inspect the ABLM 2024 paper/source, especially the stability and uniqueness proof around Proposition/Lemma `L:condun`. Determine whether their estimates can be adapted to two solutions with different deterministic initial data driven by the same noise. In particular:\n   - Can one derive finite-time weak Feller continuity?\n   - Can one derive an eventual equicontinuity/e-property estimate\n     \\[\n     |P_t f(x)-P_t f(y)|\\le \\varepsilon\n     \\quad\\text{for }y\\text{ near }x,\\ t\\ge t_0,\n     \\]\n     for bounded Lipschitz \\(f\\)?\n   - Track whether constants grow in \\(t\\), depend on initial states, or can be made uniform on compact sets.\n\n3. Search the literature for results that may imply any of:\n   - strong Feller, resolvent strong Feller, \\(L^p\\)-strong Feller;\n   - asymptotic strong Feller or e-property plus irreducibility;\n   - entrance into exceptional sets for distorted Ornstein--Uhlenbeck processes on abstract Wiener space with bounded strictly positive density;\n   - finite-energy/capacity estimates for invariant measures of singular stochastic heat equations or distorted Gaussian Dirichlet forms.\n\n   Prioritize primary sources: ABLM, Bounebache--Zambotti, R\u00f6ckner/Wang/Trutnau/Stannat/Da Prato papers, Komorowski--Peszat--Szarek e-property papers, Hairer--Mattingly ASF papers, and Dirichlet-form references.\n\n4. If you find a theorem that closes the gap, give the exact statement, citation, and a careful verification of hypotheses in the present Dirichlet \\(C_0([0,1])\\) setting.\n\n5. If no theorem closes the gap, provide a detailed obstruction report and the most promising self-contained proof route, with precise lemmas that would need to be proved.\n\nWrite findings to `responses/response_round_3.md`.\n</compute_agent>",
+                        "type": "output_text",
+                        "logprobs": []
+                    }
+                ],
+                "role": "assistant",
+                "status": "completed",
+                "type": "message",
+                "phase": "final_answer"
+            }
+        ],
+        "parallel_tool_calls": true,
+        "temperature": 1.0,
+        "tool_choice": "auto",
+        "tools": [
+            {
+                "container": {
+                    "type": "auto",
+                    "file_ids": [
+                        "file-4MWQUpuAAFvceoCsug57E8",
+                        "file-AhyepebgKkq5PYmye32XGf",
+                        "file-XsUGRgd2FRKyfiHVLygzoY",
+                        "file-JPUyV4CDajUk8qi2nA5Agf"
+                    ],
+                    "memory_limit": null,
+                    "network_policy": null
+                },
+                "type": "code_interpreter"
+            },
+            {
+                "type": "web_search_preview",
+                "search_content_types": null,
+                "search_context_size": "medium",
+                "user_location": {
+                    "type": "approximate",
+                    "city": null,
+                    "country": "US",
+                    "region": null,
+                    "timezone": null
+                }
+            }
+        ],
+        "top_p": 0.98,
+        "background": true,
+        "completed_at": 1780097536.0,
+        "conversation": null,
+        "max_output_tokens": 200000,
+        "max_tool_calls": null,
+        "previous_response_id": null,
+        "prompt": null,
+        "prompt_cache_key": null,
+        "prompt_cache_retention": "24h",
+        "reasoning": {
+            "effort": "xhigh",
+            "generate_summary": null,
+            "summary": "detailed",
+            "context": "current_turn"
+        },
+        "safety_identifier": null,
+        "service_tier": "default",
+        "status": "completed",
+        "text": {
+            "format": {
+                "type": "text"
+            },
+            "verbosity": "medium"
+        },
+        "top_logprobs": 0,
+        "truncation": "disabled",
+        "usage": {
+            "input_tokens": 89766,
+            "input_tokens_details": {
+                "cached_tokens": 0
+            },
+            "output_tokens": 52906,
+            "output_tokens_details": {
+                "reasoning_tokens": 29858
+            },
+            "total_tokens": 142672
+        },
+        "user": null,
+        "billing": {
+            "payer": "developer"
+        },
+        "frequency_penalty": 0.0,
+        "moderation": null,
+        "presence_penalty": 0.0,
+        "store": true
+    }
+}

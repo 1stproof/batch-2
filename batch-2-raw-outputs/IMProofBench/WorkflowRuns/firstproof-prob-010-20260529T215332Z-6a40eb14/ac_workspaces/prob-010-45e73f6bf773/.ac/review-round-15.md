@@ -1,0 +1,168 @@
+## Referee report
+
+### Overall verdict
+
+`answer.tex` **compiles and satisfies the stated LaTeX-format contract**, but it is **not mathematically ready**. The proof’s central “boundary-corner intersection” mechanism rests on a direct-sum support lemma whose proof contains a serious topological error: it treats strong-operator convergence in the standard representation as weak-* convergence in the universal enveloping bidual \(A^{**}\). That implication is false. Since this lemma is essential for placing the palindromic product of boundary support projections in the compact corner, the final application of the finite boundary criterion is not justified.
+
+I therefore cannot certify the solution as complete.
+
+---
+
+## Contract / compilation check
+
+I ran `pdflatex` twice on the supplied `answer.tex`.
+
+- Document class is exactly `\documentclass[12pt]{article}`.
+- Only `fullpage` is used for layout; no forbidden margin/spacing/font-size changes were detected.
+- The document compiles successfully.
+- The resulting PDF is 6 pages, within the 12-page limit.
+
+So there is **no LaTeX-contract failure**.
+
+---
+
+## Literature cross-check
+
+The cited DKEP paper indeed defines the subalgebra boundary \(X_B\) in Example 3.4 as the norm-closed span generated from \(e_B B(L^2M)e_B\), and states that it is hereditary. ([arxiv.org](https://arxiv.org/pdf/2204.00517)) DKEP Example 5.11 defines coefficient boundary pieces \(X_H,Y_H\) and says they are the smallest boundary pieces for which a correspondence is mixing relative to them. ([arxiv.org](https://arxiv.org/pdf/2204.00517)) DKEP Theorem 5.10 includes the Connes-fusion identity \(T_{\xi\otimes\eta}=T_\eta T_\xi\). ([arxiv.org](https://arxiv.org/pdf/2204.00517)) DKEP Lemma 8.5 is correctly cited for the normal-bidual formulation, but it assumes ergodicity on the center; for the trivial action this is why the factor condition matters. ([arxiv.org](https://arxiv.org/pdf/2204.00517))
+
+The cited CDHJKN paper does contain the graph-product bimodule decomposition and fusion rules used in spirit by the answer: Main Theorem 0.4 / Theorem 5.4 and Proposition 5.5 decompose \(M_{V_1}L^2(M)_{M_{V_2}}\) and give fusion summands indexed by subsets of intersections. ([ems.press](https://ems.press/content/serial-article-files/51743)) Its Main Theorem 0.5 gives the stated factoriality obstruction conditions under state-zero unitaries, and Proposition 6.3 gives the amenability criterion. ([ems.press](https://ems.press/content/serial-article-files/51743))
+
+So the references are broadly relevant, but several uses in `answer.tex` are not justified at the required level.
+
+---
+
+## Detailed audit
+
+### 1. Problem interpretation
+
+The answer explicitly adopts the standard interpretation that “irreducible” means not a nontrivial graph join, equivalently \(\Gamma^c\) connected. This is a reasonable interpretation of the problem statement, which is otherwise slightly ambiguous about whether the two subgraphs are required to be nonempty and disjoint.
+
+No major issue here.
+
+---
+
+### 2. Normal support calculus
+
+The formula
+
+\[
+(D^{\sharp_J})^*=\mathcal A_N\cap s_DA^{**}s_D
+\tag{1}
+\]
+
+is plausible for hereditary \(C^*\)-subalgebras with faithful multiplier actions of both \(N\) and \(JNJ\), but the answer states it rather generally. DKEP’s support discussion before Remark 2.8 requires normal \(M\)-\(C^*\)-algebra hypotheses and faithful multiplier action; the simultaneous-normal version is then obtained through Proposition 2.10. The answer should explicitly verify these hypotheses for every hereditary algebra to which it applies. This is not just cosmetic, because general DKEP boundary pieces need not have all of \(N\) and \(JNJ\) in their multiplier algebras; DKEP later replaces \(X\) by \(K_X(M)\) precisely to get better multiplier behavior.
+
+The claim \(q_X=q(X)\) for an arbitrary DKEP boundary piece is also overgeneralized. For the specific subalgebra boundary pieces \(X_{M_U}\), this may be repairable, because Example 3.4 gives good multiplier invariance. But as written, the statement is not fully justified for arbitrary boundary pieces.
+
+This issue is serious but probably repairable. It is not the main fatal flaw.
+
+---
+
+### 3. Lemma “induced subalgebra boundary”
+
+The statement \(X_{\mathcal H_B}=X_B\) is plausible and probably true, but the proof has clarity and convention problems.
+
+In particular, the sentence
+
+> “for the vector \(\widehat1\) the coefficient \(T_{\widehat1}T_{\widehat1}^{*}\) (for \(H\)) and \(T_{\widehat1}^{*}T_{\widehat1}\) (for \(K\)) is \(1_{L^2B}\)”
+
+is at least ambiguous and appears reversed under the convention later stated in the paper, \(T_\xi=L_\xi^*R_\xi\). With that convention, for \(H={}_NL^2N_B\), \(T_{\widehat1}:L^2B\to L^2N\) is the inclusion, so \(T_{\widehat1}^*T_{\widehat1}=1_{L^2B}\), while \(T_{\widehat1}T_{\widehat1}^*=e_B\). The analogous identity for \(K={}_BL^2N_N\) is reversed. This may only be a notational slip, but in a proof built around coefficient operators, the direction matters.
+
+The minimality argument using DKEP Example 5.11 also needs more detail. Example 5.11 gives minimal boundary pieces for a given correspondence, but the answer only sketches why \(\mathcal H_B=H\otimes_BK\) is mixing relative to \(X_B\times B(L^2N)\). A direct computation from the cyclic vector \(1\otimes_B1\), whose coefficient is \(e_B\), would be cleaner.
+
+This is a gap/ambiguity, but not by itself fatal if corrected.
+
+---
+
+### 4. Lemma “direct sums and finite coefficient algebras” — fatal flaw
+
+This is the main mathematical failure.
+
+The first assertion attempts to prove that if each summand \(\mathcal K_j\) has coefficient boundary supported by \(s_X\), then every coefficient of \(\bigoplus_j\mathcal K_j\) lies in \(s_XA^{**}s_X\). The proof uses finite-coordinate projections \(p_F\) and states:
+
+> “the strong convergence, with uniform bounds, gives  
+> \(T_{\xi_F}^*T_{\eta_F}\to T_\xi^*T_\eta\) weak-* in \(A^{**}\).”
+
+This implication is false.
+
+Here \(A=B(L^2N)\) is being treated as a \(C^*\)-algebra and \(A^{**}\) is its universal enveloping von Neumann algebra. Strong-operator convergence in the standard representation does **not** imply weak-* convergence in \(A^{**}\), i.e. convergence against all functionals in \(A^*\). It only gives convergence against normal functionals of the standard representation.
+
+A concrete standard counterexample: in \(B(\ell^2\mathbb N)\), let \(P_n\) be the projection onto \(\overline{\mathrm{span}}\{e_k:k\ge n\}\). Then \(P_n\to0\) strongly, but a singular state obtained as an ultralimit of diagonal vector states satisfies \(\varphi(P_n)=1\) for all \(n\). Thus \(P_n\) does not converge to \(0\) in the \(\sigma(B(\ell^2),B(\ell^2)^*)\) topology, hence not weak-* in \(B(\ell^2)^{**}\).
+
+This invalidates the proof that infinite direct-sum coefficients are supported by \(s_X\). Since CDHJKN fusion decompositions may have infinite multiplicity, this direct-sum support step is essential. The answer does not provide an alternative argument using DKEP’s \(\sharp_J\)-normal topology, Magajna strong-module closure, or a valid annihilator argument.
+
+Therefore Lemma `\ref{lem:dsupport}` is not proved.
+
+The second part of the lemma, constructing approximate units from finite-fusion coefficients, is more plausible, but it depends on the preceding coefficient-boundary identification and does not fix the failed support argument.
+
+---
+
+### 5. Boundary-corner intersection lemma
+
+The boundary-corner intersection
+
+\[
+q_W(q_U\mathcal A_Mq_U)q_W
+\subset q_{U\cap W}\mathcal A_Mq_{U\cap W}
+\tag{5}
+\]
+
+is the heart of the proof. Its proof depends directly on the flawed direct-sum support lemma.
+
+The use of CDHJKN fusion rules is conceptually correct: fusing \(H_W\)-blocks with \(H_U\)-blocks should produce summands indexed by subsets of \(W\cap U\). CDHJKN’s results support this kind of statement. ([ems.press](https://ems.press/content/serial-article-files/51743)) But after obtaining a direct sum of correspondences, the answer again needs a valid argument that coefficients of arbitrary bounded vectors in the direct sum are supported by the appropriate boundary support. That is precisely the part left unproved because of the invalid weak-* convergence step above.
+
+Consequently, the proof of (5) is incomplete. Since the palindromic compact-corner inclusion depends on (5), the later finite-boundary criterion cannot be applied.
+
+This is a fatal gap.
+
+---
+
+### 6. Finite boundary criterion
+
+The finite boundary criterion is largely plausible. The compression argument by \(q_i^\perp\) is reasonable because DKEP states that the support projection of \((K_X(M)^{\sharp_J})^*\) commutes with both \(M\) and \(JMJ\). ([arxiv.org](https://arxiv.org/pdf/2204.00517)) The GNS argument for the palindromic positive contraction is also plausible.
+
+However, one step should be cited or expanded:
+
+> “DKEP's canonical \(N\)- and \(JNJ\)-bimodular u.c.p. map  
+> \(\Theta:B(L^2N)\to q_0\mathcal A_Nq_0\) …”
+
+DKEP’s proof of Lemma 8.5 indeed discusses natural \(M\)-bimodular u.c.p. maps into \((K_X(M)^{\sharp_J})^*\), but the answer should explicitly connect that construction to the compact case \(X=\mathbb K(L^2N)\) and verify that \(\omega\circ\Theta\) is a Connes hypertrace. ([arxiv.org](https://arxiv.org/pdf/2204.00517)) This is a missing detail, but likely repairable.
+
+The finite criterion is not the main obstruction.
+
+---
+
+### 7. Relative Bass–Serre paradox
+
+This proposition is plausible but terse.
+
+The commutator formulas for the first-letter projections \(p,q\) are asserted by “reduced-word inspection.” This is acceptable as a sketch, but for a standalone proof the author should verify the cases where right multiplication by a centered letter cancels the final letter of a reduced word and may shorten the word to the \(B\)-summand. The projection inequalities
+
+\[
+w_1qw_1^*+w_2qw_2^*\le p,\qquad apa^*\le q
+\]
+
+are also plausible, and the \(B\)-Haar argument for \(h=w_1a\) is standard. But again, the proof is compressed.
+
+I would not reject solely on this section, but it would need expansion in a rigorous final proof.
+
+---
+
+### 8. Graph-product application
+
+The graph-product splitting
+
+\[
+M\cong M_{V\setminus\{v\}}*_{M_{L_v}}
+(M_{L_v}\bar\otimes M_v)
+\]
+
+is standard. The combinatorial selection of \(w_1,w_2\) from non-neighbors of \(v\) is correct; I also brute-force checked the relevant finite-graph combinatorial implications for small vertex numbers. The final use of CDHJKN’s factoriality and amenability criteria is also essentially correct, provided one notes explicitly that in the tracial setting a trace-zero unitary lies in the centralizer and implies \(\dim M_v\ge2\). CDHJKN Main Theorem 0.5 and Proposition 6.3 support these uses. ([ems.press](https://ems.press/content/serial-article-files/51743))
+
+But this final step relies on the unproved boundary-corner intersection lemma, so the proof as a whole does not go through.
+
+---
+
+## Final assessment
+
+The document is well organized and many components are plausible, but the proof is not complete. The fatal issue is the unsupported passage from strong convergence of finite-coordinate cutdowns to weak-* convergence in \(A^{**}\), which invalidates the direct-sum support lemma and therefore the boundary-corner intersection lemma. Since that intersection lemma is indispensable for producing the compact-corner palindromic product, the final conclusion is not rigorously established.

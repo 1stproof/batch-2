@@ -1,0 +1,154 @@
+## Referee report
+
+### Overall verdict
+
+`answer.tex` is **not a complete solution**. It explicitly presents itself as a “Partial proof and precise reduction” and states that the key estimate (13), the low-energy averaged parametric tightening estimate, is **unproved**. This is an essential lemma needed to derive the second alternative, so the submission cannot be answer-ready.
+
+The LaTeX contract, however, appears satisfied: I compiled the file twice with `pdflatex`; it compiled successfully to a 6-page PDF, uses exactly `\documentclass[12pt]{article}`, uses only the permitted `fullpage` layout package, and contains no forbidden font-size, margin, or line-spacing commands.
+
+### Literature/source validation
+
+I verified the main Guth citations used in the proof as follows.
+
+- Guth’s *Area-expanding embeddings of rectangles* exists as arXiv:0710.0403, and its Theorem 3 states an isoperimetric profile estimate for relative cycles in rectangles matching the form quoted in the draft. ([arxiv.org](https://arxiv.org/pdf/0710.0403))
+- The same paper contains “Estimate 1,” giving a lower bound for \(k\)-dilation of degree maps of pairs, in the form used to derive equation (2). ([arxiv.org](https://arxiv.org/pdf/0710.0403))
+- Guth’s *Directional isoperimetric inequalities and rational homotopy invariants* exists as arXiv:0802.3549 and is indeed about directionally dependent isoperimetric inequalities, but I was not able to independently verify the exact Proposition 2.2 formula quoted as equation (15) from the web-extracted source text. ([arxiv.org](https://arxiv.org/abs/0802.3549))
+- Guth’s 2005 MIT thesis title is bibliographically verifiable, but it is not used as a load-bearing cited theorem in the current `answer.tex`. ([mathgenealogy.org](https://mathgenealogy.org/id.php?id=34061&utm_source=openai))
+
+### Detailed mathematical audit
+
+#### Problem statement and interpretation
+
+The interpretation of rectangles as oriented Euclidean boxes and degree as relative homological degree is reasonable. Renaming the problem’s small constant \(k\) to \(\kappa\) is harmless.
+
+However, the second paragraph is disqualifying for completeness: the author explicitly says the argument only proves the first alternative and reduces the second to an unproved estimate. Under the instructions, this alone forces ``.
+
+#### Standard tools section
+
+The reduction to PL transverse maps is plausible but not fully proved. In particular, the draft asserts without proof:
+
+- relative PL approximation preserving degree;
+- control of \(\Dil_2\) under approximation;
+- preservation of the boundary-pair condition;
+- passage to the original map using flat convergence of slices and lower semicontinuity.
+
+These are standard-looking technical claims, but a complete proof should either cite precise GMT/PL approximation results or avoid relying on them.
+
+The singular-value argument that \(\Dil_2(f)\le1\) implies \(\Dil_j(f)\le1\) for \(j=3,4\) is correct.
+
+The quoted Guth isoperimetric profile estimate and the derivation of equation (1) for \(2\)-cycles are consistent with Guth’s Theorem 3. The derivation of equation (2) from Guth’s Estimate 1 with \(n=4,j=1,k=2,l=4\) is algebraically correct.
+
+#### Central target filling lemma
+
+The calibration proof of the lower bound
+\[
+\Mass Y\ge cS_1S_2S_3
+\]
+is essentially valid. The choice of a Lipschitz distance-to-boundary function \(\psi\) on the \((x_3,x_4)\)-rectangle gives \(\psi(y)\gtrsim S_3\) because \(S_3\le S_4\) and \(y\) is central. The Stokes argument is correct after smoothing \(\psi\), and the boundary terms vanish as claimed.
+
+Minor issue: the proof should explicitly say it is using the form \(\psi\,dx_1\wedge dx_2\) and applying \(d\) to obtain \(dx_1\wedge dx_2\wedge d\psi\), up to sign. This is not a fatal gap.
+
+#### Proposition: first alternative
+
+The first-alternative proof is mostly sound, assuming the standard slicing/naturality and current-pushforward facts.
+
+Key steps are valid:
+
+- \(f_\# Z_y=P_y\) for a.e. \(y\) follows from slicing naturality and degree one.
+- A filling of \(Z_y\) pushes forward to a filling of \(P_y\), and \(\Dil_3(f)\le1\) controls its mass.
+- Guth’s profile estimate forces \(\Mass Z_y\gtrsim R_1R_2\) when \(C_1R_1R_2^2\le S_1S_2S_3\).
+- Coarea gives \(\Vol(R)\ge \int_Q\Mass Z_y\,dy\), since \(J_2F\le1\).
+
+This proves the stated first-alternative proposition up to standard GMT justifications.
+
+#### Consequences of the same slicing
+
+Equations (4) and (5) are valid consequences of the same profile estimate. The algebra deriving (6) from (2) and \(R_1\le \kappa S_1\) is correct.
+
+The claim that (6) proves the desired second alternative when
+\[
+S_3/S_2\lesssim \kappa^{-6}
+\]
+is also correct up to constants.
+
+Equations (7), (8), (9), and (10) are algebraically consistent. In particular, if the first alternative fails and \(\kappa<c_1\), the contrapositive of the first-alternative proposition gives (7). Combining (5) with (7) gives (8), and combining failure of the second alternative with (8), (9) gives the anisotropic constraints in (10).
+
+No fatal issue here, but this section only narrows the remaining case; it does not prove the theorem.
+
+#### Weighted coarea section
+
+The pointwise inequality
+\[
+\lambda^2 J_2F\le 1
+\]
+is correct: if \(v\in\ker dF\) realizes \(\lambda\), then for \(n\perp\ker dF\),
+\[
+|df(v)\wedge df(n)|\ge \lambda |dF(n)|.
+\]
+Thus \(\|dF|_N\|\le \lambda^{-1}\), and hence \(J_2F\le\lambda^{-2}\).
+
+The coarea conclusion
+\[
+I\le \Vol(R)
+\]
+is valid under the usual regularity/slicing assumptions.
+
+The lower bound
+\[
+E_y\ge S_1S_2
+\]
+is also valid: \(G_\#Z_y\) is the fundamental relative current of the \(S_1\times S_2\) rectangle, and \(J_2(G|_{Z_y})\le\lambda^2\).
+
+This section is acceptable as a partial argument.
+
+#### Measurable fillings and all-plaque bad mass lemma
+
+The measurable-selection paragraph is plausible but underproved. A rigorous proof would need to specify the relative current space, compactness/mass cutoff, closed graph, and measurability hypotheses needed for Kuratowski–Ryll-Nardzewski.
+
+The all-plaque bad-mass lemma itself is credible. For fixed \(x\), the bad set of \(z\)’s is covered by finitely many \(F(P_{ij}(x))\), each of area at most \(R_iR_j\le R_3R_4\), because \(J_2(F|_{P_{ij}})\le1\). Fubini then gives the claimed estimate.
+
+Minor issue: measurability of \(\mathcal B_z\) and of the restricted currents \(B_y\llcorner\mathcal B_z\) should be stated or justified in a final proof.
+
+#### The low-energy estimate (13)
+
+This is the fatal mathematical gap.
+
+The whole remaining proof depends on the unproved estimate
+\[
+ \int_\Omega\Fill_R(Z_y)\,dy
+ \le C\int_\Omega\left(R_1E_y+\frac{E_y^2}{S_1}\right)dy
+      +\frac{C}{q}\int_Q\int_\Omega
+        \Mass(B_y\llcorner\mathcal B_z)\,dy\,dz .
+\]
+The draft explicitly says this estimate is unresolved. No proof, citation, or sufficiently precise lemma is supplied.
+
+The subsequent absorption argument is conditional on (13). If (13) were available, the algebra leading to \(I\gtrsim T\) and hence \(\Vol(R)\gtrsim T\) is essentially correct. But without (13), the second alternative is not proved.
+
+There is also a precision issue: (13) depends on the selected family \(B_y\). The text first chooses an arbitrary measurable near-minimizing selection, then states (13). A rigorous theorem would need to say whether (13) holds for every such selection, for a special selection, or after minimizing an averaged penalty. This matters because the bad-mass term depends on the chosen \(B_y\).
+
+#### Directional filling check
+
+Equation (15) is used only to explain why known directional isoperimetry is insufficient. Even if correct, it does not close the proof.
+
+The bookkeeping leading to (16) appears internally consistent: integrating \(\Vol_{ab}(Z_y)\) over \(y\) gives the complementary minor of \(F=(f_3,f_4)\). However, the exact quoted form of Guth’s Proposition 2.2 should be verified in a final proof, because I could not confirm the exact statement from the accessible web extraction.
+
+#### Remaining open issues section
+
+This section correctly admits the essential incompleteness. It states that ordinary directional deformation gives only (15), and that a new weighted Manhattan deformation or equivalent family-level lower bound is still needed. This is an explicit unresolved mathematical gap.
+
+### Summary of issues affecting validity
+
+Fatal issue:
+
+1. The proof does not prove the essential low-energy averaged parametric tightening estimate (13). Therefore the second alternative remains unproved.
+
+Nonfatal but requiring cleanup in a complete proof:
+
+2. The PL approximation/transversality reduction is handwavy.
+3. The measurable-selection argument for \(B_y\) needs full technical justification.
+4. The exact source and hypotheses for the directional filling inequality (15) should be verified.
+5. Several standard current-theoretic facts are invoked without citation, though they are plausible.
+
+### Final assessment
+
+`answer.tex` satisfies the LaTeX-format contract but is mathematically incomplete. It cannot be marked answer-ready.

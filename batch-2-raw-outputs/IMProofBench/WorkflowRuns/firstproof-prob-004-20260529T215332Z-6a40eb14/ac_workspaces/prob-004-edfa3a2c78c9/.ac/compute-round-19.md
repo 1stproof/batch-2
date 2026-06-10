@@ -1,0 +1,200 @@
+# Compute worker reply — round 19
+status: done
+error: (none)
+workspace: /data/output/workflow_runs/firstproof-prob-004-20260529T215332Z-6a40eb14/ac_workspaces/prob-004-edfa3a2c78c9/compute
+zip: /data/output/workflow_runs/firstproof-prob-004-20260529T215332Z-6a40eb14/agents/Compute-c3-8ef38c/compute_workspace_round_19.zip
+
+---
+
+# Round 19 report: the \(f_1\)-level weighted 3D route
+
+## Summary
+
+The \(f_1\)-level slicing/naturality statement is correct, and the pointwise linear algebra gives a clean weighted 3D structure:
+\[
+\|dg|_{T M_t}\|\le |\nabla f_1|^{-1},\qquad
+\|\Lambda^2(dg|_{T M_t})\|\le 1.
+\]
+These estimates are sharp as estimates involving only \(dg|_{T M_t}\) and \(w=|\nabla f_1|^{-1}\).
+
+However, the hoped-for pointwise inequality
+\[
+\int_{M_t} w\,d\Mass \gtrsim S_2^{1/2}S_3^{3/2}S_4
+\]
+is false for arbitrary level data, and in fact false for a genuine global degree-one \(2\)-contracting map: take the identity map \(R=S\). The averaged version is also false in that unrestricted global setting. Thus this route cannot replace (13) as a standalone lemma. A restricted hard-regime averaged statement might still be true, but it would be essentially the missing volume estimate itself, not a consequence of the \(f_1\)-level pointwise estimates.
+
+## 1. Naturality for the \(f_1\)-level
+
+Let \(S=[0,S_1]\times\cdots\times[0,S_4]\), \(\pi_1(y)=y_1\), \(u=\pi_1\circ f=f_1\), and \(T=[R,\partial R]\). Since \(f\) has relative degree one,
+\[
+f_\#T=[S,\partial S]\quad\text{in }I_4(S,\partial S).
+\]
+For a.e. regular \(t\in(S_1/3,2S_1/3)\), slicing naturality gives
+\[
+f_\#\langle T,u,t\rangle
+=\langle f_\#T,\pi_1,t\rangle
+=\langle [S,\partial S],\pi_1,t\rangle
+\]
+as relative currents. The last slice is, up to the orientation convention for slices,
+\[
+[\{t\}\times[0,S_2]\times[0,S_3]\times[0,S_4],
+ \partial(\{t\}\times[0,S_2]\times[0,S_3]\times[0,S_4])].
+\]
+The boundary-supported part of any relative representative slices into the side boundary of this \(3\)-rectangle, hence vanishes in the relative current group of the slice.
+
+Let \(p(y_1,y_2,y_3,y_4)=(y_2,y_3,y_4)\). On \(M_t=\langle T,u,t\rangle\), \(g=p\circ f\). Therefore
+\[
+g_\#M_t
+=p_\# f_\#M_t
+=\pm [[0,S_2]\times[0,S_3]\times[0,S_4],
+\partial],
+\]
+again with the harmless sign determined by orientation. In particular \(g\) has relative degree \(\pm1\) from \(M_t\) to the target \(3\)-rectangle.
+
+## 2. Pointwise linear algebra on \(M_t\)
+
+At a smooth regular point set
+\[
+s=|\nabla u|,\qquad w=s^{-1},\qquad H=T_xM_t=\ker du_x.
+\]
+Let \(n=\nabla u/s\), and write
+\[
+df(n)=(s,c)\in \mathbb R\oplus\mathbb R^3,\qquad
+df(v)=(0,Bv)\quad(v\in H),
+\]
+where \(B=dg|_H\).
+
+For every unit \(v\in H\),
+\[
+|df(n)\wedge df(v)|^2=s^2|Bv|^2+|c\wedge Bv|^2\le 1,
+\]
+so
+\[
+\|B\|\le s^{-1}=w. \tag{A}
+\]
+For every orthonormal pair \(v_1,v_2\in H\),
+\[
+|Bv_1\wedge Bv_2|
+=|df(v_1)\wedge df(v_2)|\le1,
+\]
+so
+\[
+\|\Lambda^2B\|\le1. \tag{B}
+\]
+If \(\mu_1\ge\mu_2\ge\mu_3\ge0\) are the singular values of \(B\), then
+\[
+\mu_1\le w,\qquad \mu_1\mu_2\le1. \tag{C}
+\]
+Consequently
+\[
+J_3g=\mu_1\mu_2\mu_3\le \min\{w^3,1\}\le w. \tag{D}
+\]
+Rank-deficient cases are included: if \(\operatorname{rank}B<2\), then \(\mu_1\mu_2=0\); if \(\operatorname{rank}B<3\), then \(J_3g=0\).
+
+These are sharp as \(B,w\)-only estimates. Given any \(w>0\) and any \(B\) with singular values satisfying (C), the block diagonal differential
+\[
+A=\operatorname{diag}(w^{-1},B)
+\]
+has \(\|\Lambda^2A\|\le1\), realizes \(du\)-size \(w^{-1}\), and has the prescribed \(dg|_H=B\). Thus no stronger pointwise inequality depending only on \(dg|_H\) and \(w\) follows from \(\Dil_2(f)\le1\).
+
+Combining naturality with the area formula gives the true basic weighted lower bound:
+\[
+S_2S_3S_4
+=\Mass(g_\#M_t)
+\le \int_{M_t}J_3g\,d\Mass
+\le \int_{M_t}\min\{w^3,1\}\,d\Mass
+\le \int_{M_t}w\,d\Mass. \tag{E}
+\]
+This is the strongest general lower bound available from the level degree plus the pointwise estimates.
+
+## 3. Counterexample to the proposed weighted 3D inequality
+
+Take, for \(L\gg1\),
+\[
+S_2=1,\qquad S_3=L,\qquad S_4=L,
+\]
+and let
+\[
+M=[0,1]\times[0,L]\times[0,L],\qquad g=\operatorname{id}_M,\qquad w\equiv1.
+\]
+Then \(g_\#M\) is exactly the relative fundamental current of the target \(3\)-rectangle. Also
+\[
+\|dg\|=1\le w,\qquad \|\Lambda^2dg\|=1,
+\]
+so all pointwise consequences of \(\Dil_2(f)\le1\) are satisfied. But
+\[
+\int_M w\,d\Mass=L^2,
+\]
+whereas the proposed lower bound is
+\[
+S_2^{1/2}S_3^{3/2}S_4=L^{5/2}.
+\]
+The ratio is \(L^{-1/2}\to0\). Hence the proposed pointwise-in-\(t\) weighted 3D inequality is false.
+
+This counterexample is not merely abstract. It arises as an actual level slice of a global degree-one \(2\)-contracting map: take
+\[
+R=S=[0,S_1]\times[0,1]\times[0,L]\times[0,L],
+\qquad f=\operatorname{id}.
+\]
+For every regular \(t\in(S_1/3,2S_1/3)\), \(M_t=\{t\}\times[0,1]\times[0,L]\times[0,L]\), \(g=\operatorname{id}\), and \(w=|\nabla f_1|^{-1}=1\). The global map has \(\Dil_2(f)=1\) and relative degree one. This example does not satisfy the small first-side hypothesis \(R_1\le\kappa S_1\) when \(\kappa<1\), so it is not a counterexample to the main theorem, but it rules out any unrestricted \(f_1\)-level replacement lemma.
+
+## 4. Averaged version
+
+For any interval \(I\subset(0,S_1)\), coarea gives the exact identity
+\[
+\int_I\int_{M_t}|\nabla u|^{-1}\,d\Mass\,dt
+=\Vol\{x\in R:u(x)\in I\}. \tag{F}
+\]
+Thus the proposed averaged inequality over \(I=[S_1/3,2S_1/3]\) is exactly a lower bound for the volume of the central \(u\)-slab:
+\[
+\Vol(u^{-1}I)\gtrsim S_1S_2^{1/2}S_3^{3/2}S_4. \tag{G}
+\]
+In the unrestricted global setting, (G) is again false by the identity example:
+\[
+\Vol(u^{-1}I)=|I|S_2S_3S_4\sim S_1L^2,
+\]
+while the desired right side is \(S_1L^{5/2}\).
+
+The true averaged consequence of (E) is only
+\[
+\Vol(u^{-1}I)
+=\int_I\int_{M_t}w
+\ge |I|\,S_2S_3S_4
+\sim S_1S_2S_3S_4. \tag{H}
+\]
+Equivalently, the central slab has at least the target slab volume, which is the basic \(4\)-Jacobian scale and not the missing anisotropic scale.
+
+Could (G) still hold after adding the hard-regime assumptions \(R_1\ll S_1\) and \(R_3R_4\ll S_3S_4\)? I found no counterexample, but also no derivation from the \(f_1\)-level mechanism. Under those extra assumptions, (G) is essentially the desired second alternative localized to the central \(f_1\)-slab. Proving it would require a new global obstruction using the ambient rectangle and the compatibility of level sets; it is not a consequence of the naturality/linear-algebra package above.
+
+## 5. Corrected lemma suitable for insertion
+
+The following lemma is true and may be useful as a warning/partial substitute, but it only recovers the basic volume scale.
+
+**Lemma (true \(f_1\)-level weighted bound).** Let \(f:(R,\partial R)\to(S,\partial S)\) be piecewise smooth of relative degree one with \(\Dil_2(f)\le1\). Put \(u=f_1\). For a.e. regular \(t\in(S_1/3,2S_1/3)\), let
+\[
+M_t=\langle [R,\partial R],u,t\rangle,\qquad
+g=(f_2,f_3,f_4)|_{M_t},\qquad
+w=|\nabla u|^{-1}.
+\]
+Then
+\[
+g_\#M_t=\pm[[0,S_2]\times[0,S_3]\times[0,S_4],\partial],
+\]
+and at \(\|M_t\|\)-a.e. point, if \(\mu_1\ge\mu_2\ge\mu_3\) are the singular values of \(dg|_{T M_t}\), then
+\[
+\mu_1\le w,\qquad \mu_1\mu_2\le1,\qquad
+J_3g\le\min\{w^3,1\}\le w.
+\]
+Consequently
+\[
+\int_{M_t}\min\{w^3,1\}\,d\Mass
+\ge S_2S_3S_4,\qquad
+\int_{M_t}w\,d\Mass\ge S_2S_3S_4,
+\]
+and
+\[
+\int_{S_1/3}^{2S_1/3}\int_{M_t}w\,d\Mass\,dt
+\ge c\,S_1S_2S_3S_4.
+\]
+The anisotropic strengthening with \(S_2^{1/2}S_3^{3/2}S_4\) is false without additional hard-regime hypotheses, as shown by the identity map example.
+

@@ -1,0 +1,288 @@
+## Referee report on revised `answer.tex`
+
+### Executive verdict
+
+The revision addresses several earlier *presentation and reduction* issues, but it still does **not** solve the stated problem. The document now openly titles itself a “Partial proof” and explicitly says that the proof is incomplete at the averaged fixed-puncture parametric tightening estimate \((13')\). Since \((13')\) is essential for deriving the second alternative, the paper remains a conditional reduction rather than a complete rigorous proof.
+
+Therefore `answer.tex` is **not answer-ready**.
+
+---
+
+## LaTeX contract check
+
+I compiled the revised `answer.tex` with `pdflatex` twice. It compiles successfully. The resulting PDF has 5 pages. The document uses exactly
+
+```latex
+\documentclass[12pt]{article}
+```
+
+uses the permitted `fullpage` package, and I found no forbidden margin/layout changes, line-spacing changes, or in-document font-size changes. The LaTeX contract is satisfied.
+
+---
+
+## Literature/source validation
+
+The cited Guth paper *Area-expanding embeddings of rectangles* is real and its official arXiv page identifies the title, author, abstract, and 21-page manuscript. The ar5iv rendering confirms that Section 1 estimates the isoperimetric profile of a rectangle and states “Theorem 3,” and later states an “Estimate 1” involving \(k\)-dilation, maps of pairs, and degree. However, the rendered formulas are partially suppressed, so the exact displayed formulas used as (1) and (2) in `answer.tex` are not fully independently validated from the accessible rendering. They are plausible specializations, but a final solution should quote the exact theorem statements or reproduce the needed special cases. ([arxiv.org](https://arxiv.org/abs/0710.0403))
+
+The cited Guth paper *Directional isoperimetric inequalities and rational homotopy invariants* is also real; its arXiv abstract says it uses a directionally dependent isoperimetric inequality for cycles. But the exact relative-rectangle specialization used as (15) is not validated from the arXiv abstract alone. Since (15) is not used to close the proof, this is not the fatal gap, but the citation remains too imprecise for a polished complete proof. ([arxiv.org](https://arxiv.org/abs/0802.3549))
+
+---
+
+## Which previous concerns were addressed?
+
+### Addressed or improved
+
+1. **The “exists \(z\)” averaging flaw was corrected.**  
+   The previous draft incorrectly said that an estimate holding for one unspecified puncture \(z\) was equivalent to an averaged estimate. The revised draft replaces this with the averaged estimate \((13')\). Conditional on \((13')\), the passage to (14) using Lemma 2 is now logically sound.
+
+2. **Measurable selection is now at least acknowledged.**  
+   The draft adds a Kuratowski–Ryll-Nardzewski measurable-selection paragraph for the fillings \(B_y\). This is an improvement over the previous version, though still somewhat compressed.
+
+3. **Directional projected volume definition was fixed.**  
+   The revised definition
+   \[
+   \Vol_{ij}(Z)=\int |\langle dx_i\wedge dx_j,\xi\rangle|\,d\|Z\|
+   \]
+   is the correct projected-mass formulation.
+
+4. **Approximation/transversality paragraph was expanded.**  
+   The revised proof now discusses PL approximation, \(\Dil_2\le 1+\varepsilon\), target rescaling, and passage back by lower semicontinuity. This is an improvement, though still not fully rigorous; see below.
+
+### Still unresolved
+
+1. **The essential estimate \((13')\) is still unproved.**  
+   This remains fatal. The proof of the theorem depends on \((13')\), and the final section explicitly says this estimate is missing.
+
+2. **The exact Guth estimates are still not quoted with full hypotheses and formulas.**  
+   The draft cites Theorem 3 and Estimate 1 more specifically than before, but a complete proof should state the precise external results being invoked, including constants, hypotheses, and the exact specialization to relative integral currents in rectangles.
+
+3. **The approximation/transversality argument remains compressed and has a constant issue.**  
+   More detail below.
+
+---
+
+## Detailed mathematical audit
+
+### 1. Title and interpretation section
+
+The title is now **“Partial proof of the rectangle \(2\)-dilation estimate.”** This is accurate but immediately disqualifies the file as a complete solution.
+
+The “Problem statement and interpretation” section correctly specifies degree in relative homology and uses \(\kappa\) for the small constant. The comment about strict inequalities following from non-strict ones after decreasing \(\kappa\) is standard, but because the proof never closes, the final constant-selection argument is absent.
+
+The second paragraph explicitly says the second alternative is reduced to one averaged parametric tightening estimate \((13')\). Since \((13')\) is not proved, the document is only conditional.
+
+---
+
+### 2. Standard tools
+
+The singular-value observation
+\[
+\Dil_2(f)\le1\implies \Dil_j(f)\le1,\qquad j=3,4
+\]
+is correct.
+
+The slicing-naturality statement is standard for integral currents, assuming the required transversality/regularity hypotheses.
+
+However, the approximation paragraph still has issues:
+
+- The target-rescaling step says that if the approximation has \(\Dil_2\le1+\varepsilon\), one applies the proof to the rescaled target \((1+\varepsilon)^{-1/2}S\). This fixes the \(2\)-dilation, because \(2\)-dimensional areas scale by \((1+\varepsilon)^{-1}\).  
+  But it also shrinks \(S_1\), so the hypothesis
+  \[
+  R_1\le \kappa S_1
+  \]
+  need not imply
+  \[
+  R_1\le \kappa (1+\varepsilon)^{-1/2}S_1.
+  \]
+  One can probably repair this by choosing the final \(\kappa\) with slack and applying the theorem with a slightly adjusted constant, but the current paragraph does not address this.
+
+- The statement “lower semicontinuity of mass and flat convergence of slices pass the estimates back” is plausible but not proved. A final proof should specify which slice convergence theorem is being used and how the relative-degree condition is preserved.
+
+The cited Guth estimates (1) and (2) are plausible, but they remain black boxes whose exact forms are not reproduced.
+
+---
+
+### 3. Central target filling lemma
+
+The lemma is mathematically sound in its main idea. The calibration
+\[
+\omega=dx_1\wedge dx_2\wedge d\psi
+\]
+works because \(\psi\) can be chosen zero on the \((x_3,x_4)\)-boundary and with value \(\gtrsim S_3\) at a central point. The boundary terms vanish on \(\partial S\) for the stated reasons. The proof should technically take an absolute value or fix orientations, but this is harmless.
+
+This part is essentially correct.
+
+---
+
+### 4. First alternative proposition
+
+The proof of the first alternative is convincing, conditional on Guth’s relative isoperimetric profile estimate (1).
+
+The logic is:
+
+1. Slice \(R\) by \(F=(f_3,f_4)\).
+2. Push forward the slice to the central target plane \(P_y\).
+3. Use the target calibration to get
+   \[
+   \Fill_R(Z_y)\ge cS_1S_2S_3.
+   \]
+4. Use the small-cycle profile (1) to force
+   \[
+   \Mass Z_y\gtrsim R_1R_2.
+   \]
+5. Integrate by coarea and use \(J_2F\le1\) to get
+   \[
+   R_3R_4\gtrsim S_3S_4.
+   \]
+
+This part appears valid modulo standard current-theoretic details and the external Guth estimate.
+
+---
+
+### 5. Consequences of the same slicing
+
+The mass lower bound (4) follows from (1) and (3). The integration giving (5) is also correct.
+
+The use of Guth’s degree estimate (2) to derive
+\[
+\Vol(R)\ge c_G\kappa^{-2}S_1S_2S_3S_4
+\]
+is algebraically correct.
+
+The reduction to the anisotropic hard case is also correct. In particular, if the first alternative fails and \(\kappa<c_1\), Proposition 1 gives
+\[
+R_1R_2^2\gtrsim S_1S_2S_3.
+\]
+Then (5) gives
+\[
+\Vol(R)\gtrsim \alpha^{1/2}T,\qquad
+\alpha=R_1/S_1,\quad T=S_1S_2^{1/2}S_3^{3/2}S_4,
+\]
+and (2) gives
+\[
+\Vol(R)\gtrsim \alpha^{-2}S_1S_2S_3S_4.
+\]
+The conclusion (10) follows if the desired second alternative also fails.
+
+This is a valid reduction, not a proof.
+
+---
+
+### 6. Weighted coarea section
+
+The weighted coarea argument is one of the stronger parts of the draft.
+
+At rank-two points of \(F\), the pointwise inequality
+\[
+\lambda^2J_2F\le1
+\]
+is justified by choosing \(v\in\ker dF\) with \(|dG(v)|=\lambda\), then comparing
+\[
+|df(v)\wedge df(n)|\ge \lambda |dF(n)|.
+\]
+This is correct.
+
+The coarea conclusion
+\[
+I\le\Vol(R)
+\]
+is correct under the usual regularity assumptions.
+
+The lower bound
+\[
+E_y\ge S_1S_2
+\]
+also follows from the relative-degree-one pushforward
+\[
+G_\#Z_y=[0,S_1]\times[0,S_2].
+\]
+
+This section is valid but only gives a basic volume-scale estimate unless combined with the missing parametric tightening.
+
+---
+
+### 7. Self-absorbing plaque-puncture reduction
+
+The all-plaque bad-mass lemma is plausible and likely correct. For fixed \(x\), the set of punctures \(z\) for which \(x\in\mathcal B_z\) is contained in a union of images of coordinate \(2\)-plaques. Since
+\[
+J_2(F|_{P_{ij}})\le1
+\]
+and
+\[
+R_iR_j\le R_3R_4,
+\]
+the averaged bad mass is bounded by
+\[
+C\frac{R_3R_4}{S_3S_4}A.
+\]
+This addresses the previous linear-example issue.
+
+But the section’s central estimate
+\[
+ A\le C\left(R_1I+\frac{I^2}{S_1q}\right)
+      +\frac{C}{q}\int_Q\int_Q
+        \Mass(B_y\llcorner\mathcal B_z)\,dy\,dz
+\tag{13'}
+\]
+is simply stated as “needed.” It is not proved.
+
+This is fatal. The derivation of (14), absorption of the bad term, and conclusion of the second alternative are all conditional on \((13')\).
+
+There is also a quantifier issue around the chosen fillings \(B_y\). The draft selects measurable almost-minimizing fillings and then states \((13')\) for them. A final theorem would need to specify whether \((13')\) is supposed to hold for every such selection, for some specially selected family, or after optimizing over selections. The bad-mass lemma works for any selected almost-minimizers, but the unproved tightening estimate may depend on the selection.
+
+---
+
+### 8. Measurable-selection paragraph
+
+This is an improvement, but still too compressed for a final proof.
+
+Potential issues:
+
+- One must specify the precise Polish space of currents being used. The full space of integral currents with flat topology requires care; often one works with currents supported in a compact set and with suitable mass bounds.
+- One must prove measurability of the multifunction \(y\mapsto\{B:\partial B=Z_y,\ \Mass B\le2\Fill_R(Z_y)\}\).
+- The closedness assertion uses lower semicontinuity of mass and closedness of the boundary condition under flat convergence. This is plausible but not detailed.
+
+These are technical rather than conceptual gaps, but they would need attention in a complete proof.
+
+---
+
+### 9. Directional filling check
+
+The corrected definition of \(\Vol_{ij}\) is good.
+
+The integrated bookkeeping leading to (16) is correct: projected volumes of the slice correspond to complementary minors of \(F=(f_3,f_4)\). For example,
+\[
+\int_Q\Vol_{12}(Z_y)\,dy=M_{34}.
+\]
+
+However, the exact relative rectangular specialization of Guth’s directional isoperimetric inequality is still not proved in the draft. Since this section is explicitly described as weaker than \((13')\) and does not close the proof, this is not the main fatal issue.
+
+---
+
+### 10. Remaining open issues
+
+This section explicitly states:
+
+> “The proof is incomplete at one essential point…”
+
+and says that a proof of \((13')\), or an equivalent family-level lower bound, is still needed.
+
+This alone forces the answer-ready flag to be false. The problem asks for a proof of the theorem, not a conditional framework.
+
+---
+
+## New issues introduced or newly clarified
+
+1. **The rescaled-target approximation step may not preserve the hypothesis \(R_1\le\kappa S_1\)** without adjusting \(\kappa\). This is fixable but currently not handled.
+
+2. **The quantifier on \((13')\) relative to the chosen fillings \(B_y\) is unclear.** A rigorous version must state whether \((13')\) holds for all near-minimizing selections or only for some canonical/specially chosen selection.
+
+3. **The KRN measurable-selection invocation is not fully justified.** It is plausible but incomplete.
+
+4. **The proof’s conditional nature is now more explicit.** This is good for honesty, but it confirms the document is not a solution.
+
+---
+
+## Final verdict
+
+The revision fixes the previous averaged-puncture logical flaw and improves several technical definitions. The first alternative and several reductions appear substantially correct. But the averaged fixed-puncture parametric tightening estimate \((13')\) remains entirely unproved and is essential to the second alternative. Thus `answer.tex` is not a complete rigorous solution.

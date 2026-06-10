@@ -1,0 +1,198 @@
+# Referee report on revised `answer.tex`
+
+## Verdict
+
+The revised draft is **still not answer-ready**. It is explicitly a partial proof: it states that the “averaged estimate is still open,” and the final section says “The proof is incomplete.” Therefore it does not prove the problem.
+
+The revision does address several prior formal issues, but it replaces the earlier false random-puncture lemma by a new unproved hard-regime averaged filling estimate, equation (13). Since that estimate is essential and unproved, the solution remains incomplete.
+
+## LaTeX contract check
+
+I compiled the supplied `answer.tex` with `pdflatex`. It compiles successfully to a 5-page PDF. It uses exactly
+
+```latex
+\documentclass[12pt]{article}
+```
+
+uses only the permitted `fullpage` layout package, and I found no forbidden margin changes, line-spacing changes, or in-document font-size changes. Thus the LaTeX contract appears satisfied. The rejection is mathematical.
+
+## Literature/source validation
+
+The cited Guth paper *Area-expanding embeddings of rectangles* exists as arXiv:0710.0403. Its statement of the rectangular isoperimetric profile appears as Theorem 3, and its Estimate 1 gives the lower bound for \(k\)-dilation of degree-nonzero maps of pairs; these support the draft’s uses of Guth’s profile estimate and monomial degree estimate. ([arxiv.org](https://arxiv.org/pdf/0710.0403))
+
+The cited Guth paper *Directional isoperimetric inequalities and rational homotopy invariants* also exists as arXiv:0802.3549, and its abstract says it uses a directionally dependent isoperimetric inequality for cycles in ellipses. However, the draft still does not identify a theorem number or prove that the precise **relative rectangular** directional filling inequality (14) follows from that paper. ([arxiv.org](https://arxiv.org/abs/0802.3549))
+
+## Previous concerns: addressed vs. remaining
+
+### Addressed
+
+1. **First-alternative proposition now states its hypotheses.**  
+   The proposition now explicitly assumes degree \(1\) and \(\Dil_2(f)\le1\). This fixes a prior formal omission.
+
+2. **The smallness condition on \(\kappa\) was fixed.**  
+   The draft now takes \(\kappa<\min\{c_1,1\}\), so \(\alpha=R_1/S_1\le1\) is justified in the derivation of (8).
+
+3. **Projected directional mass is now multiplicity-aware.**  
+   The draft defines
+   \[
+   \Vol_{ij}(Z)=\int_Z |dx_i\wedge dx_j|\,d\|Z\|,
+   \]
+   which fixes the prior ambiguity about set-theoretic projection area versus current/projected mass.
+
+4. **Complementary-minor bookkeeping was added.**  
+   The draft now explains, for example, why
+   \[
+   \int_Q \Vol_{12}(Z_y)\,dy=M_{34}.
+   \]
+   This addresses the previous concern that (15) required explanation.
+
+5. **The old random-puncture lemma is no longer claimed as valid.**  
+   The draft now explicitly records it as false in its universal form.
+
+### Still remaining
+
+1. **The theorem is not proved.**  
+   The hard-regime averaged filling estimate (13) is unproved and is explicitly listed as the essential missing step.
+
+2. **The directional filling inequality (14) is still under-cited.**  
+   It may be true, but the draft gives neither a theorem number nor a derivation from Guth’s directional paper to the stated relative-rectangle version.
+
+3. **The current/slicing formalism remains compressed.**  
+   The approximation/transversality paragraph is plausible but not fully rigorous. A final proof should specify the current category, preservation of degree and boundary conditions, and the limiting argument.
+
+## Section-by-section audit
+
+### Problem statement and interpretation
+
+The interpretation of degree \(1\) via relative homology is reasonable and faithful to the problem. Renaming the theorem’s small constant as \(\kappa\) is harmless.
+
+However, this section explicitly says that the averaged estimate needed to finish the theorem is “still open in this draft.” That alone prevents acceptance.
+
+### Standard tools
+
+The singular-value argument
+\[
+\Dil_2(f)\le1\implies \Dil_j(f)\le1,\qquad j=3,4,
+\]
+is correct.
+
+The Guth profile estimate (1) is consistent with the \(k=2,n=4\) small-volume part of Guth’s rectangular isoperimetric profile theorem. The degree estimate (2) follows from Guth’s Estimate 1 with \(j=1,k=2,l=4\). These citations are appropriate.
+
+The slicing naturality statement is standard in spirit, but the approximation sentence is still not a complete proof. In a final solution, one should avoid handwaving about “arbitrarily small Lipschitz approximation” unless all relative-boundary and degree-preservation details are supplied.
+
+### Central target filling lemma
+
+The calibration proof is essentially correct. The form
+\[
+\omega=dx_1\wedge dx_2\wedge d\psi
+\]
+has controlled comass, and the boundary contribution from \(\partial S\) vanishes because \(dx_1\wedge dx_2=0\) on the \(x_1,x_2\)-faces and \(\psi=0\) on the \(x_3,x_4\)-faces.
+
+Minor rigor issue: Stokes for relative integral currents and the smoothing of \(\psi\) should be written explicitly in a final proof, but this is not the main obstruction.
+
+### First alternative
+
+The first-alternative proof is mathematically credible.
+
+For a.e. central \(y\), the slice \(Z_y\) maps to \(P_y\). A filling of \(Z_y\) pushes forward to a filling of \(P_y\), and \(\Dil_3(f)\le1\) gives
+\[
+\Fill_R(Z_y)\gtrsim S_1S_2S_3.
+\]
+Then Guth’s profile estimate forces \(\Mass Z_y\gtrsim R_1R_2\), and coarea yields
+\[
+R_1R_2R_3R_4\gtrsim R_1R_2S_3S_4.
+\]
+Thus \(R_3R_4\gtrsim S_3S_4\). This is a valid partial result.
+
+### Reductions (4)–(10)
+
+The derivation of the slice-mass lower bound (4) and volume lower bound (5) is correct. The use of Guth’s monomial estimate to get (6) is also correct.
+
+The algebra leading to
+\[
+\Vol(R)\gtrsim \alpha^{1/2}T
+\]
+and
+\[
+\Vol(R)\gtrsim \alpha^{-2}S_1S_2S_3S_4
+\]
+is correct, now that \(\alpha\le1\) is explicitly justified. The reduction to the extreme anisotropic regime (10) is also valid.
+
+But these are reductions only; they do not prove the desired theorem.
+
+### Weighted coarea and sufficient hard-regime estimate
+
+The weighted coarea estimate is correct in substance. The pointwise argument gives
+\[
+\lambda^2J_2F\le1,
+\]
+and coarea gives
+\[
+I\le \Vol(R).
+\]
+The lower bound
+\[
+E_y\ge S_1S_2
+\]
+also follows from the relative degree-one pushforward of \(Z_y\) under \(G=(f_1,f_2)\).
+
+The newly isolated estimate
+\[
+ A\le C\left(R_1I+\frac{I^2}{S_1q}\right)
+      +C\frac{R_3R_4}{S_3S_4}A
+\tag{13}
+\]
+would indeed finish the theorem under the hard-regime hypotheses. The algebra following (13) is basically correct.
+
+However, (13) is not proved. Since it is exactly the missing hard part, this is a fatal gap.
+
+### Directional filling reduction
+
+The definition of \(\Vol_{ij}\) is now correct.
+
+The complementary-minor bookkeeping in passing from (14) to (15) is also correct.
+
+The main issue is that (14) is still cited only generically as “Guth’s directional relative isoperimetric inequality.” The cited Guth paper does contain directionally dependent isoperimetric ideas, but the draft needs either:
+
+- an exact theorem reference with hypotheses matching relative cycles in rectangles, or
+- a proof of (14) from the published theorem.
+
+Even granting (14), the draft admits that (15) is not enough to prove (13) or the theorem.
+
+### Linear obstruction to the earlier puncture lemma
+
+The linear example is consistent. The singular values are
+\[
+L,\ L^{-1},\ L^{-2},\ L^{-2},
+\]
+so \(\Dil_2(f)=1\). The central fibers are large \(x_3x_4\)-rectangles with filling mass \(\gtrsim L^4\), while the weighted energy per fiber is \(O(1)\). This correctly explains why the previous universal random-puncture lemma was false.
+
+This section is useful but does not contribute a proof of the theorem.
+
+### Remaining open issues
+
+The final section explicitly states:
+
+> “The proof is incomplete.”
+
+It then identifies the hard-regime averaged filling estimate (13) as the essential missing step. This is decisive: the manuscript is not a complete solution.
+
+## Summary
+
+What is now solid or plausibly solid:
+
+- the problem interpretation;
+- the central filling calibration;
+- the first-alternative proof;
+- the reductions (4)–(10);
+- the weighted coarea estimate;
+- the conditional implication “(13) implies the theorem”;
+- the correction of the previous random-puncture mistake.
+
+What remains missing:
+
+- a proof of the hard-regime averaged filling estimate (13);
+- a precise citation/proof of the relative rectangular directional inequality (14);
+- full current-theoretic details for slicing/approximation.
+
+The revised draft is clearer and fixes several previous formal issues, but it remains a partial proof with an explicitly open essential lemma. It therefore cannot be marked answer-ready.
